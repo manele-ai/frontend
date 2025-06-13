@@ -1,15 +1,11 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
 import admin from "firebase-admin";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { initiateMusicGeneration } from "../api/music-api";
-import { Database } from "../types";
+import { generateLyricsAndStyle } from "../api/openai-api";
 import { COLLECTIONS } from "../constants/collections";
+import { Database, Requests } from "../types";
 
-interface GenerateSongData {
-  prompt: string;
-}
-
-
-export const generateSongHandler = onCall<GenerateSongData>(
+export const generateSongHandler = onCall<Requests.GenerateSong>(
   async (request) => {
     // Ensure user is authenticated
     const {data, auth} = request;
@@ -18,13 +14,29 @@ export const generateSongHandler = onCall<GenerateSongData>(
       throw new HttpsError('unauthenticated', 'Not authenticated.');
     }
 
-    const { prompt } = data as GenerateSongData;
-    if (!prompt) {
-      throw new HttpsError('invalid-argument', 'The function must be called with a prompt.');
-    }
-
     try {
-      const musicApiResponse = await initiateMusicGeneration(prompt);
+      // First, generate lyrics and style description using OpenAI
+      const { lyrics, styleDescription } = await generateLyricsAndStyle(
+        data.style,
+        data.title,
+        data.lyricsDetails,
+        data.wantsDedication ? {
+          from: data.from,
+          to: data.to,
+          message: data.dedication
+        } : undefined,
+        data.wantsDonation ? {
+          amount: data.donationAmount || 0
+        } : undefined
+      );
+
+      // Then, use the generated content to initiate music generation
+      const musicApiResponse = await initiateMusicGeneration(
+        lyrics,
+        data.title,
+        styleDescription
+      );
+
       const externalTaskId = musicApiResponse.data.taskId;
       const newTaskRef = admin.firestore().collection(COLLECTIONS.GENERATE_SONG_TASKS).doc();
       
@@ -40,7 +52,7 @@ export const generateSongHandler = onCall<GenerateSongData>(
       return { message: "Music generation initiated.", taskId: newTaskRef.id, externalTaskId };
 
     } catch (error) {
-      console.error("Error in generateAudioHandler:", error);
+      console.error("Error in generateSongHandler:", error);
       throw new HttpsError('internal', 'Internal server error while initiating music generation.');
     }
 });

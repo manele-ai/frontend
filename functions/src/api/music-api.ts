@@ -11,17 +11,21 @@ const apiClient = axios.create({
   },
 });
 
-export async function initiateMusicGeneration(prompt: string): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
+export async function initiateMusicGeneration(
+  lyrics: string,
+  title: string,
+  style: string,
+): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
     functions.logger.info("Sending request to third-party API for music generation", { prompt });
     const requestBody: MusicApi.GenerateRequest = {
-      prompt: prompt,
-      style: "Romanian manea in a party mood. Song must be in Romanian language.",
-      title: "Maneaua verii",
+      prompt: lyrics,
+      style: style || "Romanian manea in a party mood. Song must be in Romanian language.",
+      title: title || "Maneaua verii",
       customMode: true,
       instrumental: false,
       model: "V4_5",
-      callBackUrl: "https://your-callback-url.com",
+      callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
     functions.logger.info("Request body for music API /generate", requestBody);
     const { data } = await apiClient.post<MusicApi.Response<MusicApi.GenerateResponseData>>("/generate", requestBody);

@@ -28,3 +28,11 @@ export const firebaseStorageBucket = defineString(
     // No default, should be specific to the Firebase project
   },
 );
+
+export const openaiApiKey = defineString(
+  "OPENAI_API_KEY",
+  {
+    description: "API key for OpenAI API.",
+    // No default for sensitive keys, ensure it's set during deployment/emulation
+  },
+);

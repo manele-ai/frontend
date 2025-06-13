@@ -3,8 +3,15 @@
 
 export namespace Requests {
   export interface GenerateSong {
-    userId: string;
-    prompt: string;
+    title: string;
+    lyricsDetails?: string;
+    style: string;
+    wantsDedication: boolean;
+    from?: string;
+    to?: string;
+    dedication?: string;
+    wantsDonation: boolean;
+    donationAmount?: number;
   }
   
   export interface GetStatus {
