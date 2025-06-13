@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { saveItem } from './storage';
+import { useAuth } from '../components/auth/AuthContext';
+import { generateSong } from '../services/firebase/functions';
 
 const STYLES = [
   'Jale ( Guta/Salam Vechi)',
@@ -15,6 +16,7 @@ const STYLES = [
 ];
 
 export default function HomeScreen() {
+  const { user, loading: authLoading } = useAuth();
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
   const [toName, setToName] = useState('');
@@ -38,25 +40,56 @@ export default function HomeScreen() {
   const handleGoToPay = async () => {
     setIsLoading(true);
     setError(null);
-    Animated.sequence([
-      Animated.timing(buttonAnim, { toValue: 0.95, duration: 100, useNativeDriver: true }),
-      Animated.timing(buttonAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
-    ]).start();
-    // Salvează local obiectul de generare pentru a fi folosit după plată
-    const songRequest = {
-      style: selectedStyle,
-      songName,
-      songDetails,
-      from: fromName,
-      to: toName,
-      dedication,
-      wantsDedication,
-      wantsDonation,
-      donationAmount,
-    };
-    await saveItem('pendingSongRequest', songRequest);
-    router.push({ pathname: '/pay', params: songRequest });
-    setIsLoading(false);
+    
+    try {
+      // Create the prompt from the form data
+      const prompt = mode === 'hard' 
+        ? `Generate a manele song named "${songName}" in style "${selectedStyle}" with the following details: ${songDetails}${
+            wantsDedication 
+              ? ` Include a dedication from ${fromName} to ${toName}${dedication ? ` saying: ${dedication}` : ''}.` 
+              : ''
+          }${
+            wantsDonation 
+              ? ` Mention throwing money amount: ${donationAmount} RON.` 
+              : ''
+          }`
+        : `Generate a manele song named "${songName}" in style "${selectedStyle}"`;
+
+      // Call the cloud function
+      const result = await generateSong({ prompt });
+
+      // Animate button
+      Animated.sequence([
+        Animated.timing(buttonAnim, { toValue: 0.95, duration: 100, useNativeDriver: true }),
+        Animated.timing(buttonAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      ]).start();
+
+      // TODO: cu plata va trebui sa salvam cu saveItem requestul de generare (momentat bypassing plata)
+      // // Save request data and task IDs
+      // const generateRequest = {
+      //   style: selectedStyle,
+      //   songName,
+      //   songDetails,
+      //   from: fromName,
+      //   to: toName,
+      //   dedication,
+      //   wantsDedication,
+      //   wantsDonation,
+      //   donationAmount,
+      //   taskId: result.taskId,
+      //   externalTaskId: result.externalTaskId,
+      // };
+      // await saveItem('pendingGenerateRequest', generateRequest);
+      // router.push({ 
+      //   pathname: '/pay', 
+      //   params: generateRequest 
+      // });
+    } catch (err) {
+      console.error('Error generating song:', err);
+      setError(err.message || 'Failed to generate song. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

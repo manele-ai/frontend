@@ -48,3 +48,62 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+# Project structure
+├── app/                   # Routes
+│
+├── components/            # Reusable UI components
+│
+├── services/            # Backend services
+│   └── firebase/        # Firebase service integration, avoid importing firebase functions directly in components, instead import from this folder
+│
+├── assets/              # Static assets (images, fonts, etc.)
+├── constants/           # Application constants and configurations
+├── hooks/              # Custom React hooks
+├── scripts/            # Utility and build scripts
+├── functions/          # Firebase backend
+│
+├── app.config.ts       # Expo configuration
+├── App.js             # Root React component
+├── tsconfig.json      # TypeScript configuration
+├── package.json       # Project dependencies and scripts
+└── firebase.json      # Firebase configuration
+
+
+# Testing Locally with Firebase
+## Install
+
+Install Node 18.0.8.
+
+Install expo app:
+```sh
+# In project root
+npm install
+```
+
+```sh
+firebase login
+```
+
+Install and build firebase functions:
+```sh
+cd functions
+npm install
+# If you are using TypeScript, compile your functions:
+npm run build
+cd ..
+```
+
+## Run
+To start firebase emulators:
+```sh
+firebase emulators:start
+```
+Note: Don't name .env keys with FIREBASE_ as they are reserved will cause stupid fckin error
+
+
+Start expo app:
+```sh
+npm run start # In project root
+```
