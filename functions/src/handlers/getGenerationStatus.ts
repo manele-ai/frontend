@@ -87,6 +87,7 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
         status: task.status,
         songData: {
           id: songDoc.id,
+          userId: task.userId,
           externalId: songData.externalId,
           taskId: taskDoc.id,
           externalTaskId: task.externalId,
@@ -116,11 +117,10 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
     const { dbStatus, errorMessage } = mapExternalStatus(statusResponse.data.status);
     
     // Prepare the Firestore update
-    const updateData: Partial<Database.GenerateSongTask> = {
+    const taskUpdateData: Partial<Database.GenerateSongTask> = {
       status: dbStatus,
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
-      ...(errorMessage && { error: errorMessage }),
-      songIds: []
+      ...(errorMessage && { error: errorMessage })
     };
 
     // Initialize response payload
@@ -133,6 +133,7 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
       const dbSongData: Database.SongData = {
         externalId: songApiData.id,
         taskId,
+        userId: task.userId,
         externalTaskId,
         audioUrl: songApiData.audioUrl,
         sourceAudioUrl: songApiData.audioUrl,
@@ -149,9 +150,6 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
       };
       
       const songDoc = await admin.firestore().collection(COLLECTIONS.SONGS).add(dbSongData);
-
-      // Attach the song ID to the task doc we’re about to update
-      updateData.songIds = admin.firestore.FieldValue.arrayUnion(songDoc.id) as unknown as string[]; // cast keeps TS happy
       
       // Use type assertion to ensure TypeScript recognizes all fields are present
       responsePayload.songData = { ...dbSongData, id: songDoc.id };
@@ -165,7 +163,7 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
     }
 
     // Update Firestore and respond
-    await taskRef.update(updateData);
+    await taskRef.update(taskUpdateData);
     console.info(`Updated Firestore for task ID: ${taskId} with status: ${dbStatus}`);
     
     return responsePayload;

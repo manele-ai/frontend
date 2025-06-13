@@ -15,11 +15,14 @@ functions.logger.info("Firebase Admin SDK initialized.");
 import { downloadSongHandler } from "./handlers/downloadSong";
 import { generateSongHandler } from "./handlers/generateSong";
 import { getGenerationStatusHandler } from "./handlers/getGenerationStatus";
+import { onSongCreatedHandler } from './handlers/onSongCreated';
+import { onUserCreatedHandler } from './handlers/onUserCreated';
 
 // Export functions to be deployed
 export const generateSong = generateSongHandler;
 export const getGenerationStatus = getGenerationStatusHandler;
 export const downloadSong = downloadSongHandler;
+export { onSongCreatedHandler, onUserCreatedHandler };
 
 // Example of how to use defined parameters (config) if needed directly in index.ts
 // import { thirdPartyApiBaseUrl } from "./config";

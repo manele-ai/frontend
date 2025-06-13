@@ -24,6 +24,7 @@ export namespace Database {
   export interface SongData {
     externalId: string;
     taskId: string;
+    userId: string;
     externalTaskId: string;
     audioUrl: string;
     storageUrl?: string;
