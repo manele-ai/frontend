@@ -1,0 +1,137 @@
+.switch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.switch:focus-visible {
+  outline: 2px solid #FFD700;
+  outline-offset: 2px;
+  border-radius: 16px;
+}
+
+.switch--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.switch-track {
+  position: relative;
+  border-radius: 16px;
+  background-color: #23242b;
+  transition: background-color 0.2s ease;
+}
+
+.switch-track--checked {
+  background-color: #FFD700;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 12px;
+  background-color: #FFD700;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-thumb--checked {
+  left: 28px;
+  background-color: #23242b;
+}
+
+/* Sizes */
+.switch--small .switch-track {
+  width: 40px;
+  height: 24px;
+}
+
+.switch--small .switch-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.switch--small .switch-thumb--checked {
+  left: 18px;
+}
+
+.switch--medium .switch-track {
+  width: 56px;
+  height: 28px;
+}
+
+.switch--medium .switch-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.switch--medium .switch-thumb--checked {
+  left: 28px;
+}
+
+.switch--large .switch-track {
+  width: 72px;
+  height: 36px;
+}
+
+.switch--large .switch-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+.switch--large .switch-thumb--checked {
+  left: 36px;
+}
+
+/* Hover effects */
+.switch:not(.switch--disabled):hover .switch-track {
+  background-color: #2a2b32;
+}
+
+.switch:not(.switch--disabled):hover.switch--checked .switch-track {
+  background-color: #e6c200;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .switch--large .switch-track {
+    width: 64px;
+    height: 32px;
+  }
+  
+  .switch--large .switch-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+  }
+  
+  .switch--large .switch-thumb--checked {
+    left: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .switch--medium .switch-track {
+    width: 48px;
+    height: 24px;
+  }
+  
+  .switch--medium .switch-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+  }
+  
+  .switch--medium .switch-thumb--checked {
+    left: 24px;
+  }
+} 

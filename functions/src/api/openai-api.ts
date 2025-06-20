@@ -1,6 +1,14 @@
 import axios from "axios";
 import * as functions from "firebase-functions";
 import { openaiApiKey } from "../config";
+import comercialePrompt from "../data/prompts/styles/comerciale.json";
+import deOpulentaPrompt from "../data/prompts/styles/de-opulenta.json";
+import jalePrompt from "../data/prompts/styles/jale.json";
+import lautarestiPrompt from "../data/prompts/styles/lautaresti.json";
+import maneleLivePrompt from "../data/prompts/styles/manele-live.json";
+import muzicaPopularaPrompt from "../data/prompts/styles/muzica-populara.json";
+import orientalePrompt from "../data/prompts/styles/orientale.json";
+import petrecerePrompt from "../data/prompts/styles/petrecere.json";
 
 const apiClient = axios.create({
   baseURL: "https://api.openai.com/v1",
@@ -11,14 +19,8 @@ const apiClient = axios.create({
 });
 
 interface ChatCompletionMessage {
-  id: string;
-  type: string;
   role: string;
-  content: {
-    type: string;
-    text: string;
-    annotations: any[];
-  }[];
+  content: string | null;
 }
 
 interface ChatCompletionResponse {
@@ -61,41 +63,37 @@ MUST:
 `;
 
 function getPromptJsonTemplateFromStyle(style: string) {
-  const path_prefix = '../data/prompts/styles/';
+  console.log(`Getting prompt for style: "'${style}'"`);
   switch (style) {
     case "Comerciale ( BDLP )":
-      return require(`${path_prefix}/comerciale.json`);
+      return comercialePrompt;
     case "De Opulenta":
-      return require(`${path_prefix}/de-opulenta.json`);
-    case "'Jale ( Guta/Salam Vechi)'":
-      return require(`${path_prefix}/jale.json`);
+      return deOpulentaPrompt;
+    case "Jale ( Guta/Salam Vechi)":
+      return jalePrompt;
     case "Lautaresti":
-      return require(`${path_prefix}/lautaresti.json`);
+      return lautarestiPrompt;
     case "Manele live":
-      return require(`${path_prefix}/manele-live.json`);
+      return maneleLivePrompt;
     case "Muzica Populara":
-      return require(`${path_prefix}/muzica-populara.json`);
+      return muzicaPopularaPrompt;
     case "Orientale":
-      return require(`${path_prefix}/orientale.json`);
-    case "'De Petrecere ( Bem 7 zile )'":
-      return require(`${path_prefix}/petrecere.json`);
+      return orientalePrompt;
+    case "De Petrecere ( Bem 7 zile )":
+      return petrecerePrompt;
     default:
       throw new Error(`Invalid style: ${style}`);
   }
 }
 
 function findTextContentInResponse(response: ChatCompletionResponse): string {
-  // Safely traverse the response to find text content
-  for (const choice of response.choices) {
-    if (!choice.message?.content) continue;
-    
-    for (const content of choice.message.content) {
-      if (content.type === 'output_text' && content.text) {
-        return content.text;
-      }
+  if (response.choices && response.choices.length > 0) {
+    const message = response.choices[0].message;
+    if (message && message.content) {
+      return message.content;
     }
   }
-  throw new Error('No text content found in response');
+  throw new Error("No text content found in OpenAI response");
 }
 
 export async function generateLyricsAndStyle(
@@ -144,13 +142,17 @@ export async function generateLyricsAndStyle(
       temperature: 0.8,
     });
 
+    functions.logger.info("OpenAI response:", JSON.stringify(chatgptResponse.data, null, 2));
+
     // Extract the response text safely
     // TODO: should we store chatgpt responses in firestore?
     const responseText = findTextContentInResponse(chatgptResponse.data);
     
     // Parse the JSON response
     try {
-      const parsedResponse = JSON.parse(responseText);
+      const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
+      const jsonText = jsonMatch ? jsonMatch[1] : responseText;
+      const parsedResponse = JSON.parse(jsonText);
       if (!parsedResponse.lyrics || !parsedResponse.style) {
         throw new Error('Response missing required fields');
       }

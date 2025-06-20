@@ -1,0 +1,102 @@
+.input-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.input-label {
+  color: #FFD700;
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 4px;
+  margin-left: 2px;
+}
+
+.input-field {
+  width: 100%;
+  background-color: #23242b;
+  color: #fff;
+  border-radius: 18px;
+  padding: 12px 18px;
+  font-size: 16px;
+  border: 1.5px solid #333;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #FFD700;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.input-field::placeholder {
+  color: #aaa;
+}
+
+.input-field--error {
+  border-color: #ff3b30;
+}
+
+.input-field--error:focus {
+  border-color: #ff3b30;
+  box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.2);
+}
+
+.input-field--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #1a1b20;
+}
+
+.input-error {
+  color: #ff3b30;
+  font-size: 14px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-weight: 500;
+}
+
+/* Input types */
+.input-field[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input-field[type="number"]::-webkit-outer-spin-button,
+.input-field[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-field[type="password"] {
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .input-field {
+    font-size: 15px;
+    padding: 10px 16px;
+  }
+  
+  .input-label {
+    font-size: 14px;
+  }
+  
+  .input-error {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-field {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+  
+  .input-label {
+    font-size: 13px;
+  }
+} 

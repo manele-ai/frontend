@@ -1,0 +1,54 @@
+.payment-page {
+  min-height: 100vh;
+  background-color: #181A20;
+  padding: 70px 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-page .container {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.payment-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.payment-button {
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+}
+
+/* Stripe CardElement custom styles */
+.StripeElement {
+  margin-bottom: 20px;
+}
+
+.StripeElement--focus {
+  border-color: #FFD700;
+}
+
+.StripeElement--invalid {
+  border-color: #ff3b30;
+}
+
+@media (max-width: 768px) {
+  .payment-page {
+    padding: 50px 15px 15px;
+  }
+  
+  .payment-page .container {
+    max-width: 100%;
+  }
+  
+  .payment-form {
+    max-width: 100%;
+  }
+} 
