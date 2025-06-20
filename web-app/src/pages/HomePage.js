@@ -62,23 +62,16 @@ export default function HomePage() {
         mode
       });
 
-      // Save request data and navigate to payment
-      const generateRequest = {
-        style: selectedStyle,
-        songName,
-        songDetails,
-        from: fromName,
-        to: toName,
-        dedication,
-        wantsDedication,
-        wantsDonation,
-        donationAmount,
-        taskId: result.taskId,
-        externalTaskId: result.externalTaskId
-      };
-      
-      localStorage.setItem('pendingGenerateRequest', JSON.stringify(generateRequest));
-      navigate('/payment', { state: generateRequest });
+      // Navigate to the loading page with the taskId
+      navigate('/loading', { 
+        state: { 
+          taskId: result.taskId,
+          // Pass other details if needed by the result page later
+          style: selectedStyle,
+          title: songName,
+          lyricsDetails: songDetails,
+        } 
+      });
     } catch (err) {
       console.error('Error generating song:', err);
       setError(err.message || 'Failed to generate song. Please try again.');

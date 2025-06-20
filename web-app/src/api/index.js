@@ -1,7 +1,10 @@
 // API functions for the web app using Firebase Functions
 import { generateSong, getGenerationStatus } from '../services/firebase/functions';
 
-// 1. Generate song using Firebase Functions
+/**
+ * @param {object} data
+ * @returns {Promise<{taskId: string, externalTaskId: string}>}
+ */
 export async function generateManeaSong(data) {
   try {
     // Call Firebase Function with the full data object
@@ -12,7 +15,10 @@ export async function generateManeaSong(data) {
   }
 }
 
-// 2. Polling pentru statusul piesei generate
+/**
+ * @param {string} taskId
+ * @returns {Promise<{status: 'processing' | 'completed' | 'failed', songData?: object, error?: string}>}
+ */
 export async function pollManeaSongResult(taskId) {
   try {
     const result = await getGenerationStatus({ taskId });

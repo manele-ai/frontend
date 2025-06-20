@@ -3,20 +3,22 @@ import { functions } from './index';
 
 /**
  * @param {object} data
+ * @returns {Promise<{taskId: string, externalTaskId: string}>}
  */
 export const generateSong = async (data) => {
   const generateSongFunction = httpsCallable(functions, 'generateSong');
   const result = await generateSongFunction(data);
-  return result.data;
+  return /** @type {{taskId: string, externalTaskId: string}} */ (result.data);
 }; 
 
 /**
  * @param {object} data
+ * @returns {Promise<{status: 'processing' | 'completed' | 'failed', songData?: object, error?: string}>}
  */
 export const getGenerationStatus = async (data) => {
   const getStatusFunction = httpsCallable(functions, 'getGenerationStatus');
   const result = await getStatusFunction(data);
-  return result.data;
+  return /** @type {{status: 'processing' | 'completed' | 'failed', songData?: object, error?: string}} */ (result.data);
 };
 
 /**
