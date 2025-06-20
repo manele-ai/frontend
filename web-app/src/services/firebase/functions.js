@@ -23,9 +23,10 @@ export const getGenerationStatus = async (data) => {
 
 /**
  * @param {object} data
+ * @returns {Promise<{storageUrl: string}>}
  */
 export const downloadSong = async (data) => {
   const downloadFunction = httpsCallable(functions, 'downloadSong');
   const result = await downloadFunction(data);
-  return result.data;
+  return /** @type {{storageUrl: string}} */ (result.data);
 }; 

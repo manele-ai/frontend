@@ -103,6 +103,12 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <AuthStatus />
+      <button 
+        className="my-songs-button"
+        onClick={() => navigate('/my-songs')}
+      >
+        Manelele Mele
+      </button>
       <div className="container">
         <h1 className="title">Manele IO</h1>
         

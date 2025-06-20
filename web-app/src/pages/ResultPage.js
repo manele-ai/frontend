@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { saveToList } from '../api';
+import { downloadManeaSong, saveToList } from '../api';
 import '../styles/ResultPage.css';
+import { downloadFile } from '../utils';
 
 export default function ResultPage() {
   const location = useLocation();
@@ -13,6 +14,7 @@ export default function ResultPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio] = useState(new Audio(songData?.audioUrl));
   const [saved, setSaved] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Save song to storage when component loads (only once)
   useEffect(() => {
@@ -39,6 +41,19 @@ export default function ResultPage() {
       audio.play().catch(e => console.error("Error playing audio:", e));
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const result = await downloadManeaSong(songData.id);
+      downloadFile(result.storageUrl, `${songData.title || 'manea'}.mp3`);
+    } catch (error) {
+      console.error("Failed to download song:", error);
+      // Optionally, show an error to the user
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // If no song data, redirect to home
@@ -73,6 +88,13 @@ export default function ResultPage() {
             onClick={handlePlayPause}
           >
             <span className="play-icon">{isPlaying ? '⏸️' : '▶️'}</span>
+          </button>
+          <button
+            className="button download-button"
+            onClick={handleDownload}
+            disabled={isDownloading}
+          >
+            {isDownloading ? 'Se descarcă...' : 'Descarcă'}
           </button>
         </div>
       </div>
