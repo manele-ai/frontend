@@ -17,7 +17,6 @@ export async function initiateMusicGeneration(
   style: string,
 ): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
-    functions.logger.info("Sending request to third-party API for music generation", { prompt });
     const requestBody: MusicApi.GenerateRequest = {
       prompt: lyrics,
       style: style || "Romanian manea in a party mood. Song must be in Romanian language.",
@@ -32,14 +31,21 @@ export async function initiateMusicGeneration(
     functions.logger.info("Received response from music API /generate", { responseData: data });
     return data;
   } catch (error) {
-    functions.logger.error("Error calling third-party generation API", { error });
     if (axios.isAxiosError(error)) {
+      functions.logger.error("Error calling third-party generation API", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers,
+        config: error.config,
+      });
       throw new functions.https.HttpsError(
         "internal",
         `Third-party API error: ${error.message}`,
         error.response?.data,
       );
     }
+    functions.logger.error("Non-Axios error calling third-party generation API", { error });
     throw new functions.https.HttpsError("internal", "Failed to initiate music generation with third-party API.");
   }
 }

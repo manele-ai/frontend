@@ -12,9 +12,9 @@ if (admin.apps.length === 0) {
 functions.logger.info("Firebase Admin SDK initialized.");
 
 // Import and export handlers
-import { downloadSongHandler } from "./handlers/downloadSong";
-import { generateSongHandler } from "./handlers/generateSong";
-import { getGenerationStatusHandler } from "./handlers/getGenerationStatus";
+import { downloadSongHandler } from "./handlers/downloadSong"; // la final sa dowloanda piesa ( id pisea ) 
+import { generateSongHandler } from "./handlers/generateSong"; // done 
+import { getGenerationStatusHandler } from "./handlers/getGenerationStatus"; // pulling la 20 s ( id pisea primit) 
 import { onSongCreatedHandler } from './handlers/onSongCreated';
 import { onUserCreatedHandler } from './handlers/onUserCreated';
 

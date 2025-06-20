@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateManeaSong } from '../api';
+import { useAuth } from '../components/auth/AuthContext';
 import '../styles/HomePage.css';
 
 const STYLES = [
@@ -15,6 +16,7 @@ const STYLES = [
 ];
 
 export default function HomePage() {
+  const { user, loading: authLoading, error: authError } = useAuth();
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
   const [toName, setToName] = useState('');
@@ -39,26 +41,25 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     
-    try {
-      // Create the prompt from the form data
-      const prompt = mode === 'hard' 
-        ? `Generate a manele song named "${songName}" in style "${selectedStyle}" with the following details: ${songDetails}${
-            wantsDedication 
-              ? ` Include a dedication from ${fromName} to ${toName}${dedication ? ` saying: ${dedication}` : ''}.` 
-              : ''
-          }${
-            wantsDonation 
-              ? ` Mention throwing money amount: ${donationAmount} RON.` 
-              : ''
-          }`
-        : `Generate a manele song named "${songName}" in style "${selectedStyle}"`;
+    if (!user) {
+      setError('User not authenticated. Please wait or refresh.');
+      setIsLoading(false);
+      return;
+    }
 
-      // Call the API
+    try {
+      // Call the API with all parameters, using the correct keys for the backend
       const result = await generateManeaSong({ 
         style: selectedStyle, 
         from: fromName, 
         to: toName, 
-        dedication 
+        dedication,
+        title: songName,
+        lyricsDetails: songDetails,
+        wantsDedication,
+        wantsDonation,
+        donationAmount,
+        mode
       });
 
       // Save request data and navigate to payment
@@ -72,8 +73,8 @@ export default function HomePage() {
         wantsDedication,
         wantsDonation,
         donationAmount,
-        taskId: result.id,
-        prompt
+        taskId: result.taskId,
+        externalTaskId: result.externalTaskId
       };
       
       localStorage.setItem('pendingGenerateRequest', JSON.stringify(generateRequest));
@@ -86,8 +87,29 @@ export default function HomePage() {
     }
   };
 
+  const AuthStatus = () => (
+    <div style={{
+      position: 'fixed',
+      bottom: '40px',
+      left: '10px',
+      backgroundColor: '#23242b',
+      color: '#FFD700',
+      padding: '8px',
+      borderRadius: '8px',
+      fontSize: '12px',
+      zIndex: 1000
+    }}>
+      <p>Auth Status:</p>
+      {authLoading && <p>Loading...</p>}
+      {authError && <p>Error: {authError.message}</p>}
+      {user && <p>User: {user.uid} (Anonymous: {user.isAnonymous.toString()})</p>}
+      {!user && !authLoading && <p>Not authenticated</p>}
+    </div>
+  );
+
   return (
     <div className="home-page">
+      <AuthStatus />
       <div className="container">
         <h1 className="title">Manele IO</h1>
         
@@ -233,9 +255,9 @@ export default function HomePage() {
         <button
           className={`button generate-button ${!selectedStyle || isLoading ? 'disabled' : ''}`}
           onClick={handleGoToPay}
-          disabled={!selectedStyle || isLoading}
+          disabled={!selectedStyle || isLoading || authLoading}
         >
-          {isLoading ? 'Se procesează...' : 'Plateste'}
+          {isLoading || authLoading ? 'Se procesează...' : 'Plateste'}
         </button>
         
         {error && (

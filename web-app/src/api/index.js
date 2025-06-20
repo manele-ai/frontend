@@ -1,78 +1,33 @@
-// API functions for the web app
+// API functions for the web app using Firebase Functions
+import { generateSong, getGenerationStatus } from '../services/firebase/functions';
 
-// 1. Trimite request de generare și primește un id
-export async function generateManeaSong({ style, from, to, dedication }) {
+// 1. Generate song using Firebase Functions
+export async function generateManeaSong(data) {
   try {
-    const response = await fetch('https://api.maneagenerator.com/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ style, from, to, dedication }),
-    });
-    if (!response.ok) {
-      throw new Error('Eroare la generarea piesei');
-    }
-    // Presupunem că răspunsul conține un id
-    const data = await response.json();
-    // { id: '...' }
-    return data;
+    // Call Firebase Function with the full data object
+    const result = await generateSong(data);
+    return result;
   } catch (e) {
     throw e;
   }
 }
 
 // 2. Polling pentru statusul piesei generate
-export async function pollManeaSongResult(id) {
+export async function pollManeaSongResult(taskId) {
   try {
-    const response = await fetch(`https://api.maneagenerator.com/status/${id}`);
-    if (!response.ok) {
-      throw new Error('Eroare la verificarea statusului');
-    }
-    // Presupunem că răspunsul conține status și eventual url audio
-    const data = await response.json();
-    // { status: 'pending' | 'done' | 'error', audioUrl?: '...' }
-    return data;
+    const result = await getGenerationStatus({ taskId });
+    return result;
   } catch (e) {
     throw e;
   }
 }
 
-export async function fetchFirebaseToken() {
+// 3. Trigger la finalizarea generării piesei (optional)
+export async function triggerManeaSongComplete(taskId) {
   try {
-    const response = await fetch('https://us-central1-maneagenerator.cloudfunctions.net/generateToken', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Poți adăuga date suplimentare dacă e nevoie, de ex: device info
-      body: JSON.stringify({ timestamp: Date.now() }),
-    });
-    if (!response.ok) {
-      throw new Error('Eroare la generarea tokenului');
-    }
-    const data = await response.json();
-    // Presupunem că răspunsul conține { token: '...' }
-    return data;
-  } catch (e) {
-    throw e;
-  }
-}
-
-// 3. Trigger la finalizarea generării piesei
-export async function triggerManeaSongComplete(id) {
-  try {
-    const response = await fetch('https://api.maneagenerator.com/complete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id }),
-    });
-    if (!response.ok) {
-      throw new Error('Eroare la trigger completare piesă');
-    }
-    return await response.json();
+    // This could be a separate Firebase Function if needed
+    console.log('Song generation completed for task:', taskId);
+    return { success: true };
   } catch (e) {
     throw e;
   }

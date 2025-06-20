@@ -1,0 +1,120 @@
+.button {
+  font-family: inherit;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid #FFD700;
+  outline-offset: 2px;
+}
+
+/* Variants */
+.button--primary {
+  background-color: #FFD700;
+  color: #23242b;
+  box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+}
+
+.button--primary:hover:not(.button--disabled) {
+  background-color: #e6c200;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+}
+
+.button--secondary {
+  background-color: #23242b;
+  color: #FFD700;
+  border: 1.5px solid #FFD700;
+}
+
+.button--secondary:hover:not(.button--disabled) {
+  background-color: #2a2b32;
+  border-color: #e6c200;
+  color: #e6c200;
+}
+
+.button--ghost {
+  background-color: transparent;
+  color: #FFD700;
+  border: 1.5px solid transparent;
+}
+
+.button--ghost:hover:not(.button--disabled) {
+  background-color: rgba(255, 215, 0, 0.1);
+  border-color: #FFD700;
+}
+
+/* Sizes */
+.button--small {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.button--medium {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+.button--large {
+  padding: 16px 32px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+/* States */
+.button--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.button--loading {
+  position: relative;
+  color: transparent;
+}
+
+.button--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .button--large {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+  
+  .button--medium {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+  
+  .button--small {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+} 

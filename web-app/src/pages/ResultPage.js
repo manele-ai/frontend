@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { pollManeaSongResult, saveToList, triggerManeaSongComplete } from '../api';
 import '../styles/ResultPage.css';
@@ -33,8 +33,8 @@ export default function ResultPage() {
         const data = await pollManeaSongResult(taskId);
         if (!isMounted) return;
         
-        if (data.status === 'completed' && data.audioUrl) {
-          setAudioUrl(data.audioUrl);
+        if (data.status === 'completed' && data.songData?.audioUrl) {
+          setAudioUrl(data.songData.audioUrl);
           setIsLoading(false);
           if (!triggered) {
             setTriggered(true);
@@ -81,16 +81,15 @@ export default function ResultPage() {
 
   // Audio event handlers
   useEffect(() => {
-    audio.addEventListener('ended', () => {
+    const handleEnded = () => {
       setIsPlaying(false);
       setShowWave(false);
-    });
+    };
+
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
-      audio.removeEventListener('ended', () => {
-        setIsPlaying(false);
-        setShowWave(false);
-      });
+      audio.removeEventListener('ended', handleEnded);
     };
   }, [audio]);
 
@@ -153,10 +152,10 @@ export default function ResultPage() {
         {audioUrl && !isLoading && !error && (
           <div className="player-box">
             <button 
-              className="play-button"
+              className="modern-play-button"
               onClick={handlePlayPause}
             >
-              {isPlaying ? '⏸️ Pauză' : '▶️ Redă'}
+              <span className="play-icon">{isPlaying ? '⏸️' : '▶️'}</span>
             </button>
             
             {showWave && (
