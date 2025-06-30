@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
+import SongItem from '../components/SongItem';
 import { useSongs } from '../hooks/useSongs';
 import '../styles/MySongsPage.css';
 
@@ -9,30 +10,17 @@ export default function MySongsPage() {
   const { user, userProfile, loading: authLoading } = useAuth();
   const { songs, loading: songsLoading, error: songsError } = useSongs();
   const [activeSong, setActiveSong] = useState(null);
-  const [audio] = useState(new Audio());
-
-  useEffect(() => {
-    // Stop audio when changing active song or leaving the page
-    return () => audio.pause();
-  }, [activeSong, audio]);
 
   const handlePlayPause = (song) => {
-    if (activeSong && activeSong.id === song.id) {
-      // Pause the current song
-      audio.pause();
+    if (activeSong?.id === song.id) {
       setActiveSong(null);
     } else {
-      // Play the new song
-      audio.src = song.audioUrl;
-      audio.play().catch(e => console.error("Error playing audio:", e));
       setActiveSong(song);
     }
   };
 
   const handleDownload = async (song) => {
     try {
-      // For now, we'll use the direct audio URL
-      // In the future, this could call the downloadSong API
       const link = document.createElement('a');
       link.href = song.audioUrl;
       link.download = `${song.title || 'manea'}.mp3`;
@@ -78,31 +66,13 @@ export default function MySongsPage() {
         <div className="song-list">
           {songs.length > 0 ? (
             songs.map((song) => (
-              <div key={song.id} className="song-item">
-                <div className="song-info">
-                  <h3 className="song-title">{song.title || 'Manea fără nume'}</h3>
-                  <p className="song-style">Generat pe {song.createTime ? new Date(song.createTime).toLocaleDateString('ro-RO') : 'data necunoscută'}</p>
-                  {song.duration && (
-                    <p className="song-duration">Durată: {Math.round(song.duration)}s</p>
-                  )}
-                </div>
-                <div className="song-actions">
-                  <button
-                    className="list-play-button"
-                    onClick={() => handlePlayPause(song)}
-                    title={activeSong?.id === song.id ? 'Pune pauză' : 'Pornește'}
-                  >
-                    {activeSong?.id === song.id ? '⏸️' : '▶️'}
-                  </button>
-                  <button
-                    className="download-button"
-                    onClick={() => handleDownload(song)}
-                    title="Descarcă melodia"
-                  >
-                    📥
-                  </button>
-                </div>
-              </div>
+              <SongItem
+                key={song.id}
+                song={song}
+                isActive={activeSong?.id === song.id}
+                onPlayPause={handlePlayPause}
+                onDownload={handleDownload}
+              />
             ))
           ) : (
             <div className="no-songs">

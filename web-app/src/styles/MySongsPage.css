@@ -11,7 +11,7 @@
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding-top: 20px; /* Reduced since we have header padding */
+  padding-top: 20px;
 }
 
 .title {
@@ -186,7 +186,7 @@
 
 .back-button {
   position: absolute;
-  top: 80px; /* Adjusted for header */
+  top: 80px;
   left: 20px;
   background-color: #23242b;
   color: #FFD700;
@@ -205,11 +205,19 @@
   transform: translateY(-1px);
 }
 
+/* Audio player positioning */
+.audio-player {
+  position: sticky;
+  top: 80px; /* Match header padding */
+  z-index: 100;
+  margin-bottom: 20px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .my-songs-page {
     padding: 15px;
-    padding-top: 70px; /* Adjusted for smaller header */
+    padding-top: 70px;
   }
   
   .container {
@@ -244,9 +252,15 @@
   }
   
   .back-button {
-    top: 70px; /* Adjusted for smaller header */
+    top: 70px;
     left: 15px;
     padding: 8px 12px;
     font-size: 12px;
+  }
+  
+  .audio-player {
+    top: 70px; /* Match header padding */
+    margin: 0 -15px 20px -15px; /* Extend to edges on mobile */
+    border-radius: 0; /* Remove border radius on mobile */
   }
 } 
