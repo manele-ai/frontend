@@ -1,66 +1,15 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
+import { useSongs } from '../hooks/useSongs';
 import '../styles/MySongsPage.css';
 
 export default function MySongsPage() {
   const navigate = useNavigate();
   const { user, userProfile, loading: authLoading } = useAuth();
-  const [songs, setSongs] = useState([]);
+  const { songs, loading: songsLoading, error: songsError } = useSongs();
   const [activeSong, setActiveSong] = useState(null);
   const [audio] = useState(new Audio());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchUserSongs = async () => {
-      if (!user || !userProfile) return;
-
-      try {
-        setLoading(true);
-        setError('');
-
-        const db = getFirestore();
-        const songsData = [];
-
-        // Fetch songs using the user's songIds array
-        if (userProfile.songIds && userProfile.songIds.length > 0) {
-          for (const songId of userProfile.songIds) {
-            try {
-              const songDoc = await getDoc(doc(db, 'songs', songId));
-              if (songDoc.exists()) {
-                songsData.push({
-                  id: songDoc.id,
-                  ...songDoc.data()
-                });
-              }
-            } catch (err) {
-              console.error(`Error fetching song ${songId}:`, err);
-            }
-          }
-        }
-
-        // Sort songs by creation date (newest first)
-        songsData.sort((a, b) => {
-          const dateA = a.createTime ? new Date(a.createTime) : new Date(0);
-          const dateB = b.createTime ? new Date(b.createTime) : new Date(0);
-          return dateB - dateA;
-        });
-
-        setSongs(songsData);
-      } catch (err) {
-        console.error('Error fetching user songs:', err);
-        setError('Eroare la încărcarea melodiilor. Încearcă din nou.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!authLoading) {
-      fetchUserSongs();
-    }
-  }, [user, userProfile, authLoading]);
 
   useEffect(() => {
     // Stop audio when changing active song or leaving the page
@@ -96,7 +45,7 @@ export default function MySongsPage() {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || songsLoading) {
     return (
       <div className="my-songs-page">
         <div className="loading-container">
@@ -120,9 +69,9 @@ export default function MySongsPage() {
         <h1 className="title">Manelele Mele</h1>
         <p className="subtitle">Ascultă piesele generate de tine</p>
         
-        {error && (
+        {songsError && (
           <div className="error-message">
-            {error}
+            {songsError}
           </div>
         )}
         
