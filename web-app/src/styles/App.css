@@ -13,6 +13,7 @@ body {
   background-color: #181A20;
   color: white;
   line-height: 1.6;
+  padding-top: 60px; /* Compensate for fixed header */
 }
 
 code {
@@ -123,7 +124,7 @@ code {
 
 .back-button {
   position: absolute;
-  top: 40px;
+  top: 80px; /* Adjusted for header */
   left: 20px;
   background-color: #23242b;
   border: none;
@@ -251,8 +252,16 @@ input:focus-visible {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
+  body {
+    padding-top: 50px; /* Adjusted for smaller header on mobile */
+  }
+  
   .container {
     padding: 0 15px;
+  }
+  
+  .back-button {
+    top: 70px; /* Adjusted for smaller header */
   }
 }
 

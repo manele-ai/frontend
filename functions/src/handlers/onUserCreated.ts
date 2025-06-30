@@ -20,10 +20,18 @@ export const onUserCreatedHandler = beforeUserCreated(async (event) => {
     const userRef = admin.firestore().collection(COLLECTIONS.USERS).doc(event.data.uid);
     
     const userData: Database.User = {
+      uid: event.data.uid,
+      email: event.data.email || '',
+      displayName: event.data.displayName || undefined,
+      photoURL: event.data.photoURL || undefined,
       createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       songIds: [],
-      taskIds: []
+      taskIds: [],
+      preferences: {
+        favoriteStyles: [],
+        language: 'ro'
+      }
     };
 
     await userRef.set(userData);

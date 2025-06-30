@@ -1,0 +1,248 @@
+.auth-page {
+  min-height: 100vh;
+  background-color: #181A20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-top: 80px; /* Compensate for header */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.auth-container {
+  background-color: #23242b;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
+}
+
+.auth-title {
+  color: #FFD700;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.auth-subtitle {
+  color: #a2a5bd;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  position: relative;
+}
+
+.auth-input {
+  width: 100%;
+  background-color: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 16px;
+  color: #fff;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.auth-input::placeholder {
+  color: #666;
+}
+
+.auth-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-button {
+  background-color: #FFD700;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: #e6c200;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #333;
+}
+
+.auth-divider span {
+  background-color: #23242b;
+  color: #666;
+  padding: 0 15px;
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.google-button {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.google-button:hover:not(:disabled) {
+  border-color: #FFD700;
+  background-color: #2a2b32;
+}
+
+.google-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  fill: #4285f4;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.auth-link-button {
+  background: none;
+  border: none;
+  color: #FFD700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.auth-link-button:hover {
+  color: #e6c200;
+  text-decoration-color: #e6c200;
+}
+
+.auth-error {
+  background-color: #ff3b30;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+  border: 1px solid #ff6b6b;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 30px 20px;
+    padding-top: 70px; /* Adjusted for smaller header */
+    margin: 10px;
+  }
+  
+  .auth-container {
+    padding: 30px 20px;
+  }
+  
+  .auth-title {
+    font-size: 24px;
+  }
+  
+  .auth-subtitle {
+    font-size: 14px;
+  }
+  
+  .auth-input {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+  
+  .auth-button,
+  .google-button {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.auth-button:disabled,
+.google-button:disabled {
+  animation: pulse 1.5s infinite;
+}
+
+/* Focus styles for accessibility */
+.auth-input:focus-visible,
+.auth-button:focus-visible,
+.google-button:focus-visible,
+.auth-link-button:focus-visible {
+  outline: 2px solid #FFD700;
+  outline-offset: 2px;
+} 

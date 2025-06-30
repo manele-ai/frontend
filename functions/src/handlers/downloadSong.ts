@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import admin from "firebase-admin";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { firebaseStorageBucket } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
@@ -17,19 +17,35 @@ interface DownloadSongData {
 
 export const downloadSongHandler = onCall<DownloadSongData>(async (request) => {
   const { songId } = request.data;
+  const { auth } = request;
+
+  if (!auth) {
+    throw new HttpsError('unauthenticated', 'Not authenticated.');
+  }
 
   if (!songId) {
-    throw new Error("Missing songId parameter");
+    throw new HttpsError('invalid-argument', 'Missing songId parameter');
   }
 
   try {
     const songDoc = await admin.firestore().collection(COLLECTIONS.SONGS).doc(songId).get();
 
     if (!songDoc.exists) {
-      throw new Error(`No song found with ID: ${songId}`);
+      throw new HttpsError('not-found', `No song found with ID: ${songId}`);
     }
 
     const songData = songDoc.data() as Database.SongData;
+
+    // Check if the user is authorized to download this song
+    if (songData.userId !== auth.uid) {
+      throw new HttpsError('permission-denied', 'You are not authorized to download this song.');
+    }
+
+    // Verify that the user exists in the database
+    const userDoc = await admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid).get();
+    if (!userDoc.exists) {
+      throw new HttpsError('not-found', 'User not found in database.');
+    }
 
     if (songData.storageUrl) {
       console.info(`Serving stored audio URL for song ID: ${songId} from: ${songData.storageUrl}`);
@@ -41,7 +57,7 @@ export const downloadSongHandler = onCall<DownloadSongData>(async (request) => {
     }
 
     if (!songData.audioUrl) {
-      throw new Error(`No audio URL found for song ID: ${songId}`);
+      throw new HttpsError('failed-precondition', `No audio URL found for song ID: ${songId}`);
     }
 
     const audioUrl = songData.audioUrl;
@@ -49,7 +65,7 @@ export const downloadSongHandler = onCall<DownloadSongData>(async (request) => {
     
     const bucketName = firebaseStorageBucket.value();
     if (!bucketName) {
-      throw new Error("Storage bucket not configured");
+      throw new HttpsError('internal', 'Storage bucket not configured');
     }
 
     try {
@@ -99,14 +115,17 @@ export const downloadSongHandler = onCall<DownloadSongData>(async (request) => {
 
     } catch (error) {
       console.error(`Error saving audio file for song ID ${songId}:`, error);
-      throw new Error("Failed to save audio file to storage");
+      throw new HttpsError('internal', 'Failed to save audio file to storage');
     }
 
   } catch (error) {
     console.error(`Error in downloadSongHandler for song ID ${songId}:`, error);
     if (error instanceof AxiosError && error.response?.status === 404) {
-      throw new Error("Song not found");
+      throw new HttpsError('not-found', 'Song not found');
     }
-    throw new Error("Internal server error while processing song download");
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+    throw new HttpsError('internal', 'Internal server error while processing song download');
   }
 });

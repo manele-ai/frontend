@@ -15,6 +15,12 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
     }
 
     try {
+      // Verify that the user exists in the database
+      const userDoc = await admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid).get();
+      if (!userDoc.exists) {
+        throw new HttpsError('not-found', 'User not found in database. Please try logging in again.');
+      }
+
       // First, generate lyrics and style description using OpenAI
       const { lyrics, styleDescription } = await generateLyricsAndStyle(
         data.style,
@@ -46,13 +52,41 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
         status: "processing",
         createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
         updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+        metadata: {
+          style: data.style,
+          title: data.title,
+          from: data.from,
+          to: data.to,
+          dedication: data.dedication,
+          wantsDedication: data.wantsDedication,
+          wantsDonation: data.wantsDonation,
+          donationAmount: data.donationAmount
+        }
       };
 
-      await newTaskRef.set(newTask);
+      // Start a batch write to create task and update user
+      const batch = admin.firestore().batch();
+      
+      // Create the task document
+      batch.set(newTaskRef, newTask);
+      
+      // Update the user document - add task ID to taskIds array
+      const userRef = admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid);
+      batch.update(userRef, {
+        taskIds: admin.firestore.FieldValue.arrayUnion(newTaskRef.id),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      // Commit the batch
+      await batch.commit();
+
       return { message: "Music generation initiated.", taskId: newTaskRef.id, externalTaskId };
 
     } catch (error) {
       console.error("Error in generateSongHandler:", error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
       throw new HttpsError('internal', 'Internal server error while initiating music generation.');
     }
 });

@@ -12,77 +12,91 @@ const progressMap = {
 };
 
 export default function LoadingPage() {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { taskId } = location.state || {};
+  const navigate = useNavigate();
+  
+  // Get taskId from the HomePage
+  const { taskId, style, title, lyricsDetails } = location.state || {};
   
   const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState('Se pregătește generarea...');
+  const [status, setStatus] = useState('Se generează versurile...');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!taskId) {
-      console.error('No taskId found, redirecting to home.');
       navigate('/');
       return;
     }
 
-    // Initial state
-    setProgress(10);
-    setStatusText('Se inițializează procesul...');
-
-    const intervalId = setInterval(async () => {
+    const interval = setInterval(async () => {
       try {
         const result = await pollManeaSongResult(taskId);
-        const { status, songData, error } = result;
         
-        const newProgress = progressMap[status] || { percent: progress, text: statusText };
-
-        // A small trick to show intermediate progress
-        if (status === 'processing' && progress < 40) {
-            setProgress(newProgress.percent);
-            setStatusText(newProgress.text);
-        } else if (status === 'processing' && progress >= 40) {
-            setProgress(progressMap.generating.percent);
-            setStatusText(progressMap.generating.text);
+        if (result.status === 'completed' && result.songData) {
+          // Song is ready!
+          navigate('/result', { 
+            state: { 
+              songData: result.songData,
+              style,
+              title,
+              lyricsDetails
+            } 
+          });
+        } else if (result.status === 'failed') {
+          setError(result.error || 'Generarea piesei a eșuat. Încearcă din nou.');
         } else {
-            setProgress(newProgress.percent);
-            setStatusText(newProgress.text);
-        }
-
-        if (status === 'completed') {
-          clearInterval(intervalId);
-          setTimeout(() => {
-            navigate('/result', { state: { songData } });
-          }, 1000); // Wait a bit on 100% before navigating
-        }
-
-        if (status === 'failed') {
-          console.error('Song generation failed:', error);
-          clearInterval(intervalId);
-          // Optional: navigate to an error page or show error message
+          // Still processing, update progress
+          setProgress(prev => Math.min(prev + Math.random() * 15, 90));
+          
+          // Update status based on progress
+          if (progress < 30) {
+            setStatus('Se generează versurile...');
+          } else if (progress < 60) {
+            setStatus('Se compune muzica...');
+          } else {
+            setStatus('Se finalizează piesa...');
+          }
         }
       } catch (err) {
-        console.error('Polling failed:', err);
-        setStatusText('A apărut o eroare la verificare. Se reîncearcă...');
+        console.error('Error polling result:', err);
+        setError('A apărut o eroare. Încearcă din nou.');
       }
-    }, 5000); // Poll every 5 seconds for faster feedback in development
+    }, 2000); // Poll every 2 seconds
 
-    // Cleanup on unmount
-    return () => clearInterval(intervalId);
-  }, [taskId, navigate, progress, statusText]);
+    return () => clearInterval(interval);
+  }, [taskId, navigate, progress, style, title, lyricsDetails]);
+
+  if (error) {
+    return (
+      <div className="loading-page">
+        <div className="loading-container">
+          <h1 className="loading-title">Eroare</h1>
+          <p className="loading-status">{error}</p>
+          <button 
+            className="button"
+            onClick={() => navigate('/')}
+          >
+            Înapoi la început
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="loading-page">
       <div className="loading-container">
         <h1 className="loading-title">Se generează maneaua...</h1>
+        
         <div className="progress-bar-container">
           <div 
             className="progress-bar"
             style={{ width: `${progress}%` }}
-          />
+          ></div>
         </div>
+        
         <p className="loading-percentage">{Math.round(progress)}%</p>
-        <p className="loading-status">{statusText}</p>
+        <p className="loading-status">{status}</p>
       </div>
     </div>
   );

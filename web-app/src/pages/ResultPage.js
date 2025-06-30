@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { downloadManeaSong, saveToList } from '../api';
+import { useAuth } from '../components/auth/AuthContext';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   // Get songData from the LoadingPage
   const { songData } = location.state || {};

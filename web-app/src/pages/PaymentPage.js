@@ -1,85 +1,93 @@
-import { CardElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/PaymentPage.css';
 
-// Replace with your Stripe publishable key
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 function PaymentForm({ style, from, to, dedication }) {
-  const stripe = useStripe();
-  const elements = useElements();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
   const handlePay = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsProcessing(true);
     setError(null);
-    
+
     try {
-      // TODO: Fetch clientSecret from backend
-      const clientSecret = 'pi_test_secret_xxx'; // mock
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: elements.getElement(CardElement) }
+      // Navigate to loading page with song generation data
+      navigate('/loading', {
+        state: {
+          taskId: 'mock-task-id-' + Date.now(),
+          style,
+          from,
+          to,
+          dedication
+        }
       });
-      
-      if (stripeError) {
-        setError(stripeError.message);
-      } else {
-        // Payment successful, navigate to result page
-        navigate('/result', { 
-          state: { 
-            style, 
-            from, 
-            to, 
-            dedication, 
-            payment: 'success',
-            taskId: 'mock-task-id' // This should come from the backend
-          } 
-        });
-      }
     } catch (err) {
-      setError('Payment failed. Please try again.');
+      setError('Plata a eșuat. Încearcă din nou.');
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
   return (
     <form onSubmit={handlePay} className="payment-form">
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: '18px',
-              color: '#FFD700',
-              backgroundColor: '#23242b',
-              border: '2px solid #FFD700',
-              borderRadius: '8px',
-              padding: '18px 16px',
-              minHeight: '64px',
-              lineHeight: '44px',
-              '::placeholder': { color: '#FFD700' },
-            },
-            invalid: {
-              color: '#ff3b30',
-            },
-          },
-        }}
-      />
+      <div className="payment-summary">
+        <h3>Sumar comandă</h3>
+        <p><strong>Stil:</strong> {style}</p>
+        {from && <p><strong>De la:</strong> {from}</p>}
+        {to && <p><strong>Pentru:</strong> {to}</p>}
+        {dedication && <p><strong>Dedicație:</strong> {dedication}</p>}
+        <p><strong>Preț:</strong> 9.99 RON</p>
+      </div>
+
+      <div className="payment-method">
+        <h3>Metodă de plată</h3>
+        <div className="card-element">
+          {/* Stripe Elements would go here */}
+          <div className="mock-card-input">
+            <input 
+              type="text" 
+              placeholder="Numărul cardului" 
+              disabled={isProcessing}
+            />
+            <div className="card-details">
+              <input 
+                type="text" 
+                placeholder="MM/YY" 
+                disabled={isProcessing}
+              />
+              <input 
+                type="text" 
+                placeholder="CVC" 
+                disabled={isProcessing}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <button 
         type="submit" 
-        disabled={loading} 
-        className="button payment-button"
+        className="payment-button"
+        disabled={isProcessing}
       >
-        {loading ? 'Se procesează...' : 'Plătește cu cardul'}
+        {isProcessing ? 'Se procesează...' : 'Plătește 9.99 RON'}
       </button>
-      {error && <div className="error-text">{error}</div>}
+
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
     </form>
   );
 }
@@ -87,36 +95,38 @@ function PaymentForm({ style, from, to, dedication }) {
 export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Get data from HomePage
   const { style, from, to, dedication } = location.state || {};
 
-  // If no state, redirect to home
+  // Redirect if no style selected
   if (!style) {
     navigate('/');
     return null;
   }
 
   return (
-    <Elements stripe={stripePromise}>
-      <div className="payment-page">
-        <button
-          onClick={() => navigate('/')}
-          className="back-button"
-        >
-          ←
-        </button>
-        
-        <div className="container">
-          <h1 className="title">Plată cu cardul</h1>
-          <p className="subtitle">Completează plata pentru a genera piesa</p>
-          
+    <div className="payment-page">
+      <button 
+        className="back-button"
+        onClick={() => navigate('/')}
+      >
+        ← Înapoi
+      </button>
+
+      <div className="container">
+        <h1 className="title">Plată</h1>
+        <p className="subtitle">Finalizează comanda pentru a genera maneaua</p>
+
+        <Elements stripe={stripePromise}>
           <PaymentForm 
-            style={style} 
-            from={from} 
-            to={to} 
-            dedication={dedication} 
+            style={style}
+            from={from}
+            to={to}
+            dedication={dedication}
           />
-        </div>
+        </Elements>
       </div>
-    </Elements>
+    </div>
   );
 } 

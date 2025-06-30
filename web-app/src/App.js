@@ -1,9 +1,13 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import Header from './components/ui/Header';
+import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
-import PaymentPage from './pages/PaymentPage';
+// import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
+import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import './styles/App.css';
 
@@ -12,12 +16,38 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="App">
+          <Header />
           <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
-            <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/loading" element={<LoadingPage />} />
-            <Route path="/result" element={<ResultPage />} />
-            <Route path="/my-songs" element={<MySongsPage />} />
+            
+            {/* Protected routes */}
+            <Route path="/loading" element={
+              <ProtectedRoute>
+                <LoadingPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/result" element={
+              <ProtectedRoute>
+                <ResultPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-songs" element={
+              <ProtectedRoute>
+                <MySongsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+            {/* <Route path="/pay" element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            } /> */}
           </Routes>
         </div>
       </Router>
