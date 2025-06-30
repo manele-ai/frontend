@@ -6,10 +6,10 @@
 }
 
 .input-label {
-  color: #FFD700;
-  font-weight: bold;
+  color: #eab111;
+  font-weight: 700;
   font-size: 15px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   margin-left: 2px;
 }
 
@@ -28,7 +28,7 @@
 
 .input-field:focus {
   outline: none;
-  border-color: #FFD700;
+  border-color: #eab111;
   box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
 }
 

@@ -5,20 +5,17 @@ import './Header.css';
 export default function Header() {
   const navigate = useNavigate();
 
-  const handleLogoClick = () => {
-    navigate('/');
-  };
-
   return (
-    <header className="app-header">
-      <div className="header-content">
-        <button 
-          className="logo-button"
-          onClick={handleLogoClick}
-          aria-label="Manele IO - Pagina principală"
-        >
-          <span className="logo-text">Manele IO</span>
-        </button>
+    <header className="header">
+      <div className="header-left" onClick={() => navigate('/')}
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+        <img
+          src="/_LOGO_MANELEIO.svg"
+          alt="Manele IO Logo"
+          className="header-logo"
+        />
+      </div>
+      <div className="header-right">
         <UserMenu />
       </div>
     </header>

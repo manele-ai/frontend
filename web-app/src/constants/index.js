@@ -11,7 +11,7 @@ export const STYLES = [
 ];
 
 export const COLORS = {
-  primary: '#FFD700',
+  primary: '#eab111',
   secondary: '#23242b',
   background: '#181A20',
   text: '#ffffff',

@@ -94,7 +94,7 @@ export const validationRules = {
 // UI constants
 export const uiConstants = {
   colors: {
-    primary: '#FFD700',
+    primary: '#eab111',
     secondary: '#e6c200',
     background: '#1a1a1a',
     surface: '#23242b',
@@ -102,7 +102,7 @@ export const uiConstants = {
     success: '#34c759',
     warning: '#ff9500',
     text: {
-      primary: '#FFD700',
+      primary: '#eab111',
       secondary: '#a2a5bd',
       disabled: '#666'
     }

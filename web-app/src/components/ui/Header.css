@@ -1,31 +1,46 @@
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background-color: #1a1a1a;
-  border-bottom: 1px solid #333;
-  z-index: 1000;
+.header {
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  padding: 0;
+  height: 110px;
+  background: transparent;
+  border-bottom: 2px solid #222;
+  position: relative;
 }
 
-.header-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+.header-left {
+  height: 100%;
+  width: 50%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  padding-right: 80px;
+}
+
+.header-right {
+  height: 100%;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 80px;
+}
+
+.header-left, .header-right {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.header-right {
+  justify-content: flex-end;
+  flex: 1 1 0;
 }
 
 .logo-button {
   background: none;
   border: none;
-  color: #FFD700;
+  color: #eab111;
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
@@ -36,7 +51,7 @@
 }
 
 .logo-button:hover {
-  color: #e6c200;
+  color: #eab111;
   transform: translateY(-1px);
 }
 
@@ -48,11 +63,6 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .app-header {
-    height: 50px;
-    padding: 0 15px;
-  }
-  
   .logo-text {
     font-size: 20px;
   }
@@ -60,6 +70,7 @@
   .logo-button {
     font-size: 20px;
   }
+  
 }
 
 @media (max-width: 480px) {
@@ -74,7 +85,19 @@
 
 /* Focus styles for accessibility */
 .logo-button:focus-visible {
-  outline: 2px solid #FFD700;
+  outline: 2px solid #eab111;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.header-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 64px;
+  width: auto;
+  display: block;
+  cursor: pointer;
+  z-index: 2;
 } 

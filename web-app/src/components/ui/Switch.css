@@ -10,7 +10,7 @@
 }
 
 .switch:focus-visible {
-  outline: 2px solid #FFD700;
+  outline: 2px solid #eab111;
   outline-offset: 2px;
   border-radius: 16px;
 }
@@ -28,7 +28,7 @@
 }
 
 .switch-track--checked {
-  background-color: #FFD700;
+  background-color: #eab111;
 }
 
 .switch-thumb {
@@ -36,7 +36,7 @@
   top: 2px;
   left: 2px;
   border-radius: 12px;
-  background-color: #FFD700;
+  background-color: #eab111;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -94,7 +94,7 @@
 
 /* Hover effects */
 .switch:not(.switch--disabled):hover .switch-track {
-  background-color: #2a2b32;
+  background-color: #eab111;
 }
 
 .switch:not(.switch--disabled):hover.switch--checked .switch-track {

@@ -173,7 +173,7 @@ export default function AuthPage() {
           }
         </p>
         {infoMessage && (
-          <div className="auth-error" style={{ background: '#FFD700', color: '#23242b', marginBottom: 16, fontWeight: 600 }}>
+          <div className="auth-error" style={{ background: '#eab111', color: '#23242b', marginBottom: 16, fontWeight: 600 }}>
             {infoMessage}
           </div>
         )}

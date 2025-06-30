@@ -13,7 +13,7 @@ body {
   background-color: #181A20;
   color: white;
   line-height: 1.6;
-  padding-top: 60px; /* Compensate for fixed header */
+  padding-top: 0;
 }
 
 code {
@@ -35,7 +35,7 @@ code {
 .title {
   font-size: 32px;
   font-weight: bold;
-  color: #FFD700;
+  color: #eab111;
   margin-bottom: 10px;
   letter-spacing: 1px;
   text-align: center;
@@ -49,7 +49,7 @@ code {
 }
 
 .button {
-  background-color: #FFD700;
+  background-color: #eab111;
   color: #23242b;
   border: none;
   border-radius: 30px;
@@ -63,13 +63,13 @@ code {
 }
 
 .button:hover {
-  background-color: #e6c200;
+  background-color: #eab111;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
 }
 
 .button:disabled {
-  background-color: #b5a642;
+  background-color: #eab111;
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
@@ -88,7 +88,7 @@ code {
 
 .input:focus {
   outline: none;
-  border-color: #FFD700;
+  border-color: #eab111;
 }
 
 .input::placeholder {
@@ -116,7 +116,7 @@ code {
 }
 
 .loading-text {
-  color: #FFD700;
+  color: #eab111;
   font-size: 18px;
   margin-top: 18px;
   font-weight: bold;
@@ -130,7 +130,7 @@ code {
   border: none;
   border-radius: 16px;
   padding: 6px 14px;
-  color: #FFD700;
+  color: #eab111;
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
@@ -163,13 +163,13 @@ input {
 
 /* Global link styles */
 a {
-  color: #FFD700;
+  color: #eab111;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #e6c200;
+  color: #eab111;
 }
 
 /* Scrollbar styling */
@@ -182,18 +182,18 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FFD700;
+  background: #eab111;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e6c200;
+  background: #eab111;
 }
 
 /* Focus styles for accessibility */
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #FFD700;
+  outline: 2px solid #eab111;
   outline-offset: 2px;
 }
 
@@ -219,7 +219,7 @@ input:focus-visible {
 }
 
 .text-gold {
-  color: #FFD700;
+  color: #eab111;
 }
 
 .text-white {
@@ -231,7 +231,7 @@ input:focus-visible {
 }
 
 .bg-gold {
-  background-color: #FFD700;
+  background-color: #eab111;
 }
 
 .rounded {
@@ -247,7 +247,7 @@ input:focus-visible {
 }
 
 .shadow-gold {
-  box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(234, 177, 17, 0.3);
 }
 
 /* Responsive utilities */

@@ -3,7 +3,7 @@
   min-height: 100vh;
   padding: 20px;
   background-color: #1a1a1a;
-  color: #FFD700;
+  color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding-top: 80px; /* Compensate for header */
 }
@@ -13,7 +13,7 @@
   top: 80px; /* Adjusted for header */
   left: 20px;
   background-color: #23242b;
-  color: #FFD700;
+  color: #eab111;
   border: none;
   padding: 10px 15px;
   border-radius: 8px;
@@ -39,7 +39,7 @@
 .title {
   font-size: 32px;
   font-weight: bold;
-  color: #FFD700;
+  color: #eab111;
   margin-bottom: 10px;
   letter-spacing: 1px;
 }
@@ -51,7 +51,7 @@
 }
 
 .style-highlight {
-  color: #FFD700;
+  color: #eab111;
   font-weight: bold;
 }
 
@@ -66,7 +66,7 @@
   width: 40px;
   height: 40px;
   border: 4px solid #23242b;
-  border-top: 4px solid #FFD700;
+  border-top: 4px solid #eab111;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto;
@@ -78,7 +78,7 @@
 }
 
 .loading-text {
-  color: #FFD700;
+  color: #eab111;
   font-size: 18px;
   font-weight: bold;
   margin-top: 18px;
@@ -113,12 +113,12 @@
   border-radius: 12px;
   object-fit: cover;
   margin-bottom: 20px;
-  border: 3px solid #FFD700;
-  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+  border: 3px solid #eab111;
+  box-shadow: 0 8px 24px rgba(234, 177, 17, 0.2);
 }
 
 .modern-play-button {
-  background-color: #FFD700;
+  background-color: #eab111;
   color: #1a1a1a;
   border: none;
   border-radius: 50%;
@@ -131,13 +131,13 @@
   align-items: center;
   justify-content: center;
   margin: 20px 0;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
 }
 
 .modern-play-button:hover {
-  background-color: #e6c200;
+  background-color: #eab111;
   transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 6px 16px rgba(234, 177, 17, 0.4);
 }
 
 .play-icon {
@@ -147,7 +147,7 @@
 .waveform {
   width: 200px;
   height: 60px;
-  background: linear-gradient(90deg, #FFD700 0%, #e6c200 50%, #FFD700 100%);
+  background: linear-gradient(90deg, #eab111 0%, #e6c200 50%, #eab111 100%);
   border-radius: 8px;
   margin-top: 20px;
   opacity: 0.7;
@@ -155,8 +155,8 @@
 
 .download-button {
   background-color: #23242b;
-  color: #FFD700;
-  border: 2px solid #FFD700;
+  color: #eab111;
+  border: 2px solid #eab111;
   border-radius: 12px;
   padding: 12px 24px;
   font-size: 16px;
@@ -169,10 +169,10 @@
 }
 
 .download-button:hover {
-  background-color: #FFD700;
+  background-color: #eab111;
   color: #1a1a1a;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
 }
 
 .download-button:disabled {
@@ -182,7 +182,7 @@
 }
 
 .button {
-  background-color: #FFD700;
+  background-color: #eab111;
   color: #1a1a1a;
   border: none;
   border-radius: 12px;
@@ -199,7 +199,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: #FFD700;
+  background: #eab111;
   color: #1a1a1a;
   border: none;
   border-radius: 40px;
@@ -208,13 +208,13 @@
   font-weight: bold;
   cursor: pointer;
   margin-top: 24px;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(234, 177, 17, 0.15);
   transition: background 0.2s, transform 0.2s;
   letter-spacing: 1px;
 }
 
 .download-btn:hover {
-  background: #e6c200;
+  background: #eab111;
   transform: translateY(-2px) scale(1.04);
 }
 

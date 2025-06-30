@@ -6,7 +6,7 @@
 .user-menu-trigger {
   background: none;
   border: none;
-  color: #FFD700;
+  color: #eab111;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -27,21 +27,21 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #FFD700;
+  border: 2px solid #eab111;
 }
 
 .user-avatar-placeholder {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #FFD700;
+  background-color: #eab111;
   color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 16px;
-  border: 2px solid #FFD700;
+  border: 2px solid #eab111;
 }
 
 .user-name {
@@ -90,7 +90,7 @@
 }
 
 .user-info-name {
-  color: #FFD700;
+  color: #eab111;
   font-weight: bold;
   font-size: 16px;
 }
@@ -180,6 +180,6 @@
 /* Focus styles for accessibility */
 .user-menu-trigger:focus-visible,
 .user-menu-item:focus-visible {
-  outline: 2px solid #FFD700;
+  outline: 2px solid #eab111;
   outline-offset: 2px;
 } 
