@@ -195,6 +195,42 @@
   letter-spacing: 1px;
 }
 
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFD700;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 40px;
+  padding: 16px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 24px;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+  transition: background 0.2s, transform 0.2s;
+  letter-spacing: 1px;
+}
+
+.download-btn:hover {
+  background: #e6c200;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.download-btn:disabled {
+  background: #888;
+  color: #222;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.download-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .result-page {

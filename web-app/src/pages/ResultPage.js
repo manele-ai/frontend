@@ -92,11 +92,11 @@ export default function ResultPage() {
             <span className="play-icon">{isPlaying ? '⏸️' : '▶️'}</span>
           </button>
           <button
-            className="button download-button"
+            className="download-btn"
             onClick={handleDownload}
             disabled={isDownloading}
           >
-            {isDownloading ? 'Se descarcă...' : 'Descarcă'}
+            <span>{isDownloading ? 'Se descarcă...' : 'Descarcă'}</span>
           </button>
         </div>
       </div>
