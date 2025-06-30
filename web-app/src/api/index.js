@@ -1,5 +1,5 @@
 // API functions for the web app using Firebase Functions
-import { generateSong, getGenerationStatus } from '../services/firebase/functions';
+import { downloadSong, generateSong, getGenerationStatus } from '../services/firebase/functions';
 
 /**
  * @param {object} data
@@ -35,6 +35,15 @@ export async function triggerManeaSongComplete(taskId) {
     console.log('Song generation completed for task:', taskId);
     return { success: true };
   } catch (e) {
+    throw e;
+  }
+}
+
+export async function downloadManeaSong(songId) {
+  try {
+    const result = await downloadSong({ songId });
+    return result;
+  } catch(e) {
     throw e;
   }
 }

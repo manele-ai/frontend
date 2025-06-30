@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { getTaskStatus } from "../api/music-api";
 import { COLLECTIONS } from "../constants/collections";
 import { Database, MusicApi, Shared } from "../types";
@@ -48,9 +48,14 @@ function mapExternalStatus(externalStatus: MusicApi.TaskStatus): {
 
 export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) => {
   const { taskId } = request.data;
+  const { auth } = request;
+
+  if (!auth) {
+    throw new HttpsError('unauthenticated', 'Not authenticated.');
+  }
 
   if (!taskId) {
-    throw new Error("Missing taskId parameter");
+    throw new HttpsError('invalid-argument', 'Missing taskId parameter');
   }
 
   try {
@@ -58,11 +63,23 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
     const taskDoc = await taskRef.get();
 
     if (!taskDoc.exists) {
-      throw new Error(`No generation request found for task ID: ${taskId}`);
+      throw new HttpsError('not-found', `No generation request found for task ID: ${taskId}`);
+    }
+
+    const task = taskDoc.data() as Database.GenerateSongTask;
+
+    // Check if the user is authorized to check this task's status
+    if (task.userId !== auth.uid) {
+      throw new HttpsError('permission-denied', 'You are not authorized to check this task\'s status.');
+    }
+
+    // Verify that the user exists in the database
+    const userDoc = await admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid).get();
+    if (!userDoc.exists) {
+      throw new HttpsError('not-found', 'User not found in database.');
     }
 
     // Check local status first
-    const task = taskDoc.data() as Database.GenerateSongTask;
     if (task.status === "failed") {
       return { status: task.status };
     }
@@ -78,7 +95,7 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
       if (songQuerySnapshot.empty) {
         // This should never happen - if status is completed, song data must exist
         console.error(`Data integrity error: Task ${taskId} marked as completed but no song data found`);
-        throw new Error("Internal server error: Data integrity issue detected");
+        throw new HttpsError('internal', 'Internal server error: Data integrity issue detected');
       }
 
       const songDoc = songQuerySnapshot.docs[0];
@@ -170,6 +187,9 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
 
   } catch (error) {
     console.error(`Error in getGenerationStatusHandler for task ID ${taskId}:`, error);
-    throw new Error("Internal server error while checking generation status.");
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+    throw new HttpsError('internal', 'Internal server error while checking generation status.');
   }
 });
