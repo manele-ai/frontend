@@ -41,11 +41,9 @@ interface ChatCompletionResponse {
 //     'Orientale'
 //   ];
 
-const SYSTEM_PROMPT = `You are the best Romanian manele music composer and lyricist. You will help create lyrics and music style descriptions for manele songs.`;
+const SYSTEM_PROMPT = `You are one of the best Romanian manelists. You will create lyrics and music style descriptions for manele songs.`;
 
 const BASE_PROMPT_TEMPLATE = `
-You are the best Romanian manele music composer and lyricist. You will help create lyrics and music style descriptions for manele songs.
-
 MANEA_STYLE: [MANEA_STYLE]
 
 LYRICS INSTRUCTION:
@@ -54,11 +52,12 @@ LYRICS INSTRUCTION:
 STYLE GUIDANCE:
 [STYLE_INSTRUCTION]
 
-TASK: Create the lyrics and the music style description for the manea song.
+TASK: Create the lyrics and the music style description for the manea song. Return both in JSON format with keys: "lyrics" and "style".
 
 MUST:
 - Lyrics must be in Romanian language.
 - Lyrics and style description must be text only, no markdown, no emojis or other formatting.
+- Create a style guidance description for the song in order to get the best possible manea song that matches the requirements.
 - Respond only in JSON format with keys: "lyrics" and "style".
 `;
 
@@ -134,7 +133,7 @@ export async function generateLyricsAndStyle(
       .replace("[STYLE_INSTRUCTION]", promptTemplate.style);
 
     const chatgptResponse = await apiClient.post<ChatCompletionResponse>("/chat/completions", {
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
@@ -150,15 +149,16 @@ export async function generateLyricsAndStyle(
     
     // Parse the JSON response
     try {
-      const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
-      const jsonText = jsonMatch ? jsonMatch[1] : responseText;
-      const parsedResponse = JSON.parse(jsonText);
-      if (!parsedResponse.lyrics || !parsedResponse.style) {
+      functions.logger.info("Attempting to parse response", { responseText });
+      // Parse the content which is a JSON string containing lyrics and style
+      const result = JSON.parse(responseText);
+      
+      if (!result.lyrics || !result.style) {
         throw new Error('Response missing required fields');
       }
       return {
-        lyrics: parsedResponse.lyrics,
-        styleDescription: parsedResponse.style
+        lyrics: result.lyrics,
+        styleDescription: result.style
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
