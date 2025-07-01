@@ -41,7 +41,7 @@ interface ChatCompletionResponse {
 //     'Orientale'
 //   ];
 
-const SYSTEM_PROMPT = `You are one of the best Romanian manelists. You will create lyrics and music style descriptions for manele songs.`;
+const SYSTEM_PROMPT = `You are one of the best Romanian manelists. You will create lyrics for manele songs.`;
 
 const BASE_PROMPT_TEMPLATE = `
 MANEA_STYLE: [MANEA_STYLE]
@@ -49,16 +49,15 @@ MANEA_STYLE: [MANEA_STYLE]
 LYRICS INSTRUCTION:
 [LYRICS_INSTRUCTION]
 
-STYLE GUIDANCE:
-[STYLE_INSTRUCTION]
+STYLE_DESCRIPTION:
+[STYLE_DESCRIPTION]
 
-TASK: Create the lyrics and the music style description for the manea song. Return both in JSON format with keys: "lyrics" and "style".
+TASK: Create the lyrics for the manea song by taking into account the MANEA_STYLE, LYRICS_INSTRUCTION, and STYLE_DESCRIPTION. Return both in JSON format with the key "lyrics".
 
 MUST:
 - Lyrics must be in Romanian language.
-- Lyrics and style description must be text only, no markdown, no emojis or other formatting.
-- Create a style guidance description for the song in order to get the best possible manea song that matches the requirements.
-- Respond only in JSON format with keys: "lyrics" and "style".
+- Lyrics  must be text only, no markdown, no emojis or other formatting.
+- Respond only in JSON format with the key: "lyrics".
 `;
 
 function getPromptJsonTemplateFromStyle(style: string) {
@@ -95,6 +94,7 @@ function findTextContentInResponse(response: ChatCompletionResponse): string {
   throw new Error("No text content found in OpenAI response");
 }
 
+// Atm we only do lyrics generation and keep the style constant across manele types
 export async function generateLyricsAndStyle(
   style: string,
   title: string,
@@ -130,7 +130,7 @@ export async function generateLyricsAndStyle(
     const userPrompt = BASE_PROMPT_TEMPLATE
       .replace("[MANEA_STYLE]", style)
       .replace("[LYRICS_INSTRUCTION]", lyricsInstruction)
-      .replace("[STYLE_INSTRUCTION]", promptTemplate.style);
+      .replace("[STYLE_DESCRIPTION]", promptTemplate.style);
 
     const chatgptResponse = await apiClient.post<ChatCompletionResponse>("/chat/completions", {
       model: "gpt-4o",
@@ -153,12 +153,12 @@ export async function generateLyricsAndStyle(
       // Parse the content which is a JSON string containing lyrics and style
       const result = JSON.parse(responseText);
       
-      if (!result.lyrics || !result.style) {
-        throw new Error('Response missing required fields');
+      if (!result.lyrics) {
+        throw new Error('Response missing required fields: lyrics');
       }
       return {
         lyrics: result.lyrics,
-        styleDescription: result.style
+        styleDescription: promptTemplate.style,
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
