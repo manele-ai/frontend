@@ -1,70 +1,88 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { pollManeaSongResult } from '../api';
+import { generateManeaSong, pollManeaSongResult } from '../api';
 import '../styles/LoadingPage.css';
 
-// Map statuses to progress percentages and text
-const progressMap = {
-  processing: { percent: 45, text: 'ManeleAI generează versurile și stilul...' },
-  generating: { percent: 75, text: 'Inteligența artificială compune linia melodică...' }, // This is an intermediate status we can use on the client
-  completed: { percent: 100, text: 'Piesa este gata!' },
-  failed: { percent: 100, text: 'Ne pare rău, a apărut o eroare.' },
-};
+const GIF = '/NeTf.gif';
 
 export default function LoadingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Get taskId from the HomePage
-  const { taskId, style, title, lyricsDetails } = location.state || {};
-  
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState('Se generează versurile...');
+  const [status, setStatus] = useState('Se pregătește generarea...');
   const [error, setError] = useState(null);
+  const [taskId, setTaskId] = useState(null);
+  const [requestSent, setRequestSent] = useState(false);
+  const pollingRef = useRef(null);
 
+  // Extrage datele din HomePage
+  const {
+    style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
+  } = location.state || {};
+
+  // Trimite requestul la mount
   useEffect(() => {
-    if (!taskId) {
-      navigate('/');
-      return;
+    if (!requestSent) {
+      if (!style || !title) {
+        navigate('/');
+        return;
+      }
+      setStatus('Se trimit datele către AI...');
+      setError(null);
+      setRequestSent(true);
+      generateManeaSong({
+        style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
+      })
+        .then((result) => {
+          setTaskId(result.taskId);
+          setStatus('AI-ul compune maneaua...');
+        })
+        .catch((err) => {
+          setError(err.message || 'Eroare la generare. Încearcă din nou.');
+          setStatus('');
+        });
     }
+  }, [requestSent, style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode, navigate]);
 
-    const interval = setInterval(async () => {
+  // Polling dupa taskId
+  useEffect(() => {
+    if (!taskId) return;
+    setStatus('AI-ul compune maneaua...');
+    setError(null);
+    pollingRef.current = setInterval(async () => {
       try {
         const result = await pollManeaSongResult(taskId);
-        
         if (result.status === 'completed' && result.songData) {
-          // Song is ready!
-          navigate('/result', { 
-            state: { 
+          clearInterval(pollingRef.current);
+          navigate('/result', {
+            state: {
               songData: result.songData,
               style,
               title,
               lyricsDetails
-            } 
+            }
           });
         } else if (result.status === 'failed') {
+          clearInterval(pollingRef.current);
           setError(result.error || 'Generarea piesei a eșuat. Încearcă din nou.');
+          setStatus('');
         } else {
-          // Still processing, update progress
-          setProgress(prev => Math.min(prev + Math.random() * 15, 90));
-          
-          // Update status based on progress
-          if (progress < 30) {
-            setStatus('Se generează versurile...');
-          } else if (progress < 60) {
-            setStatus('Se compune muzica...');
-          } else {
-            setStatus('Se finalizează piesa...');
-          }
+          setStatus('AI-ul compune maneaua...');
         }
       } catch (err) {
-        console.error('Error polling result:', err);
+        clearInterval(pollingRef.current);
         setError('A apărut o eroare. Încearcă din nou.');
+        setStatus('');
       }
-    }, 2000); // Poll every 2 seconds
+    }, 2000);
+    return () => clearInterval(pollingRef.current);
+  }, [taskId, navigate, style, title, lyricsDetails]);
 
-    return () => clearInterval(interval);
-  }, [taskId, navigate, progress, style, title, lyricsDetails]);
+  const handleRetry = () => {
+    setError(null);
+    setRequestSent(false);
+    setTaskId(null);
+    setStatus('Se pregătește generarea...');
+  };
 
   if (error) {
     return (
@@ -72,10 +90,11 @@ export default function LoadingPage() {
         <div className="loading-container">
           <h1 className="loading-title">Eroare</h1>
           <p className="loading-status">{error}</p>
-          <button 
-            className="button"
-            onClick={() => navigate('/')}
-          >
+          <button className="button" onClick={handleRetry}>
+            Încearcă din nou
+          </button>
+          <button className="button" onClick={() => navigate('/')}
+            style={{ marginTop: 12 }}>
             Înapoi la început
           </button>
         </div>
@@ -87,15 +106,17 @@ export default function LoadingPage() {
     <div className="loading-page">
       <div className="loading-container">
         <h1 className="loading-title">Se generează maneaua...</h1>
-        
-        <div className="progress-bar-container">
-          <div 
-            className="progress-bar"
-            style={{ width: `${progress}%` }}
-          ></div>
+        <p style={{ fontSize: 13, color: '#a2a5bd', marginTop: -18, marginBottom: 18 }}>
+          Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '32px 0' }}>
+          <div className="spinner" style={{ width: 60, height: 60, borderWidth: 6, marginBottom: 24 }}></div>
+          <img
+            src={GIF}
+            alt="gif loading manea"
+            style={{ width: 180, height: 120, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 16px #0008', marginBottom: 12 }}
+          />
         </div>
-        
-        <p className="loading-percentage">{Math.round(progress)}%</p>
         <p className="loading-status">{status}</p>
       </div>
     </div>
