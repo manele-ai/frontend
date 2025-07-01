@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateManeaSong } from '../api';
 import { useAuth } from '../components/auth/AuthContext';
 import '../styles/HomePage.css';
 
@@ -21,7 +20,6 @@ export default function HomePage() {
   const [fromName, setFromName] = useState('');
   const [toName, setToName] = useState('');
   const [dedication, setDedication] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [songName, setSongName] = useState('');
   const [songDetails, setSongDetails] = useState('');
@@ -57,20 +55,12 @@ export default function HomePage() {
       return;
     }
 
-    // If user is authenticated, proceed with generation
-    await generateSong();
-  };
-
-  const generateSong = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Call the API with all parameters, using the correct keys for the backend
-      const result = await generateManeaSong({ 
-        style: selectedStyle, 
-        from: fromName, 
-        to: toName, 
+    // Navigheaza direct la pagina de loading cu toate datele
+    navigate('/loading', {
+      state: {
+        style: selectedStyle,
+        from: fromName,
+        to: toName,
         dedication,
         title: songName,
         lyricsDetails: songDetails,
@@ -78,23 +68,8 @@ export default function HomePage() {
         wantsDonation,
         donationAmount,
         mode
-      });
-
-      // Navigate direct la loading page (pentru toți utilizatorii)
-      navigate('/loading', { 
-        state: { 
-          taskId: result.taskId,
-          style: selectedStyle,
-          title: songName,
-          lyricsDetails: songDetails,
-        } 
-      });
-    } catch (err) {
-      console.error('Error generating song:', err);
-      setError(err.message || 'Failed to generate song. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+      }
+    });
   };
 
   // Auth modal handlers
@@ -147,12 +122,23 @@ export default function HomePage() {
       } else {
         await signUp(formData.email, formData.password, formData.displayName);
       }
-      
       setShowAuthModal(false);
       setFormData({ email: '', password: '', confirmPassword: '', displayName: '' });
-      
-      // After successful authentication, proceed with song generation
-      await generateSong();
+      // Navighează direct la loading cu datele
+      navigate('/loading', {
+        state: {
+          style: selectedStyle,
+          from: fromName,
+          to: toName,
+          dedication,
+          title: songName,
+          lyricsDetails: songDetails,
+          wantsDedication,
+          wantsDonation,
+          donationAmount,
+          mode
+        }
+      });
     } catch (error) {
       setFormError(error.message);
     } finally {
@@ -165,9 +151,21 @@ export default function HomePage() {
     try {
       await signInWithGoogle();
       setShowAuthModal(false);
-      
-      // After successful authentication, proceed with song generation
-      await generateSong();
+      // Navighează direct la loading cu datele
+      navigate('/loading', {
+        state: {
+          style: selectedStyle,
+          from: fromName,
+          to: toName,
+          dedication,
+          title: songName,
+          lyricsDetails: songDetails,
+          wantsDedication,
+          wantsDonation,
+          donationAmount,
+          mode
+        }
+      });
     } catch (error) {
       setFormError(error.message);
     } finally {
@@ -241,7 +239,6 @@ export default function HomePage() {
             placeholder="Nume piesă"
             value={songName}
             onChange={(e) => setSongName(e.target.value)}
-            disabled={isLoading}
           />
         </div>
         
@@ -254,7 +251,6 @@ export default function HomePage() {
               placeholder="Detalii versuri (ex: temă, atmosferă, poveste)"
               value={songDetails}
               onChange={(e) => setSongDetails(e.target.value)}
-              disabled={isLoading}
             />
           </div>
         )}
@@ -267,7 +263,6 @@ export default function HomePage() {
                 key={style}
                 className={`style-button ${selectedStyle === style ? 'selected' : ''}`}
                 onClick={() => handleStyleSelect(style)}
-                disabled={isLoading}
               >
                 {style}
               </button>
@@ -282,7 +277,6 @@ export default function HomePage() {
                 type="checkbox"
                 checked={wantsDedication}
                 onChange={(e) => setWantsDedication(e.target.checked)}
-                disabled={isLoading}
                 id="dedication-checkbox"
               />
               <label htmlFor="dedication-checkbox" className="checkbox-label">
@@ -300,7 +294,6 @@ export default function HomePage() {
                     placeholder="De la cine?"
                     value={fromName}
                     onChange={(e) => setFromName(e.target.value)}
-                    disabled={isLoading}
                   />
                 </div>
                 <div className="input-group">
@@ -311,7 +304,6 @@ export default function HomePage() {
                     placeholder="Pentru cine?"
                     value={toName}
                     onChange={(e) => setToName(e.target.value)}
-                    disabled={isLoading}
                   />
                 </div>
                 <div className="input-group">
@@ -322,7 +314,6 @@ export default function HomePage() {
                     placeholder="Dedicatie (opțional)"
                     value={dedication}
                     onChange={(e) => setDedication(e.target.value)}
-                    disabled={isLoading}
                   />
                 </div>
               </>
@@ -333,7 +324,6 @@ export default function HomePage() {
                 type="checkbox"
                 checked={wantsDonation}
                 onChange={(e) => setWantsDonation(e.target.checked)}
-                disabled={isLoading}
                 id="donation-checkbox"
               />
               <label htmlFor="donation-checkbox" className="checkbox-label">
@@ -352,7 +342,6 @@ export default function HomePage() {
                   placeholder="Ex: 100 RON"
                   value={donationAmount}
                   onChange={(e) => setDonationAmount(e.target.value)}
-                  disabled={isLoading}
                 />
               </div>
             )}
@@ -360,11 +349,11 @@ export default function HomePage() {
         )}
         
         <button
-          className={`button generate-button ${!selectedStyle || isLoading ? 'disabled' : ''}`}
+          className={`button generate-button ${!selectedStyle ? 'disabled' : ''}`}
           onClick={handleGoToPay}
-          disabled={!selectedStyle || isLoading}
+          disabled={!selectedStyle}
         >
-          {isLoading ? 'Se procesează...' : 'Plateste'}
+          Plateste
         </button>
         
         {error && (
