@@ -6,7 +6,7 @@
 .user-menu-trigger {
   background: none;
   border: none;
-  color: #eab111;
+  color: #2b2b2b;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -34,14 +34,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #eab111;
-  color: #1a1a1a;
+  background-color: #262626;
+  color: #e1e1e1;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 16px;
-  border: 2px solid #eab111;
+  border: 2px solid #262626;
 }
 
 .user-name {

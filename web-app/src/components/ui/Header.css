@@ -7,6 +7,7 @@
   background: transparent;
   border-bottom: 2px solid #222;
   position: relative;
+  background-color: #efc143;
 }
 
 .header-left {
@@ -16,6 +17,7 @@
   align-items: center;
   justify-content: flex-end;
   padding-right: 80px;
+  color: #eab111;
 }
 
 .header-right {
