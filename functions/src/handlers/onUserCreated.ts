@@ -22,12 +22,15 @@ export const onUserCreatedHandler = beforeUserCreated(async (event) => {
     const userData: Database.User = {
       uid: event.data.uid,
       email: event.data.email || '',
-      displayName: event.data.displayName || undefined,
-      photoURL: event.data.photoURL || undefined,
+      displayName: event.data.displayName || "",
+      photoURL: event.data.photoURL || "",
       createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       songIds: [],
       taskIds: [],
+      numSongsGenerated: 0,
+      numDedicationsGiven: 0,
+      sumDonationsTotal: 0,
       preferences: {
         favoriteStyles: [],
         language: 'ro'

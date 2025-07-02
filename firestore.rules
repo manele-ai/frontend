@@ -1,29 +1,51 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own profile
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // ---------- Helper ------------
+    function isAdmin() {
+      // Grant if user token carries the custom claim admin=true.
+      return request.auth != null &&
+             'admin' in request.auth.token &&
+             request.auth.token.admin == true;
     }
-    
-    // Users can read and write their own songs
-    match /songs/{songId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
-    }
-    
-    // Users can read and write their own generation tasks
-    match /tasks/{taskId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
-    }
-    
-    // Allow Firebase Functions to read and write all documents
+
+    // ---------- Global admin/cloud‑function access ------------
     match /{document=**} {
-      allow read, write: if request.auth != null && 
-        request.auth.token.firebase.sign_in_provider == 'google.com' &&
-        request.auth.token.firebase.email_verified == true;
+      allow read, write: if isAdmin();
+    }
+
+    // ---------- /users collection ------------
+    //   • No client may read or write.
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ---------- /songs collection ------------
+    //   • Client can READ their own songs.
+    //   • No client writes allowed.
+    match /songs/{songId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // ---------- /tasks collection ------------
+    //   • Completely blocked to clients.
+    match /tasks/{taskId} {
+      allow read, write: if false;
+    }
+
+    // ---------- /publicUsers collection ------------
+    //   • Read‑only for everyone (including unauthenticated users).
+    match /publicUsers/{publicUserId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ---------- Catch‑all (deny) ------------
+    match /{path=**} {
+      allow read, write: if false;
     }
   }
 }

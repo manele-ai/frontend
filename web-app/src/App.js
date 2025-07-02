@@ -4,6 +4,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/ui/Header';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
 // import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
@@ -21,6 +22,7 @@ function App() {
             {/* Public routes */}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
             
             {/* Protected routes */}
             <Route path="/loading" element={

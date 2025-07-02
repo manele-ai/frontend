@@ -9,6 +9,8 @@ export const COLLECTIONS = {
   USERS: 'users',
   /** Collection storing generated songs */
   SONGS: 'songs',
+  /** Collection storing public user data */
+  PUBLIC_USERS: 'publicUsers',
 } as const;
 
 // Type for collection names

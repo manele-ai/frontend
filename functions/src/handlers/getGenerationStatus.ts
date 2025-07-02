@@ -120,7 +120,8 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
           tags: songData.tags,
           createTime: songData.createTime,
           duration: songData.duration,
-          storageUrl: songData.storageUrl
+          storageUrl: songData.storageUrl,
+          metadata: task.metadata,
         },
       }
       return responseData;
@@ -164,6 +165,7 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
         tags: songApiData.tags,
         createTime: songApiData.createTime,
         duration: songApiData.duration,
+        metadata: task.metadata,
       };
       
       const songDoc = await admin.firestore().collection(COLLECTIONS.SONGS).add(dbSongData);

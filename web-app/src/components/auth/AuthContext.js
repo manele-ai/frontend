@@ -8,7 +8,7 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../../services/firebase';
 
@@ -44,32 +44,6 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;
-    }
-  };
-
-  // Create user profile in Firestore
-  const createUserProfile = async (uid, userData) => {
-    try {
-      const userProfile = {
-        uid,
-        email: userData.email,
-        displayName: userData.displayName || userData.email.split('@')[0],
-        photoURL: userData.photoURL || null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        songIds: [],
-        taskIds: [],
-        preferences: {
-          favoriteStyles: [],
-          language: 'ro'
-        }
-      };
-
-      await setDoc(doc(db, 'users', uid), userProfile);
-      return { id: uid, ...userProfile };
-    } catch (error) {
-      console.error('Error creating user profile:', error);
-      throw error;
     }
   };
 
@@ -111,13 +85,6 @@ export function AuthProvider({ children }) {
 
       // Update display name in Firebase Auth
       await updateProfile(user, { displayName });
-
-      // Create user profile in Firestore
-      await createUserProfile(user.uid, {
-        email: user.email,
-        displayName,
-        photoURL: user.photoURL
-      });
 
       // setUserProfile(profile); // profile is fetched onAuthStateChanged
       // return user; // REMOVE, should return void
@@ -163,13 +130,6 @@ export function AuthProvider({ children }) {
 
       // Check if user profile exists, if not create it
       let profile = await fetchUserProfile(user.uid);
-      if (!profile) {
-        await createUserProfile(user.uid, {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        });
-      }
 
       // setUserProfile(profile); // profile is fetched onAuthStateChanged
       // return user; // REMOVE, should return void

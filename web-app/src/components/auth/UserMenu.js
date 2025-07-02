@@ -42,6 +42,11 @@ export default function UserMenu() {
     navigate('/my-songs');
   };
 
+  const handleLeaderboardClick = () => {
+    setIsOpen(false);
+    navigate('/leaderboard');
+  };
+
   const handleAuthClick = () => {
     navigate('/auth');
   };
@@ -110,6 +115,15 @@ export default function UserMenu() {
             >
               <span>🎵</span>
               Manelele mele
+            </button>
+
+            <button 
+              className="user-menu-item"
+              onClick={handleLeaderboardClick}
+              aria-label="Clasament"
+            >
+              <span>🏆</span>
+              Clasament
             </button>
             
             <div className="user-menu-divider"></div>

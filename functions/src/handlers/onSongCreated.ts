@@ -55,7 +55,10 @@ export const onSongCreatedHandler = onDocumentCreated(
       // Update the user document - add song ID to songIds array
       batch.update(userRef, {
         songIds: admin.firestore.FieldValue.arrayUnion(songId),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        numSongsGenerated: admin.firestore.FieldValue.increment(1),
+        sumDonationsTotal: admin.firestore.FieldValue.increment(songData.metadata.wantsDonation ? 1 : 0),
+        numDedicationsGiven: admin.firestore.FieldValue.increment(songData.metadata.wantsDedication ? 1 : 0)
       });
       
       // Commit the batch

@@ -13,9 +13,9 @@ export namespace Database {
     updatedAt: admin.firestore.Timestamp;
     songIds?: string[];
     // Metadata about the generation request
-    metadata?: {
-      style?: string;
-      title?: string;
+    metadata: {
+      style: string;
+      title: string;
       from?: string;
       to?: string;
       dedication?: string;
@@ -32,12 +32,24 @@ export namespace Database {
     photoURL?: string;
     taskIds?: string[];
     songIds?: string[];
+    numSongsGenerated: number;
+    numDedicationsGiven: number;
+    sumDonationsTotal: number;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     preferences?: {
       favoriteStyles?: string[];
       language?: string;
     };
+  }
+
+  export interface PublicUser {
+    uid: string;
+    displayName: string;
+    photoURL?: string;
+    numSongsGenerated: number;
+    numDedicationsGiven: number;
+    sumDonationsTotal: number;
   }
   
   export interface SongData {
@@ -58,5 +70,16 @@ export namespace Database {
     tags: string;
     createTime: string;
     duration: number;
+    // Metadata about the generation request
+    metadata: {
+      style: string;
+      title: string;
+      from?: string;
+      to?: string;
+      dedication?: string;
+      wantsDedication?: boolean;
+      wantsDonation?: boolean;
+      donationAmount?: number;
+    };
   }
 }
