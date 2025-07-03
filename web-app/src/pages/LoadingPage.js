@@ -11,7 +11,7 @@ export default function LoadingPage() {
   const [status, setStatus] = useState('Se pregătește generarea...');
   const [error, setError] = useState(null);
   const [taskId, setTaskId] = useState(null);
-  const [requestSent, setRequestSent] = useState(false);
+  const generationStartedRef = useRef(false);
   const pollingRef = useRef(null);
 
   // Extrage datele din HomePage
@@ -21,33 +21,47 @@ export default function LoadingPage() {
 
   // Trimite requestul la mount
   useEffect(() => {
-    if (!requestSent) {
-      if (!style || !title) {
-        navigate('/');
-        return;
-      }
-      setStatus('Se trimit datele către AI...');
-      setError(null);
-      setRequestSent(true);
-      generateManeaSong({
-        style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
-      })
-        .then((result) => {
-          setTaskId(result.taskId);
-          setStatus('AI-ul compune maneaua...');
-        })
-        .catch((err) => {
-          setError(err.message || 'Eroare la generare. Încearcă din nou.');
-          setStatus('');
-        });
+    // Validate required fields and redirect if missing
+    if (!style || !title) {
+      navigate('/');
+      return;
     }
-  }, [requestSent, style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode, navigate]);
+
+    // Only start generation if we haven't already
+    if (generationStartedRef.current) {
+      return;
+    }
+
+    const startGeneration = async () => {
+      try {
+        setStatus('Se trimit datele către AI...');
+        setError(null);
+        generationStartedRef.current = true;
+        
+        const result = await generateManeaSong({
+          style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
+        });
+        
+        setTaskId(result.taskId);
+        setStatus('AI-ul compune maneaua...');
+      } catch (err) {
+        setError(err.message || 'Eroare la generare. Încearcă din nou.');
+        setStatus('');
+        generationStartedRef.current = false;
+      }
+    };
+
+    startGeneration();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]); // Only depend on navigate since other values are from location.state
 
   // Polling dupa taskId
   useEffect(() => {
     if (!taskId) return;
+    
     setStatus('AI-ul compune maneaua...');
     setError(null);
+    
     pollingRef.current = setInterval(async () => {
       try {
         const result = await pollManeaSongResult(taskId);
@@ -74,12 +88,13 @@ export default function LoadingPage() {
         setStatus('');
       }
     }, 2000);
+    
     return () => clearInterval(pollingRef.current);
   }, [taskId, navigate, style, title, lyricsDetails]);
 
   const handleRetry = () => {
     setError(null);
-    setRequestSent(false);
+    generationStartedRef.current = false;
     setTaskId(null);
     setStatus('Se pregătește generarea...');
   };
