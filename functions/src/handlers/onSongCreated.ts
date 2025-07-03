@@ -50,12 +50,10 @@ export const onSongCreatedHandler = onDocumentCreated(
       // Update the user document
       batch.update(userRef, {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        // Update all-time stats
-        stats: {
-          numSongsGenerated: admin.firestore.FieldValue.increment(1),
-          sumDonationsTotal: admin.firestore.FieldValue.increment(songData.metadata.wantsDonation ? 1 : 0),
-          numDedicationsGiven: admin.firestore.FieldValue.increment(songData.metadata.wantsDedication ? 1 : 0)
-        }
+        // Update all-time stats using dot notation to avoid overwriting
+        'stats.numSongsGenerated': admin.firestore.FieldValue.increment(1),
+        'stats.sumDonationsTotal': admin.firestore.FieldValue.increment(songData.metadata.wantsDonation ? 1 : 0),
+        'stats.numDedicationsGiven': admin.firestore.FieldValue.increment(songData.metadata.wantsDedication ? 1 : 0)
       });
 
       // Update the stats per timeframe
