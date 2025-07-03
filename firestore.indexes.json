@@ -29,31 +29,61 @@
       ]
     },
     {
-      "collectionGroup": "publicUsers",
+      "collectionGroup": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "numSongsGenerated",
+          "fieldPath": "stats.numSongsGenerated",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "publicUsers",
+      "collectionGroup": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "numDedicationsGiven",
+          "fieldPath": "stats.numDedicationsGiven",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "publicUsers",
+      "collectionGroup": "usersPublic", 
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "sumDonationsTotal",
+          "fieldPath": "stats.sumDonationsTotal",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "numSongsGenerated",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "count",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "numDedicationsGiven",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        {
+          "fieldPath": "count",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "donationValue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "count",
           "order": "DESCENDING"
         }
       ]

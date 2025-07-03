@@ -1,12 +1,19 @@
-import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
 
 export function useLeaderboardData() {
   const [data, setData] = useState({
-    songs: [],
-    dedications: [],
-    donations: []
+    allTime: {
+      songs: [],
+      dedications: [],
+      donations: []
+    },
+    today: {
+      songs: [],
+      dedications: [],
+      donations: []
+    }
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,48 +25,100 @@ export function useLeaderboardData() {
       
       try {
         console.log('Starting leaderboard data fetch...');
-        const usersRef = collection(db, 'publicUsers');
         
-        // Fetch top 10 for each category
-        const songsQuery = query(usersRef, orderBy('numSongsGenerated', 'desc'), limit(10));
-        const dedicationsQuery = query(usersRef, orderBy('numDedicationsGiven', 'desc'), limit(10));
-        const donationsQuery = query(usersRef, orderBy('sumDonationsTotal', 'desc'), limit(10));
+        // Get current date for today's stats
+        const now = new Date();
+        const todayKey = now.toISOString().split('T')[0].replace(/-/g, '');
 
-        console.log('Queries created, fetching data...');
-        
-        try {
-          const songsSnapshot = await getDocs(songsQuery);
-          console.log('Songs data:', songsSnapshot.docs.length, 'results');
-          const dedicationsSnapshot = await getDocs(dedicationsQuery);
-          console.log('Dedications data:', dedicationsSnapshot.docs.length, 'results');
-          const donationsSnapshot = await getDocs(donationsQuery);
-          console.log('Donations data:', donationsSnapshot.docs.length, 'results');
+        // Define the stat types and their field/collection names
+        const statTypes = {
+          songs: {
+            allTimeField: 'numSongsGenerated',
+            dailyCollection: 'numSongsGenerated'
+          },
+          dedications: {
+            allTimeField: 'numDedicationsGiven',
+            dailyCollection: 'numDedicationsGiven'
+          },
+          donations: {
+            allTimeField: 'sumDonationsTotal',
+            dailyCollection: 'donationValue'
+          }
+        };
 
-          const mapUserData = (doc) => {
+        // Helper function to fetch daily stats
+        const fetchDailyStats = async (periodKey, bucketName) => {
+          const statsRef = collection(db, 'stats', 'day', periodKey, 'buckets', bucketName);
+          const q = query(statsRef, orderBy('count', 'desc'), limit(10));
+          console.log('Fetching daily stats for:', periodKey, bucketName);
+          const snapshot = await getDocs(q);
+          
+          // Get user details for each stat entry
+          const statsWithUserDetails = await Promise.all(
+            snapshot.docs.map(async (statDoc) => {
+              const userId = statDoc.id;
+              const userRef = doc(db, 'usersPublic', userId);
+              const userDoc = await getDoc(userRef);
+              const userData = userDoc.data() || {};
+              
+              return {
+                id: userId,
+                displayName: userData.displayName || 'Anonymous User',
+                photoURL: userData.photoURL || null,
+                count: statDoc.data().count || 0
+              };
+            })
+          );
+
+          return statsWithUserDetails;
+        };
+
+        // Helper function to fetch all-time stats from usersPublic
+        const fetchAllTimeStats = async (fieldName) => {
+          const usersRef = collection(db, 'usersPublic');
+          const q = query(
+            usersRef, 
+            orderBy(`stats.${fieldName}`, 'desc'), 
+            limit(10)
+          );
+          console.log('Fetching all-time stats for:', fieldName);
+          const snapshot = await getDocs(q);
+          
+          return snapshot.docs.map(doc => {
             const data = doc.data();
-            console.log('Processing user data:', {
-              id: doc.id,
-              numSongsGenerated: data.numSongsGenerated,
-              numDedicationsGiven: data.numDedicationsGiven,
-              sumDonationsTotal: data.sumDonationsTotal
-            });
             return {
               id: doc.id,
-              ...data,
               displayName: data.displayName || 'Anonymous User',
-              photoURL: data.photoURL || null
+              photoURL: data.photoURL || null,
+              count: data.stats?.[fieldName] || 0
             };
-          };
-
-          setData({
-            songs: songsSnapshot.docs.map(mapUserData),
-            dedications: dedicationsSnapshot.docs.map(mapUserData),
-            donations: donationsSnapshot.docs.map(mapUserData)
           });
-        } catch (queryError) {
-          console.error('Error during individual query:', queryError);
-          throw queryError;
+        };
+
+        // Initialize results with empty arrays
+        const results = {
+          allTime: {
+            songs: [],
+            dedications: [],
+            donations: []
+          },
+          today: {
+            songs: [],
+            dedications: [],
+            donations: []
+          }
+        };
+
+        // Fetch stats for each type
+        for (const [key, { allTimeField, dailyCollection }] of Object.entries(statTypes)) {
+          // Fetch all-time stats from usersPublic
+          results.allTime[key] = await fetchAllTimeStats(allTimeField);
+          
+          // Fetch today's stats from stats collection
+          results.today[key] = await fetchDailyStats(todayKey, dailyCollection);
         }
+
+        setData(results);
       } catch (err) {
         console.error('Error fetching leaderboard data:', {
           error: err,

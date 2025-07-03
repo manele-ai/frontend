@@ -54,6 +54,25 @@ functions/
 │   └── types/             # Tipuri TypeScript
 ```
 
+### Data Model (Firestore)
+```
+/users/{uid}
+
+/usersPublic/{uid}
+    - mirrors part of /usersPrivate
+
+/tasks/{taskId}
+
+/songs/{songId}
+
+/songsPublic/{songId}
+ - mirrors part of /songs
+
+
+/stats/{periodType}/{periodKey}/{bucket}/{id}
+- {bucket} in 'donation', 'likes', 'numSongs'
+```
+
 ## 🚀 Tehnologii Utilizate
 
 ### Frontend

@@ -44,7 +44,6 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
       );
 
       const externalTaskId = musicApiResponse.data.taskId;
-      const newTaskRef = admin.firestore().collection(COLLECTIONS.GENERATE_SONG_TASKS).doc();
       
       const newTask: Database.GenerateSongTask = {
         userId: auth.uid,
@@ -64,21 +63,7 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
         }
       };
 
-      // Start a batch write to create task and update user
-      const batch = admin.firestore().batch();
-      
-      // Create the task document
-      batch.set(newTaskRef, newTask);
-      
-      // Update the user document - add task ID to taskIds array
-      const userRef = admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid);
-      batch.update(userRef, {
-        taskIds: admin.firestore.FieldValue.arrayUnion(newTaskRef.id),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-      
-      // Commit the batch
-      await batch.commit();
+      const newTaskRef = await admin.firestore().collection(COLLECTIONS.GENERATE_SONG_TASKS).add(newTask);
 
       return { message: "Music generation initiated.", taskId: newTaskRef.id, externalTaskId };
 

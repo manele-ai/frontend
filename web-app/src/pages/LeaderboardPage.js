@@ -6,16 +6,19 @@ import '../styles/LeaderboardPage.css';
 export default function LeaderboardPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('songs');
+  const [timeframe, setTimeframe] = useState('allTime'); // 'allTime' or 'today'
   const { data, loading, error } = useLeaderboardData();
 
   const getActiveData = () => {
+    const timeframeData = data[timeframe];
+    console.log('Timeframe data:', timeframeData);
     switch (activeTab) {
       case 'songs':
-        return data.songs;
+        return timeframeData.songs;
       case 'dedications':
-        return data.dedications;
+        return timeframeData.dedications;
       case 'donations':
-        return data.donations;
+        return timeframeData.donations;
       default:
         return [];
     }
@@ -49,9 +52,9 @@ export default function LeaderboardPage() {
                 )}
                 <span>{user.displayName}</span>
               </td>
-              {activeTab === 'songs' && <td>{user.numSongsGenerated}</td>}
-              {activeTab === 'dedications' && <td>{user.numDedicationsGiven}</td>}
-              {activeTab === 'donations' && <td>{user.sumDonationsTotal} RON</td>}
+              {activeTab === 'songs' && <td>{user.count || 0}</td>}
+              {activeTab === 'dedications' && <td>{user.count || 0}</td>}
+              {activeTab === 'donations' && <td>{user.count || 0} RON</td>}
             </tr>
           ))}
         </tbody>
@@ -71,6 +74,21 @@ export default function LeaderboardPage() {
       <div className="container">
         <h1 className="title">Clasament</h1>
         
+        <div className="timeframe-tabs">
+          <button 
+            className={`tab-button ${timeframe === 'allTime' ? 'active' : ''}`}
+            onClick={() => setTimeframe('allTime')}
+          >
+            Din totdeauna
+          </button>
+          <button 
+            className={`tab-button ${timeframe === 'today' ? 'active' : ''}`}
+            onClick={() => setTimeframe('today')}
+          >
+            Astăzi
+          </button>
+        </div>
+
         <div className="tabs">
           <button 
             className={`tab-button ${activeTab === 'songs' ? 'active' : ''}`}

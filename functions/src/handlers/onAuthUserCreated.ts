@@ -8,7 +8,7 @@ import { Database } from "../types";
  * Cloud Function that triggers when a new user is created in Firebase Auth.
  * It creates a corresponding document in the users collection with the same ID.
  */
-export const onUserCreatedHandler = beforeUserCreated(async (event) => {
+export const onAuthUserCreatedHandler = beforeUserCreated(async (event) => {
   if (!event.data) {
     throw new functions.https.HttpsError(
       'invalid-argument',
@@ -21,19 +21,14 @@ export const onUserCreatedHandler = beforeUserCreated(async (event) => {
     
     const userData: Database.User = {
       uid: event.data.uid,
-      email: event.data.email || '',
       displayName: event.data.displayName || "",
       photoURL: event.data.photoURL || "",
       createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
-      songIds: [],
-      taskIds: [],
-      numSongsGenerated: 0,
-      numDedicationsGiven: 0,
-      sumDonationsTotal: 0,
-      preferences: {
-        favoriteStyles: [],
-        language: 'ro'
+      stats: {
+        numSongsGenerated: 0,
+        numDedicationsGiven: 0,
+        sumDonationsTotal: 0,
       }
     };
 

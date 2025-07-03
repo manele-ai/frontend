@@ -36,9 +36,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // ---------- /publicUsers collection ------------
+    // ---------- /usersPublic collection ------------
     //   • Read‑only for everyone (including unauthenticated users).
-    match /publicUsers/{publicUserId} {
+    match /usersPublic/{publicUserId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ---------- /stats collection ------------
+    match /stats/{path=**} {
       allow read: if true;
       allow write: if false;
     }

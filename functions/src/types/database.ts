@@ -27,35 +27,34 @@ export namespace Database {
   
   export interface User {
     uid: string;
-    email: string;
     displayName?: string;
     photoURL?: string;
-    taskIds?: string[];
-    songIds?: string[];
-    numSongsGenerated: number;
-    numDedicationsGiven: number;
-    sumDonationsTotal: number;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
-    preferences?: {
-      favoriteStyles?: string[];
-      language?: string;
-    };
+    stats: {
+      numSongsGenerated: number
+      numDedicationsGiven: number;
+      sumDonationsTotal: number;
+    }
   }
 
-  export interface PublicUser {
+  export interface UserPublic {
     uid: string;
     displayName: string;
+    createdAt: admin.firestore.Timestamp;
     photoURL?: string;
-    numSongsGenerated: number;
-    numDedicationsGiven: number;
-    sumDonationsTotal: number;
+    stats: {
+      numSongsGenerated: number;
+      numDedicationsGiven: number;
+      sumDonationsTotal: number;
+    }
   }
   
   export interface SongData {
     externalId: string;
     taskId: string;
     userId: string;
+    createdAt: admin.firestore.Timestamp;
     externalTaskId: string;
     audioUrl: string;
     storageUrl?: string;
@@ -73,6 +72,19 @@ export namespace Database {
     // Metadata about the generation request
     metadata: {
       style: string;
+      title: string;
+      from?: string;
+      to?: string;
+      dedication?: string;
+      wantsDedication?: boolean;
+      wantsDonation?: boolean;
+      donationAmount?: number;
+    };
+  }
+
+  export interface SongDataPublic {
+    audioUrl: string;
+    metadata: {
       title: string;
       from?: string;
       to?: string;
