@@ -24,6 +24,7 @@ export async function initiateMusicGeneration(
       customMode: true,
       instrumental: false,
       model: "V4_5",
+      negativeTags: ["pop", "trap"],
       callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
     functions.logger.info("Request body for music API /generate", requestBody);
