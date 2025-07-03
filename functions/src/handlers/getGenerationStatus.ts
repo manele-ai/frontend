@@ -23,7 +23,7 @@ function mapExternalStatus(externalStatus: MusicApi.TaskStatus): {
   errorMessage?: string;
 } {
   // Success case
-  if (externalStatus === "SUCCESS") {
+  if (externalStatus === "SUCCESS" || externalStatus === "FIRST_SUCCESS") {
     return { dbStatus: "completed" };
   }
 
@@ -146,7 +146,11 @@ export const getGenerationStatusHandler = onCall<GetStatusData>(async (request) 
     let responsePayload: GetStatusResponseData = { status: dbStatus };
 
     // Handle successful completion
-    if (statusResponse.data.status === "SUCCESS" && statusResponse.data.response.sunoData) {
+    if (
+      (statusResponse.data.status === "SUCCESS" || statusResponse.data.status === "FIRST_SUCCESS")
+      && statusResponse.data.response.sunoData
+    ) {
+      console.log("Task completed successfully");
       const songApiData = statusResponse.data.response.sunoData[0];
       // Create the database song data with all required fields
       const dbSongData: Database.SongData = {
