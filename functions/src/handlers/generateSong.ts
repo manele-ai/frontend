@@ -1,9 +1,12 @@
 import admin from "firebase-admin";
+import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { initiateMusicGeneration } from "../api/music-api";
 import { generateLyricsAndStyle } from "../api/openai-api";
+import { db } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database, Requests } from "../types";
+import { enqueuePollGenerationStatusTask } from "./tasks/pollGenerationStatus";
 
 export const generateSongHandler = onCall<Requests.GenerateSong>(
   async (request) => {
@@ -16,9 +19,9 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
 
     try {
       // Verify that the user exists in the database
-      const userDoc = await admin.firestore().collection(COLLECTIONS.USERS).doc(auth.uid).get();
+      const userDoc = await db.collection(COLLECTIONS.USERS).doc(auth.uid).get();
       if (!userDoc.exists) {
-        throw new HttpsError('not-found', 'User not found in database. Please try logging in again.');
+        throw new HttpsError('not-found', 'Not found.');
       }
 
       // First, generate lyrics and style description using OpenAI
@@ -49,9 +52,10 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
         userId: auth.uid,
         externalId: externalTaskId,
         status: "processing",
+        externalStatus: "PENDING",
         createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
         updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
-        metadata: {
+        userGenerationInput: {
           style: data.style,
           title: data.title,
           from: data.from,
@@ -62,13 +66,27 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
           donationAmount: data.donationAmount
         }
       };
+      const newTaskRef = await db.collection(COLLECTIONS.GENERATE_SONG_TASKS).add(newTask);
 
-      const newTaskRef = await admin.firestore().collection(COLLECTIONS.GENERATE_SONG_TASKS).add(newTask);
+      // Enqueue a task to poll the generation status
+      try {
+        await enqueuePollGenerationStatusTask(newTaskRef.id, {
+          scheduleDelaySeconds: 60,
+          dispatchDeadlineSeconds: 30,
+        });
+      } catch (error: any) {
+        if (error.code === "functions/task-already-exists") {
+          logger.info(`pollGenerationStatusTask for ${newTaskRef.id} already enqueued, skipping.`);
+        } else {
+          logger.error("Error in enqueuePollGenerationStatusTask:", error);
+          throw new HttpsError('internal', 'Internal server error while enqueuing poll generation status task.');
+        }
+      }
 
-      return { message: "Music generation initiated.", taskId: newTaskRef.id, externalTaskId };
+      return { taskId: newTaskRef.id };
 
     } catch (error) {
-      console.error("Error in generateSongHandler:", error);
+      logger.error("Error in generateSongHandler:", error);
       if (error instanceof HttpsError) {
         throw error;
       }

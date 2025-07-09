@@ -10,21 +10,24 @@ import { Database } from "../types";
 export const mirrorSongsPublicHandler = onDocumentWritten(
   `${COLLECTIONS.SONGS}/{songId}`,
   async (event) => {
-    const songId = event.params.songId;
     const afterData = event.data?.after.data() as Database.SongData;
-    
+    if (!afterData) return; // Do nothing if song deleted
+
+    const songId = event.params.songId;
     try {
       // Create/update public song document with only the public fields
       const publicSongData: Database.SongDataPublic = {
-        audioUrl: afterData.audioUrl,
-        metadata: {
-          title: afterData.metadata.title,
-          from: afterData.metadata.from,
-          to: afterData.metadata.to,
-          dedication: afterData.metadata.dedication,
-          wantsDedication: afterData.metadata.wantsDedication,
-          wantsDonation: afterData.metadata.wantsDonation,
-          donationAmount: afterData.metadata.donationAmount,
+        externalAudioUrl: afterData.apiData.audioUrl || "",
+        storage: afterData.storage || null,
+        userGenerationInput: {
+          title: afterData.userGenerationInput.title,
+          from: afterData.userGenerationInput.from,
+          to: afterData.userGenerationInput.to,
+          dedication: afterData.userGenerationInput.dedication,
+          wantsDedication: afterData.userGenerationInput.wantsDedication,
+          wantsDonation: afterData.userGenerationInput.wantsDonation,
+          donationAmount: afterData.userGenerationInput.donationAmount,
+          style: afterData.userGenerationInput.style,
         }
       };
 
