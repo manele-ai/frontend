@@ -7,7 +7,7 @@ import { Database } from "../types";
  * Cloud Function that triggers when a user document is written (created/updated/deleted) in the users collection.
  * It creates/updates/deletes a corresponding document in the mirrored collection with public user data.
  */
-export const mirrorUsersPublicHandler = onDocumentWritten(
+export const mirrorUsersPublic = onDocumentWritten(
   `${COLLECTIONS.USERS}/{userId}`,
   async (event) => {
     const userId = event.params.userId;

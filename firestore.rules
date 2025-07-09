@@ -30,6 +30,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ---------- /songsPublic collection ------------
+    //   • Client can READ their own songs.
+    //   • No client writes allowed.
+    match /songsPublic/{songId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // ---------- /taskStatuses collection ------------
+    //   • Client can READ their own task statuses.
+    //   • No client writes allowed.
+    match /taskStatuses/{taskId} {
+      allow read: if request.auth != null && 
+                    request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
     // ---------- /tasks collection ------------
     //   • Completely blocked to clients.
     match /tasks/{taskId} {

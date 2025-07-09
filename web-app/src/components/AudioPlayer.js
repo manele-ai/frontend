@@ -1,41 +1,60 @@
 import { useEffect, useRef, useState } from 'react';
-import '../styles/AudioPlayer.css';
+import '../styles/SongItem.css';
 
-export default function AudioPlayer({ song, onClose }) {
+export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError }) {
   const audioRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
+  
+  // Detect if we're using a stream URL
+  const isStreamUrl = audioUrl?.includes('stream');
 
   useEffect(() => {
     const audio = audioRef.current;
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
+      if (!hasStartedPlaying && audio.currentTime > 0) {
+        setHasStartedPlaying(true);
+      }
     };
 
     const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
+      if (!isStreamUrl) {
+        setDuration(audio.duration);
+      }
       setIsLoading(false);
     };
 
     const handleEnded = () => {
-      setIsPlaying(false);
+      onPlayPause();
       setCurrentTime(0);
+      setHasStartedPlaying(false);
     };
 
     const handleError = (e) => {
-      console.error('Audio playback error:', e);
-      setError('Error playing audio. Please try again.');
+      // Only show error if we're actually trying to play
+      if (isPlaying) {
+        console.error('Audio playback error:', e);
+        const errorMsg = 'Error playing audio. Please try again.';
+        setError(errorMsg);
+        onError?.(errorMsg);
+      }
       setIsLoading(false);
     };
 
     const handleCanPlay = () => {
       setIsLoading(false);
       if (isPlaying) {
-        audio.play().catch(handleError);
+        audio.play().catch(() => {
+          // Only show error if play() fails
+          const errorMsg = 'Error playing audio. Please try again.';
+          setError(errorMsg);
+          onError?.(errorMsg);
+        });
       }
     };
 
@@ -50,9 +69,20 @@ export default function AudioPlayer({ song, onClose }) {
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('waiting', handleWaiting);
 
-    // Load the audio source
-    audio.src = song.audioUrl;
-    audio.load();
+    // Load or unload audio based on active state
+    if (isPlaying) {
+      setError(null);
+      setIsLoading(true);
+      audio.src = audioUrl;
+      audio.load();
+    } else {
+      audio.pause();
+      audio.src = '';
+      setCurrentTime(0);
+      setHasStartedPlaying(false);
+      setError(null);
+      setIsLoading(false);
+    }
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
@@ -64,57 +94,38 @@ export default function AudioPlayer({ song, onClose }) {
       audio.pause();
       audio.src = '';
     };
-  }, [song.audioUrl, isPlaying]);
-
-  const togglePlayPause = () => {
-    if (isLoading) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(e => {
-        console.error('Error playing audio:', e);
-        setError('Error playing audio. Please try again.');
-      });
-    }
-    setIsPlaying(!isPlaying);
-  };
+  }, [audioUrl, isPlaying, onPlayPause, onError, isStreamUrl, hasStartedPlaying]);
 
   const handleSeek = (e) => {
+    if (isStreamUrl) return; // Disable seeking for stream URLs
     const newTime = e.target.value;
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const formatTime = (time) => {
+    if (typeof time !== 'number' || isNaN(time)) return '';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className="audio-player">
+    <div className="song-playback">
       <audio ref={audioRef} />
       
-      <div className="player-header">
-        <h3 className="song-title">{song.title || 'Manea fără nume'}</h3>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
-
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <>
-          <div className="player-controls">
-            <button 
-              className="play-pause-button" 
-              onClick={togglePlayPause}
-              disabled={isLoading}
-            >
-              {isLoading ? '⌛' : isPlaying ? '⏸️' : '▶️'}
-            </button>
-            
-            <div className="progress-container">
+      <div className="player-controls">
+        <button 
+          className="play-pause-button" 
+          onClick={onPlayPause}
+          disabled={isLoading}
+        >
+          {isLoading ? '⌛' : isPlaying ? '⏸️' : '▶️'}
+        </button>
+        
+        <div className="progress-container">
+          {!isStreamUrl ? (
+            <>
               <input
                 type="range"
                 min="0"
@@ -122,22 +133,23 @@ export default function AudioPlayer({ song, onClose }) {
                 value={currentTime}
                 onChange={handleSeek}
                 className="progress-bar"
-                disabled={isLoading}
+                disabled={!isPlaying || isLoading}
               />
               <div className="time-display">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
-            </div>
-          </div>
-
-          {isLoading && (
-            <div className="loading-indicator">
-              <div className="spinner"></div>
-              <span>Loading...</span>
+            </>
+          ) : hasStartedPlaying && (
+            <div className="time-display stream-time">
+              <span>{formatTime(currentTime)}</span>
             </div>
           )}
-        </>
+        </div>
+      </div>
+
+      {error && isPlaying && (
+        <div className="error-message">{error}</div>
       )}
     </div>
   );

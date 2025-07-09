@@ -41,9 +41,12 @@ export namespace MusicApi {
 
     export interface SunoData {
       id: string;
-      audioUrl: string;
+      audioUrl?: string;
+      sourceAudioUrl?: string;
       streamAudioUrl: string;
-      imageUrl: string;
+      sourceStreamAudioUrl?: string;
+      imageUrl?: string;
+      sourceImageUrl?: string;
       prompt: string;
       modelName: string;
       title: string;

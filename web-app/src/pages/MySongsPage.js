@@ -21,9 +21,14 @@ export default function MySongsPage() {
 
   const handleDownload = async (song) => {
     try {
+      const downloadUrl = song.storage?.url || song.apiData?.audioUrl;
+      if (!downloadUrl) {
+        throw new Error('No download URL available');
+      }
+
       const link = document.createElement('a');
-      link.href = song.audioUrl;
-      link.download = `${song.title || 'manea'}.mp3`;
+      link.href = downloadUrl;
+      link.download = `${song.apiData?.title || 'manea'}.mp3`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

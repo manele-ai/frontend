@@ -1,6 +1,8 @@
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { generateManeaSong, pollManeaSongResult } from '../api';
+import { generateManeaSong } from '../api';
+import { db } from '../services/firebase';
 import '../styles/LoadingPage.css';
 
 const GIF = '/NeTf.gif';
@@ -12,12 +14,21 @@ export default function LoadingPage() {
   const [error, setError] = useState(null);
   const [taskId, setTaskId] = useState(null);
   const generationStartedRef = useRef(false);
-  const pollingRef = useRef(null);
+  const unsubscribeRef = useRef(null);
 
   // Extrage datele din HomePage
   const {
     style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
   } = location.state || {};
+
+  // Cleanup function for Firestore subscription
+  useEffect(() => {
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+    };
+  }, []);
 
   // Trimite requestul la mount
   useEffect(() => {
@@ -38,13 +49,24 @@ export default function LoadingPage() {
         setError(null);
         generationStartedRef.current = true;
         
+        console.log("Sending generation request with data:", {
+          style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
+        });
+        
         const result = await generateManeaSong({
           style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
         });
         
+        console.log("Generation API response:", result);
+        
+        if (!result || !result.taskId) {
+          throw new Error('Nu s-a primit un ID valid pentru task.');
+        }
+        
         setTaskId(result.taskId);
         setStatus('AI-ul compune maneaua...');
       } catch (err) {
+        console.error("Generation error:", err);
         setError(err.message || 'Eroare la generare. Încearcă din nou.');
         setStatus('');
         generationStartedRef.current = false;
@@ -55,41 +77,74 @@ export default function LoadingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]); // Only depend on navigate since other values are from location.state
 
-  // Polling dupa taskId
+  // Subscribe to task status updates
   useEffect(() => {
     if (!taskId) return;
     
     setStatus('AI-ul compune maneaua...');
     setError(null);
     
-    pollingRef.current = setInterval(async () => {
-      try {
-        const result = await pollManeaSongResult(taskId);
-        if (result.status === 'completed' && result.songData) {
-          clearInterval(pollingRef.current);
-          navigate('/result', {
-            state: {
-              songData: result.songData,
-              style,
-              title,
-              lyricsDetails
-            }
-          });
-        } else if (result.status === 'failed') {
-          clearInterval(pollingRef.current);
-          setError(result.error || 'Generarea piesei a eșuat. Încearcă din nou.');
+    // Subscribe to task status document
+    const taskStatusRef = doc(db, 'taskStatuses', taskId);
+    unsubscribeRef.current = onSnapshot(taskStatusRef, 
+      (doc) => {
+        if (!doc.exists()) {
+          console.error("Document does not exist:", taskId);
+          setError('Nu s-a găsit statusul generării. Încearcă din nou.');
           setStatus('');
-        } else {
-          setStatus('AI-ul compune maneaua...');
+          return;
         }
-      } catch (err) {
-        clearInterval(pollingRef.current);
-        setError('A apărut o eroare. Încearcă din nou.');
+
+        const taskStatus = doc.data();
+        console.log("Full taskStatus document:", taskStatus);
+        
+        if (!taskStatus) {
+          console.error("Document data is undefined:", taskId);
+          setError('Date invalide pentru generare. Încearcă din nou.');
+          setStatus('');
+          return;
+        }
+
+        switch (taskStatus.status) {
+          case 'processing':
+            setStatus('AI-ul compune maneaua...');
+            break;
+          case 'partial':
+          case 'completed':
+            console.log("taskStatus.songId", taskStatus.songId);
+            if (!taskStatus.songId) {
+              setError('A aparut o eroare. Încearcă din nou.');
+              setStatus('');
+              return;
+            }
+            // Navigate to result page with song data
+            navigate('/result', {
+              state: {
+                songId: taskStatus.songId,
+              }
+            });
+            break;
+          case 'failed':
+            setError(taskStatus.error || 'Generarea piesei a eșuat. Încearcă din nou.');
+            setStatus('');
+            break;
+          default:
+            setError('Status necunoscut. Încearcă din nou.');
+            setStatus('');
+        }
+      },
+      (error) => {
+        console.error("error", error);
+        setError('Eroare la urmărirea statusului. Încearcă din nou.');
         setStatus('');
       }
-    }, 2000);
-    
-    return () => clearInterval(pollingRef.current);
+    );
+
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+    };
   }, [taskId, navigate, style, title, lyricsDetails]);
 
   const handleRetry = () => {

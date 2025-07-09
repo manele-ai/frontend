@@ -1,11 +1,29 @@
 import admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v2";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
-import { getPeriodKeys } from "./utils";
 
-export const onSongCreatedHandler = onDocumentCreated(
+export function getPeriodKeys(ts: Date) {
+  const y = ts.getUTCFullYear();
+  const m = `${ts.getUTCMonth() + 1}`.padStart(2, "0");
+  const d = `${ts.getUTCDate()}`.padStart(2, "0");
+
+  // ――― ISO-8601 week number (1‥53) ―――
+  const startOfYear = Date.UTC(y, 0, 1);        // 00:00 UTC Jan-01
+  const dayOfYear   = Math.floor((ts.getTime() - startOfYear) / 86_400_000) + 1;
+  const isoWeek     = Math.ceil((dayOfYear + 6 - (ts.getUTCDay() || 7)) / 7);
+
+  return {
+    day:   `${y}${m}${d}`,               // 20250703
+    week:  `${y}-W${String(isoWeek).padStart(2, "0")}`, // 2025-W27
+    month: `${y}${m}`,                   // 202507
+    year:  `${y}`,                       // 2025
+  };
+}
+
+export const updateLeaderboardOnSongCreated = onDocumentCreated(
   `${COLLECTIONS.SONGS}/{songId}`,
   async (event) => {
     const songId = event.params.songId;
@@ -42,18 +60,18 @@ export const onSongCreatedHandler = onDocumentCreated(
       
       // Update the task document
       batch.update(taskRef, {
-        songIds: admin.firestore.FieldValue.arrayUnion(songId),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        songIds: FieldValue.arrayUnion(songId),
+        updatedAt: FieldValue.serverTimestamp(),
         status: "completed"
       });
       
       // Update the user document
       batch.update(userRef, {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         // Update all-time stats using dot notation to avoid overwriting
-        'stats.numSongsGenerated': admin.firestore.FieldValue.increment(1),
-        'stats.sumDonationsTotal': admin.firestore.FieldValue.increment(songData.metadata.wantsDonation ? 1 : 0),
-        'stats.numDedicationsGiven': admin.firestore.FieldValue.increment(songData.metadata.wantsDedication ? 1 : 0)
+        'stats.numSongsGenerated': FieldValue.increment(1),
+        'stats.sumDonationsTotal': FieldValue.increment(songData.userGenerationInput.wantsDonation ? 1 : 0),
+        'stats.numDedicationsGiven': FieldValue.increment(songData.userGenerationInput.wantsDedication ? 1 : 0)
       });
 
       // Update the stats per timeframe
@@ -70,12 +88,12 @@ export const onSongCreatedHandler = onDocumentCreated(
         },
         dedications: {
           name: 'numDedicationsGiven',
-          shouldUpdate: songData.metadata.wantsDedication,
+          shouldUpdate: songData.userGenerationInput.wantsDedication,
           value: 1
         },
         donations: {
           name: 'donationValue',
-          shouldUpdate: songData.metadata.wantsDonation,
+          shouldUpdate: songData.userGenerationInput.wantsDonation,
           value: 1
         }
       };
@@ -97,8 +115,8 @@ export const onSongCreatedHandler = onDocumentCreated(
               .doc(userId);
 
             batch.set(statRef, {
-              count: admin.firestore.FieldValue.increment(bucket.value),
-              lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+              count: FieldValue.increment(bucket.value),
+              lastUpdated: FieldValue.serverTimestamp()
             }, { merge: true });
           }
         });

@@ -1,28 +1,46 @@
 import admin from "firebase-admin";
-import { Shared } from "./shared";
+import { MusicApi } from "./music-api";
 
 // ============= Database Types =============
 // Prefix with 'DB' to clearly identify Firestore stored types
 export namespace Database {
+  interface UserGenerationInput {
+    style: string;
+    title: string;
+    from?: string;
+    to?: string;
+    dedication?: string;
+    wantsDedication?: boolean;
+    wantsDonation?: boolean;
+    donationAmount?: number;
+  }
+
+  export type GenerationStatus = 
+  | 'processing'
+  | 'partial'
+  | 'completed'
+  | 'failed';
+
   export interface GenerateSongTask {
     userId: string;
     externalId: string;
-    status: Shared.GenerationStatus;
+    externalStatus: MusicApi.TaskStatus;
     error?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
+    lastStatusPollAt?: admin.firestore.Timestamp;
     songIds?: string[];
-    // Metadata about the generation request
-    metadata: {
-      style: string;
-      title: string;
-      from?: string;
-      to?: string;
-      dedication?: string;
-      wantsDedication?: boolean;
-      wantsDonation?: boolean;
-      donationAmount?: number;
-    };
+    userGenerationInput: UserGenerationInput;
+  }
+
+  export interface TaskStatus {
+    userId: string;
+    status: GenerationStatus;
+    songId?: string;
+    error?: string;
+    userGenerationInput: UserGenerationInput;
+    createdAt: admin.firestore.Timestamp;
+    updatedAt: admin.firestore.Timestamp;
   }
   
   export interface User {
@@ -51,47 +69,43 @@ export namespace Database {
   }
   
   export interface SongData {
+    // Override the id field with our naming
     externalId: string;
+    // Additional fields
     taskId: string;
+    externalTaskId: string;
     userId: string;
     createdAt: admin.firestore.Timestamp;
-    externalTaskId: string;
-    audioUrl: string;
-    storageUrl?: string;
-    sourceAudioUrl: string;
-    streamAudioUrl: string;
-    sourceStreamAudioUrl: string;
-    imageUrl: string;
-    sourceImageUrl: string;
-    prompt: string;
-    modelName: string;
-    title: string;
-    tags: string;
-    createTime: string;
-    duration: number;
-    // Metadata about the generation request
-    metadata: {
-      style: string;
-      title: string;
-      from?: string;
-      to?: string;
-      dedication?: string;
-      wantsDedication?: boolean;
-      wantsDonation?: boolean;
-      donationAmount?: number;
+    updatedAt: admin.firestore.Timestamp;
+    storage?: {
+      url: string;
+      path: string;
+      sizeBytes: number;
+      contentType: string;
     };
+    // Metadata about the generation request
+    userGenerationInput: UserGenerationInput;
+    // API data
+    apiData: MusicApi.SunoData;
   }
 
   export interface SongDataPublic {
-    audioUrl: string;
-    metadata: {
+    taskId: string;
+    userId: string;
+    createdAt: admin.firestore.Timestamp;
+    updatedAt: admin.firestore.Timestamp;
+    storage: {
+      url: string;
+      sizeBytes: number;
+      contentType: string;
+    } | null;
+    userGenerationInput: UserGenerationInput;
+    apiData: {
+      audioUrl: string;
+      streamAudioUrl: string;
+      imageUrl: string;
       title: string;
-      from?: string;
-      to?: string;
-      dedication?: string;
-      wantsDedication?: boolean;
-      wantsDonation?: boolean;
-      donationAmount?: number;
-    };
+      duration: number;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Shared } from "./shared";
+import { Database } from "./database";
 
 // TODO; remove this file
 export namespace Responses {
@@ -11,7 +11,7 @@ export namespace Responses {
   }
   
   export interface GetStatus {
-    status: Shared.GenerationStatus;
+    status: Database.GenerationStatus;
     songData?: {
       songId: string;
       audioUrl: string;

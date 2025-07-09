@@ -1,9 +1,17 @@
+import admin from "firebase-admin";
 import { defineString } from "firebase-functions/params";
+import { setGlobalOptions } from "firebase-functions/v2";
+
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
 
 // Define parameters for environment variables
 // These can be set in .env files for local emulation (e.g. .env.local, .env.<project_id>)
 // or configured in Firebase console for deployed functions.
 // See https://firebase.google.com/docs/functions/config-env
+
+export const REGION = "europe-central2";
 
 export const thirdPartyApiBaseUrl = defineString(
   "THIRD_PARTY_API_BASE_URL",
@@ -36,3 +44,11 @@ export const openaiApiKey = defineString(
     // No default for sensitive keys, ensure it's set during deployment/emulation
   },
 );
+
+export const db = admin.firestore();
+export const storage = admin.storage();
+export const songsBucket = storage.bucket();
+
+setGlobalOptions({
+  region: REGION,
+});

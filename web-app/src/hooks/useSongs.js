@@ -18,7 +18,7 @@ export function useSongs() {
       }
 
       try {
-        const songsRef = collection(db, 'songs');
+        const songsRef = collection(db, 'songsPublic');
         const q = query(songsRef, where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);
         
