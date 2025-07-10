@@ -24,10 +24,7 @@
   z-index: 10;
 }
 
-.back-button:hover {
-  background-color: #2a2b32;
-  transform: translateY(-1px);
-}
+
 
 .container {
   max-width: 600px;
@@ -134,11 +131,7 @@
   box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
 }
 
-.modern-play-button:hover {
-  background-color: #eab111;
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(234, 177, 17, 0.4);
-}
+
 
 .play-icon {
   font-size: 32px;
@@ -164,16 +157,10 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 20px;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.download-button:hover {
-  background-color: #eab111;
-  color: #1a1a1a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
-}
+
 
 .download-button:disabled {
   opacity: 0.7;
@@ -181,19 +168,7 @@
   transform: none;
 }
 
-.button {
-  background-color: #eab111;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
+/* */
 
 .download-btn {
   display: inline-flex;
@@ -213,10 +188,7 @@
   letter-spacing: 1px;
 }
 
-.download-btn:hover {
-  background: #eab111;
-  transform: translateY(-2px) scale(1.04);
-}
+
 
 .download-btn:disabled {
   background: #888;

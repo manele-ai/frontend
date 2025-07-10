@@ -46,13 +46,7 @@ export default function MySongsPage() {
 
   return (
     <div className="my-songs-page">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
-        ← Înapoi
-      </button>
-
+      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">Manelele Mele</h1>
         <p className="subtitle">Ascultă piesele generate de tine</p>

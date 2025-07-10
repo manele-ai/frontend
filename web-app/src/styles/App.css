@@ -49,7 +49,7 @@ code {
 }
 
 .button {
-  background-color: #eab111;
+  background: var(--gold-gradient);
   color: #23242b;
   border: none;
   border-radius: 30px;
@@ -58,18 +58,12 @@ code {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.button:hover {
-  background-color: #eab111;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
-}
 
 .button:disabled {
-  background-color: #eab111;
+  background: var(--gold-gradient);
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
@@ -137,9 +131,7 @@ code {
   z-index: 10;
 }
 
-.back-button:hover {
-  background-color: #2a2b32;
-}
+
 
 /* Global button styles */
 button {
@@ -168,9 +160,6 @@ a {
   transition: color 0.2s ease;
 }
 
-a:hover {
-  color: #eab111;
-}
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
@@ -231,7 +220,7 @@ input:focus-visible {
 }
 
 .bg-gold {
-  background-color: #eab111;
+  background: var(--gold-gradient);
 }
 
 .rounded {
@@ -247,8 +236,10 @@ input:focus-visible {
 }
 
 .shadow-gold {
-  box-shadow: 0 2px 6px rgba(234, 177, 17, 0.3);
+  box-shadow: 0 2px 6px rgba(201,169,104,0.3);
 }
+
+
 
 /* Responsive utilities */
 @media (max-width: 768px) {
@@ -269,4 +260,16 @@ input:focus-visible {
   .container {
     padding: 0 10px;
   }
+} 
+
+:root {
+  --app-bg-gradient: linear-gradient(180deg, rgba(43,43,43,1) 0%, rgba(8,10,11,1) 100%);
+  --gold-gradient: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  --gold-gradient-start: rgba(255,224,161,1);
+  --gold-gradient-end: rgba(201,169,104,1);
+}
+
+body, .App {
+  background: var(--app-bg-gradient) !important;
+  color: white;
 } 

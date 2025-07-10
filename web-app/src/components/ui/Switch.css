@@ -10,7 +10,7 @@
 }
 
 .switch:focus-visible {
-  outline: 2px solid #eab111;
+  outline: 2px solid var(--gold-gradient-end);
   outline-offset: 2px;
   border-radius: 16px;
 }
@@ -28,7 +28,7 @@
 }
 
 .switch-track--checked {
-  background-color: #eab111;
+  background: var(--gold-gradient);
 }
 
 .switch-thumb {

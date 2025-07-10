@@ -10,7 +10,7 @@
 }
 
 .song-item:hover {
-  border-color: #FFD700;
+  border-color: var(--gold-gradient-end);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.1);
 }
@@ -22,7 +22,7 @@
 }
 
 .song-title {
-  color: #FFD700;
+  color: var(--gold-gradient-end);
   font-size: 18px;
   font-weight: bold;
   margin: 0;
@@ -50,7 +50,7 @@
 }
 
 .play-pause-button {
-  background-color: #FFD700;
+  background: var(--gold-gradient);
   color: #1a1a1a;
   border: none;
   border-radius: 50%;
@@ -66,7 +66,7 @@
 }
 
 .play-pause-button:hover:not(:disabled) {
-  background-color: #e6c200;
+  background: var(--gold-gradient);
   transform: scale(1.1);
 }
 
@@ -118,7 +118,7 @@
 }
 
 .download-button {
-  background-color: #4CAF50;
+  background: var(--gold-gradient);
   color: white;
   border: none;
   border-radius: 50%;
@@ -134,7 +134,7 @@
 }
 
 .download-button:hover {
-  background-color: #45a049;
+  background: var(--gold-gradient);
   transform: scale(1.1);
 }
 

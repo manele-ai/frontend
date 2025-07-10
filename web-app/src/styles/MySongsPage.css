@@ -154,10 +154,7 @@
   flex-shrink: 0;
 }
 
-.download-button:hover {
-  background-color: #45a049;
-  transform: scale(1.1);
-}
+
 
 .no-songs {
   text-align: center;

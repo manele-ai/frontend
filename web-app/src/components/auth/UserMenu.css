@@ -18,16 +18,14 @@
   font-weight: 500;
 }
 
-.user-menu-trigger:hover {
-  background-color: rgba(255, 215, 0, 0.1);
-}
+
 
 .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #eab111;
+  border: 2px solid var(--gold-gradient-end);
 }
 
 .user-avatar-placeholder {
@@ -90,7 +88,7 @@
 }
 
 .user-info-name {
-  color: #eab111;
+  color: var(--gold-gradient-end);
   font-weight: bold;
   font-size: 16px;
 }
@@ -122,9 +120,6 @@
   text-align: left;
 }
 
-.user-menu-item:hover {
-  background-color: #2a2b32;
-}
 
 .user-menu-item span {
   width: 18px;
@@ -139,9 +134,7 @@
   color: #ff6b6b;
 }
 
-.user-menu-item-danger:hover {
-  background-color: rgba(255, 107, 107, 0.1);
-}
+
 
 .user-menu-divider {
   height: 1px;
@@ -180,6 +173,6 @@
 /* Focus styles for accessibility */
 .user-menu-trigger:focus-visible,
 .user-menu-item:focus-visible {
-  outline: 2px solid #eab111;
+  outline: 2px solid var(--gold-gradient-end);
   outline-offset: 2px;
 } 

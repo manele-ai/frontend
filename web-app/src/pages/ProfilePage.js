@@ -63,13 +63,7 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-page">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
-        ← Înapoi
-      </button>
-
+      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">Profilul meu</h1>
         

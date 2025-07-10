@@ -17,10 +17,12 @@
 .title {
   font-size: 32px;
   font-weight: bold;
-  color: #eab111;
+  color: var(--gold-gradient-end);
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1px;
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
 .profile-card {
@@ -72,8 +74,10 @@
 .profile-name {
   font-size: 24px;
   font-weight: bold;
-  color: #eab111;
+  color: var(--gold-gradient-end);
   margin: 0 0 8px 0;
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
 .profile-email {
@@ -107,8 +111,10 @@
   display: block;
   font-size: 28px;
   font-weight: bold;
-  color: #eab111;
+  color: var(--gold-gradient-end);
   margin-bottom: 5px;
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
 .stat-label {
@@ -130,15 +136,13 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
   letter-spacing: 1px;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
-.edit-button:hover {
-  background-color: #eab111;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
-}
+
 
 .edit-form {
   background-color: #1a1a1a;
@@ -204,6 +208,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
 .cancel-button:hover:not(:disabled) {
@@ -221,6 +228,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
 .save-button:hover:not(:disabled) {
@@ -267,13 +277,12 @@
   gap: 10px;
   min-width: 200px;
   justify-content: center;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
-.action-button:hover {
-  border-color: #eab111;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.1);
-}
+
 
 .action-icon {
   font-size: 20px;
@@ -293,12 +302,11 @@
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
+  border-color: var(--gold-gradient-end);
 }
 
-.back-button:hover {
-  background-color: #2a2b32;
-  transform: translateY(-1px);
-}
 
 .loading-container {
   display: flex;

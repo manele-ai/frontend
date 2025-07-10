@@ -110,7 +110,6 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
   letter-spacing: 1px;
   width: 100%;
   margin-top: 24px;
@@ -155,10 +154,7 @@
   z-index: 10;
 }
 
-.back-button:hover {
-  background-color: #2a2b32;
-  transform: translateY(-1px);
-}
+
 
 .title {
   font-size: 32px;
@@ -172,6 +168,18 @@
   color: #a2a5bd;
   font-size: 18px;
   margin-bottom: 20px;
+}
+
+.payment-page .title, .payment-summary h3, .payment-summary strong, .payment-method h3, .payment-method label, .payment-button, .payment-button:hover:not(:disabled), .payment-button:disabled, .error-message, .back-button {
+  color: var(--gold-gradient-end);
+}
+
+.payment-button, .payment-button:hover:not(:disabled), .payment-button:disabled {
+  background: var(--gold-gradient);
+}
+
+.payment-form input:focus, .card-element:focus-within {
+  border-color: var(--gold-gradient-end);
 }
 
 /* Responsive design */

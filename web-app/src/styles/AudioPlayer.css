@@ -32,9 +32,7 @@
   transition: opacity 0.2s;
 }
 
-.close-button:hover {
-  opacity: 1;
-}
+
 
 .player-controls {
   display: flex;
@@ -57,9 +55,7 @@
   transition: all 0.2s;
 }
 
-.play-pause-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-}
+
 
 .play-pause-button:disabled {
   opacity: 0.5;

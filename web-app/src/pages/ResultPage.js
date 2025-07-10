@@ -66,13 +66,7 @@ export default function ResultPage() {
 
   return (
     <div className="result-page">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
-        ← Înapoi
-      </button>
-      
+      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">{songData.title || 'Piesa ta e gata!'}</h1>
         <p className="subtitle">

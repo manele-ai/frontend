@@ -83,15 +83,10 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.auth-button:hover:not(:disabled) {
-  background-color: #e6c200;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-}
+
 
 .auth-button:disabled {
   opacity: 0.7;
