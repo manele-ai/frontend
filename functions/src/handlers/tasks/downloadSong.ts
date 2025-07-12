@@ -6,6 +6,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 import { pipeline } from "node:stream/promises";
 import { db, REGION, songsBucket } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
+import { Database } from "../../types/database";
 
 // 10MB in bytes - maximum allowed file size
 // const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -26,8 +27,8 @@ export const downloadSongTask = onTaskDispatched(
     retryConfig: {
       maxAttempts: 5,
       minBackoffSeconds: 30,
-      maxBackoffSeconds: 300,
-      maxDoublings: 2,
+      maxBackoffSeconds: 4 * 60, // 4 minutes
+      maxDoublings: 3,
     },
     rateLimits: { maxConcurrentDispatches: 10 }, // Can handle more concurrent small files
     memory: "256MiB",
@@ -53,20 +54,20 @@ export const downloadSongTask = onTaskDispatched(
         logger.info(`downloadSong: File already downloaded for songId ${songId}`);
         return;
     }
-    const { audioUrl } = songSnap.data() || {};
-    if (!audioUrl) {
+    const { apiData } = songSnap.data() as Database.SongData;
+    if (!apiData.audioUrl) {
         logger.error("downloadSong: Missing audioUrl", { songId });
         return;
     }
     const fileName = `${songId}.mp3`;
     const destination = `songs/${fileName}`;
     const file = songsBucket.file(destination);
-    logger.info(`downloadSong: Starting download ${audioUrl} → gs://${songsBucket.name}/${destination}`);
+    logger.info(`downloadSong: Starting download ${apiData.audioUrl} → gs://${songsBucket.name}/${destination}`);
 
     // Now fetch the actual file
-    const downloadResponse = await fetch(audioUrl);
+    const downloadResponse = await fetch(apiData.audioUrl);
     if (!downloadResponse.ok || !downloadResponse.body) {
-      logger.error(`downloadSong: Failed to fetch ${audioUrl} – status ${downloadResponse.status}`);
+      logger.error(`downloadSong: Failed to fetch ${apiData.audioUrl} – status ${downloadResponse.status}`);
       throw new HttpsError("unavailable", `Could not download audio: ${downloadResponse.statusText}`);
     }
 

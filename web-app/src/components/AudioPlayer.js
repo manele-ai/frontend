@@ -72,14 +72,34 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     // Load or unload audio based on active state
     if (isPlaying) {
       setError(null);
-      setIsLoading(true);
-      audio.src = audioUrl;
-      audio.load();
+      // Check if we need to set or update the source
+      const currentSrc = audio.src || '';
+      const newSrc = audioUrl || '';
+      if (!currentSrc || (currentSrc === '' && newSrc)) {
+        if (audioUrl) {
+          setIsLoading(true);
+          audio.src = audioUrl;
+          audio.load();
+        }
+      }
     } else {
       audio.pause();
-      audio.src = '';
-      setCurrentTime(0);
-      setHasStartedPlaying(false);
+      // Only switch to storage URL when user has stopped playing
+      const currentSrc = audio.src || '';
+      const newSrc = audioUrl || '';
+      if (currentSrc !== newSrc && newSrc) {
+        const currentTime = audio.currentTime;
+        audio.src = audioUrl;
+        audio.load();
+        if (currentTime > 0) {
+          audio.currentTime = currentTime;
+        }
+      }
+      if (!audioUrl) {
+        audio.removeAttribute('src'); // More reliable than setting empty string
+        setCurrentTime(0);
+        setHasStartedPlaying(false);
+      }
       setError(null);
       setIsLoading(false);
     }
@@ -92,7 +112,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       audio.removeEventListener('canplay', handleCanPlay);
       audio.removeEventListener('waiting', handleWaiting);
       audio.pause();
-      audio.src = '';
+      audio.removeAttribute('src');
     };
   }, [audioUrl, isPlaying, onPlayPause, onError, isStreamUrl, hasStartedPlaying]);
 
@@ -104,7 +124,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
   };
 
   const formatTime = (time) => {
-    if (typeof time !== 'number' || isNaN(time)) return '';
+    if (typeof time !== 'number' || isNaN(time) || !isFinite(time)) return '';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -136,13 +156,17 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
                 disabled={!isPlaying || isLoading}
               />
               <div className="time-display">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+                {formatTime(currentTime) && (
+                  <>
+                    <span>{formatTime(currentTime)}</span>
+                    {formatTime(duration) && <span>{formatTime(duration)}</span>}
+                  </>
+                )}
               </div>
             </>
           ) : hasStartedPlaying && (
             <div className="time-display stream-time">
-              <span>{formatTime(currentTime)}</span>
+              {formatTime(currentTime) && <span>{formatTime(currentTime)}</span>}
             </div>
           )}
         </div>

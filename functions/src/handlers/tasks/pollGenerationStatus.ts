@@ -133,7 +133,15 @@ export const pollGenerationStatusTask = onTaskDispatched({
         updatedAt: FieldValue.serverTimestamp(),
       });
       await batch.commit();
-      return;
+      if (latestExternalStatus === "SUCCESS") {
+        return; // Done, no retry needed
+      } else if (["TEXT_SUCCESS", "FIRST_SUCCESS"].includes(latestExternalStatus)) {
+        // Intermediate success - need to keep polling
+        throw new HttpsError(
+          'failed-precondition',
+          `Generation in progress (${latestExternalStatus}), continuing to poll.`
+        );
+      }
     }
     throw new HttpsError('internal', `Unexpected status: ${latestExternalStatus}`);
   }

@@ -28,10 +28,10 @@ export default function ResultPage() {
       doc(db, 'songsPublic', songId),
       (doc) => {
         if (!doc.exists()) {
-          setError('Song not found');
-          return;
+          console.log("Song does not exist yet, loading...");
+        } else {
+          setSongData(doc.data());
         }
-        setSongData(doc.data());
       },
       (err) => {
         console.error('Error fetching song:', err);
@@ -102,6 +102,12 @@ export default function ResultPage() {
       <div className="result-page">
         <div className="container">
           <h1 className="title">Se încarcă...</h1>
+          <div className="player-box">
+            <div className="loading-container">
+              <div className="spinner" />
+              <p className="status-message">Se încarcă datele piesei... Te rugăm să aștepți.</p>
+            </div>
+          </div>
         </div>
       </div>
     );
