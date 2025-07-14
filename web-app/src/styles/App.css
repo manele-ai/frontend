@@ -270,6 +270,6 @@ input:focus-visible {
 }
 
 body, .App {
-  background: var(--app-bg-gradient) !important;
+  background: #f5e6c5 !important;
   color: white;
 } 

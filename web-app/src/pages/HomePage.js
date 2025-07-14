@@ -5,7 +5,7 @@ const styles = [
   {
     title: 'JALE',
     subtitle: 'Guta/Salam vechi',
-    image: '/photos/Frame 55 (1).png',
+    image: 'photos/Jale.png',
   },
   {
     title: 'COMERCIALE',
@@ -35,7 +35,7 @@ const styles = [
   {
     title: 'ORIENTALE',
     subtitle: '',
-    image: '/photos/Frame 64 (1).png',
+    image: '/photos/Orieltala.png',
   },
   {
     title: 'LAUTARESTI',
@@ -65,11 +65,13 @@ function HeroCard() {
 function StyleCard({ title, subtitle, image }) {
   console.log('CARD IMAGE PATH:', image);
   return (
-    <div className="style-card" style={{ backgroundImage: `url(${image})` }}>
+    <div className="style-card" style={{ backgroundImage: `url(${encodeURI(image)})` }}>
       <div className="style-card-overlay">
         <div className="style-card-title">{title}</div>
         {subtitle && <div className="style-card-subtitle">{subtitle}</div>}
-        <Button variant="secondary" size="small" className="style-card-btn" onClick={() => {}}>Exemple</Button>
+        <Button variant="secondary" size="small" className="hero-btn" onClick={() => {}}>
+          <span className="hero-btn-text">Exemple</span>
+        </Button>
       </div>
     </div>
   );

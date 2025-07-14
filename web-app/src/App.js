@@ -12,6 +12,7 @@ import BottomMenu from './components/ui/BottomMenu';
 import GeneratePage from './pages/GeneratePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
+import SelectStylePage from './pages/SelectStylePage';
 import './styles/App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             {/* Public routes */}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="/select-style" element={<SelectStylePage />} />
             <Route path="/generate" element={<GeneratePage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
             

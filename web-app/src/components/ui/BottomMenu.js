@@ -3,7 +3,7 @@ import './BottomMenu.css';
 
 const ICONS = [
   { src: '/icons/home-09.png', alt: 'Home', route: '/' },
-  { src: '/icons/Vector-1.png', alt: 'Plus', route: '/generate' },
+  { src: '/icons/Vector-1.png', alt: 'Plus', route: '/select-style' },
   { src: '/icons/Vector.png', alt: 'Leaderboard', route: '/leaderboard' },
   { src: '/icons/user.png', alt: 'Profil', route: '/profile' },
 ];
