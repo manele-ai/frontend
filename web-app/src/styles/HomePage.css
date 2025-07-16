@@ -1,4 +1,4 @@
-/* HomePage.css - doar stiluri pentru HomePage, fără overlay/selected/continua etc. */
+/* HomePage.css - doar stiluri pentru HomePage */
 .home-page {
   position: relative;
   min-height: 100vh;
@@ -99,58 +99,76 @@
   text-align: left;
 }
 
-.styles-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-bottom: 32px;
-  width: 100%;
-}
-@media (max-width: 700px) {
-  .styles-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.style-card {
-  position: relative;
-  border-radius: 22px;
-  overflow: hidden;
-  aspect-ratio: 16 / 7;
-  min-width: 300px;
+/* Stiluri pentru butonul hero conform specificațiilor din imagini */
+.hero-btn.button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
-  width: 100%;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.style-card-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 18px 16px 16px 16px;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
-.style-card-title {
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 2px;
+.hero-btn.button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
 }
 
-.style-card-subtitle {
-  color: #ffe0a1;
-  font-size: 0.80rem;
+.hero-btn.button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+/* Stiluri pentru textul din buton conform specificațiilor din imagini */
+.hero-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-style: normal;
   font-weight: 500;
-  margin-bottom: 10px;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Card de exemplu sub hero section */
+.style-example-title {
+  color: #FFEEA6;
+  text-align: center;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.style-example-subtitle {
+  color: #FFF;
+  text-align: center;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.48px;
+  margin-bottom: 0;
+  margin-top: 8px;
 } 
