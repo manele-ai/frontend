@@ -1,17 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { styles } from '../data/stylesData';
 import '../styles/SelectStylePage.css';
-
-const styles = [
-  { title: 'JALE', subtitle: 'Guta/Salam vechi', image: '/photos/Jale.png' },
-  { title: 'COMERCIALE', subtitle: 'BDLP', image: '/photos/Frame 63.png' },
-  { title: 'DE PETRECERE', subtitle: 'Bem 7 zile', image: '/photos/Frame 64.png' },
-  { title: 'MUZICA POPULARA', subtitle: '', image: '/photos/Frame 63.1.png' },
-  { title: 'MANELE LIVE', subtitle: '', image: '/photos/Frame 63.2.png' },
-  { title: 'DE OPULENTA', subtitle: '', image: '/photos/Frame 55.png' },
-  { title: 'ORIENTALE', subtitle: '', image: '/photos/Orieltala.png' },
-  { title: 'LAUTARESTI', subtitle: '', image: '/photos/Frame 63.3.png' },
-];
 
 function HeroCard() {
   return (
@@ -28,11 +18,10 @@ function HeroCard() {
   );
 }
 
-function StyleCard({ title, subtitle, image, selected, onClick }) {
+function StyleCard({ title, subtitle, selected, onClick }) {
   return (
     <div
       className={`style-card${selected ? ' selected' : ''}`}
-      style={{ backgroundImage: `url(${encodeURI(image)})`, cursor: 'pointer' }}
       onClick={onClick}
       tabIndex={0}
       role="button"
@@ -52,7 +41,9 @@ export default function SelectStylePage() {
 
   const handleContinue = () => {
     if (selectedStyle) {
-      navigate('/generate');
+      navigate('/generate', {
+        state: { selectedStyle }
+      });
     }
   };
 
@@ -64,7 +55,8 @@ export default function SelectStylePage() {
           {styles.map((style) => (
             <StyleCard
               key={style.title}
-              {...style}
+              title={style.title}
+              subtitle={style.subtitle}
               selected={selectedStyle === style.title}
               onClick={() => setSelectedStyle(style.title)}
             />

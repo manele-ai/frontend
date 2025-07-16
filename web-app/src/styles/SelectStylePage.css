@@ -5,11 +5,6 @@
   margin-bottom: 32px;
   width: 100%;
 }
-@media (max-width: 700px) {
-  .select-style-page .styles-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .select-style-page .style-card {
   position: relative;
@@ -19,8 +14,8 @@
   min-width: 300px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   width: 100%;
   background-size: contain;
   background-position: center;
@@ -39,7 +34,7 @@
 
 .select-style-page .style-card.selected {
   position: relative;
-  box-shadow: 0 0 0 4px rgba(255,224,161,0.25), 0 2px 12px rgba(0,0,0,0.10);
+  box-shadow: 0 0 0 4px rgba(255,224,161,0.25), 0 8px 32px rgba(0, 0, 0, 0.4);
   z-index: 2;
 }
 
@@ -106,7 +101,95 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
+
 .select-style-continue-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+  .select-style-page .home-page {
+    padding: 10px;
+  }
+  
+  .select-style-page .container {
+    width: 100%;
+    gap: 15px;
+  }
+  
+  /* Hero section responsive */
+  .select-style-page .hero-card {
+    flex-direction: row;
+    gap: 15px;
+    padding: 15px;
+    min-height: auto;
+    justify-content: space-between;
+  }
+  
+  .select-style-page .hero-card-content {
+    width: 60%;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .select-style-page .hero-title {
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: left;
+  }
+  
+  .select-style-page .hero-subtitle {
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: left;
+  }
+  
+  .select-style-page .hero-card-img {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+  
+  .select-style-page .hero-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .select-style-page .ellipse-bg {
+    width: 100px;
+    height: 100px;
+  }
+  
+  /* Styles grid responsive - keep 2 columns as requested */
+  .select-style-page .styles-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .select-style-page .style-card {
+    min-width: unset;
+    aspect-ratio: 16 / 9;
+  }
+  
+  .select-style-page .style-card-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+  
+  .select-style-page .style-card-subtitle {
+    font-size: 0.65rem;
+    margin-bottom: 8px;
+  }
+  
+  .select-style-page .style-card-overlay {
+    padding: 12px 10px 10px 10px;
+  }
+  
+  /* Continue button responsive */
+  .select-style-continue-btn {
+    font-size: 14px;
+    padding: 12px 32px;
+    margin: 24px auto 0 auto;
+  }
 } 
