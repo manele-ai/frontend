@@ -83,25 +83,8 @@ code {
 
 
 
-/* Global button styles */
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* Global input styles */
-input {
-  font-family: inherit;
-  outline: none;
-}
+/* Global button styles - removed to allow local styling */
+/* Global input styles - removed to allow local styling */
 
 /* Global link styles */
 a {
@@ -129,12 +112,7 @@ a {
   background: #eab111;
 }
 
-/* Focus styles for accessibility */
-button:focus-visible,
-input:focus-visible {
-  outline: 2px solid #eab111;
-  outline-offset: 2px;
-}
+/* Focus styles for accessibility - removed to allow local styling */
 
 /* Loading animation */
 @keyframes fadeIn {
@@ -219,5 +197,4 @@ input:focus-visible {
 
 body, .App {
   background: #f5e6c5 !important;
-  color: white;
 } 

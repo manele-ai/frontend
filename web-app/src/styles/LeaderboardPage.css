@@ -6,6 +6,7 @@
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding-top: 80px; /* Compensate for header */
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
 .container {

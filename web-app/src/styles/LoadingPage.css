@@ -5,29 +5,70 @@
   justify-content: center;
   align-items: flex-start;
   background-color: #1a1a1a;
-  color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding: 20px;
   padding-top: 80px; /* Compensate for header */
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
 .loading-container {
-  text-align: center;
-  background-color: #23242b;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid #333;
-  max-width: 400px;
-  width: 100%;
+  display: inline-flex;
+  padding: 2.5%;
+  justify-content: flex-start;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 0px 20px 20px 20px;
+  min-height: unset;
+  width: 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+  margin-bottom: 32px;
+  gap: 10%;
+  flex-direction: column;
+}
+
+.loading-bar-container {
+  width: 220.701px;
+  height: 9px;
+  background-color: #1a1a1a;
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(0deg, rgba(231, 170, 43, 1) 0%, rgba(255, 240, 218, 1) 100%);
+  border-radius: 100px;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 10px rgba(231, 170, 43, 0.3);
 }
 
 .loading-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #eab111;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  color: #000 !important;
+  text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1px;
+}
+
+.loading-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  color: #000 !important;
+  text-align: center;
+  width: 100%;
+  margin: -18px auto 18px auto;
 }
 
 .progress-bar-container {
@@ -55,14 +96,163 @@
 }
 
 .loading-status {
-  color: #a2a5bd;
+  color: #000;
   font-size: 16px;
   margin: 0;
   line-height: 1.5;
 }
 
-.loading-title, .loading-percentage, .loading-status {
+.loading-percentage {
   color: var(--gold-gradient-end);
+}
+
+.loading-status {
+  color: #a2a5bd;
+}
+
+/* Songs container styles */
+.songs-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 20px 15px;
+  background: #2B2B2B;
+  border-radius: 20px;
+  margin: 20px 0;
+}
+
+.songs-title {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  color: #FFE0A1;
+  text-align: center;
+  align-self: stretch;
+  margin: 0;
+}
+
+.songs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.loading-song-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  width: 100%;
+  min-height: 48px;
+}
+
+.song-image-placeholder {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(45deg, #FFE0A1, #C9A968);
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.song-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.song-artist {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #E5E5E5;
+  line-height: normal;
+  margin: 0;
+  text-align: left;
+}
+
+.song-name {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #B0B0B0;
+  line-height: normal;
+  margin: 0;
+  text-align: left;
+}
+
+.play-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Hero button styles for error page */
+.hero-btn.button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.hero-btn.button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.hero-btn.button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+.hero-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  text-align: center;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Responsive design */
@@ -73,11 +263,59 @@
   }
   
   .loading-container {
-    padding: 30px 20px;
+    width: 100%;
+    padding: 25px 20px;
+    gap: 15px;
+  }
+  
+  .loading-bar-container {
+    width: 200px;
+    height: 8px;
   }
   
   .loading-title {
-    font-size: 24px;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .loading-subtitle {
+    font-size: 11px;
+    width: 100%;
+    margin: -15px auto 15px auto;
+  }
+  
+  .songs-container {
+    width: 100%;
+    padding: 18px 12px;
+    gap: 12px;
+  }
+  
+  .songs-title {
+    font-size: 15px;
+  }
+  
+  .loading-song-item {
+    gap: 10px;
+    padding: 6px 0;
+    min-height: 44px;
+  }
+  
+  .song-image-placeholder {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .song-artist {
+    font-size: 13px;
+  }
+  
+  .song-name {
+    font-size: 11px;
+  }
+  
+  .play-icon {
+    width: 18px;
+    height: 18px;
   }
   
   .loading-percentage {
@@ -86,5 +324,75 @@
   
   .loading-status {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-page {
+    padding: 10px;
+    padding-top: 60px;
+  }
+  
+  .loading-container {
+    width: 100%;
+    padding: 20px 15px;
+    gap: 12px;
+  }
+  
+  .loading-bar-container {
+    width: 180px;
+    height: 7px;
+  }
+  
+  .loading-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .loading-subtitle {
+    font-size: 10px;
+    margin: -12px auto 12px auto;
+  }
+  
+  .songs-container {
+    width: 100%;
+    padding: 15px 10px;
+    gap: 10px;
+  }
+  
+  .songs-title {
+    font-size: 14px;
+  }
+  
+  .loading-song-item {
+    gap: 8px;
+    padding: 5px 0;
+    min-height: 40px;
+  }
+  
+  .song-image-placeholder {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .song-artist {
+    font-size: 12px;
+  }
+  
+  .song-name {
+    font-size: 10px;
+  }
+  
+  .play-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .loading-percentage {
+    font-size: 18px;
+  }
+  
+  .loading-status {
+    font-size: 12px;
   }
 } 

@@ -65,130 +65,113 @@ export default function ProfilePage() {
     <div className="profile-page">
       {/* Butonul de Înapoi eliminat */}
       <div className="container">
-        <h1 className="title">Profilul meu</h1>
-        
-        <div className="profile-card">
-          <div className="profile-header">
-            <div className="profile-avatar">
-              {userProfile?.photoURL ? (
-                <img 
-                  src={userProfile.photoURL} 
-                  alt={userProfile.displayName}
-                  className="avatar-image"
-                />
-              ) : (
-                <div className="avatar-placeholder">
-                  {userProfile?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              )}
-            </div>
-            
-            <div className="profile-info">
-              <h2 className="profile-name">
-                {userProfile?.displayName || user?.displayName || 'Utilizator'}
-              </h2>
-              <p className="profile-email">{user?.email}</p>
-              <p className="profile-joined">
-                Membru din {userProfile?.createdAt ? 
-                  new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 
-                  'recent'
-                }
-              </p>
-            </div>
+        <div className="profile-content">
+          <div className="profile-avatar">
+            {userProfile?.photoURL ? (
+              <img 
+                src={userProfile.photoURL} 
+                alt={userProfile.displayName}
+                className="avatar-image"
+              />
+            ) : (
+              <div className="avatar-placeholder">
+                {userProfile?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            )}
           </div>
+          
+          <h2 className="profile-name">
+            {userProfile?.displayName || user?.displayName || 'Utilizator'}
+          </h2>
+          
+          <p className="profile-email">{user?.email}</p>
+          
+          <p className="profile-joined">
+            Membru din {userProfile?.createdAt ? 
+              new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 
+              'recent'
+            }
+          </p>
 
           <div className="profile-stats">
             <div className="stat-item">
               <span className="stat-number">{userProfile?.songIds?.length || 0}</span>
               <span className="stat-label">Piese generate</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-number">{userProfile?.taskIds?.length || 0}</span>
-              <span className="stat-label">Cereri</span>
-            </div>
           </div>
+        </div>
 
+        {!isEditing ? (
+          <div className="quick-actions">
+            <button
+              className="action-button hero-btn"
+              onClick={() => setIsEditing(true)}
+            >
+              <span className="hero-btn-text">Editează profilul</span>
+            </button>
+            
+            <button
+              className="action-button hero-btn"
+              onClick={() => navigate('/select-style')}
+            >
+              <span className="hero-btn-text">Generează manea</span>
+            </button>
+          </div>
+        ) : (
           <div className="profile-actions">
-            {!isEditing ? (
-              <button
-                className="edit-button"
-                onClick={() => setIsEditing(true)}
-              >
-                Editează profilul
-              </button>
-            ) : (
-              <form onSubmit={handleSave} className="edit-form">
-                <div className="form-group">
-                  <label htmlFor="displayName">Nume afișat</label>
-                  <input
-                    type="text"
-                    id="displayName"
-                    name="displayName"
-                    value={formData.displayName}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                  />
-                </div>
+            <form onSubmit={handleSave} className="edit-form">
+              <div className="form-group">
+                <label htmlFor="displayName">Nume afișat</label>
+                <input
+                  type="text"
+                  id="displayName"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  required
+                />
+              </div>
 
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    disabled
-                    className="form-input disabled"
-                  />
-                  <small>Email-ul nu poate fi modificat</small>
-                </div>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  disabled
+                  className="form-input disabled"
+                />
+                <small>Email-ul nu poate fi modificat</small>
+              </div>
 
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="cancel-button"
-                    disabled={saveLoading}
-                  >
-                    Anulează
-                  </button>
-                  <button
-                    type="submit"
-                    className="save-button"
-                    disabled={saveLoading}
-                  >
-                    {saveLoading ? 'Se salvează...' : 'Salvează'}
-                  </button>
-                </div>
-              </form>
-            )}
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="cancel-button hero-btn"
+                  disabled={saveLoading}
+                >
+                  <span className="hero-btn-text">Anulează</span>
+                </button>
+                <button
+                  type="submit"
+                  className="save-button hero-btn"
+                  disabled={saveLoading}
+                >
+                  <span className="hero-btn-text">{saveLoading ? 'Se salvează...' : 'Salvează'}</span>
+                </button>
+              </div>
+            </form>
           </div>
+        )}
 
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
-        </div>
-
-        <div className="quick-actions">
-          <button
-            className="action-button"
-            onClick={() => navigate('/my-songs')}
-          >
-            <span className="action-icon">🎵</span>
-            Manelele mele
-          </button>
-          
-          <button
-            className="action-button"
-            onClick={() => navigate('/')}
-          >
-            <span className="action-icon">➕</span>
-            Generează o nouă manea
-          </button>
-        </div>
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,41 +2,41 @@ export const styles = [
   {
     title: 'JALE',
     subtitle: 'Guta/Salam vechi',
-    // image: '/photos/Jale.png',
+    image: '/photos/Jale.jpeg',
   },
   {
     title: 'COMERCIALE',
     subtitle: 'BDLP',
-    // image: '/photos/Comerciale.png',
+    image: '/photos/Comerciale.jpeg',
   },
   {
     title: 'DE PETRECERE',
     subtitle: 'Bem 7 zile',
-    // image: '/photos/Frame 64.png',
+    image: '/photos/Petrecere.jpeg',
   },
   {
     title: 'MUZICA POPULARA',
     subtitle: '',
-    // image: '/photos/Frame 63.1.png',
+    image: '/photos/Populare.jpeg',
   },
   {
     title: 'MANELE LIVE',
     subtitle: '',
-    // image: '/photos/Frame 63.2.png',
+    image: '/photos/Live.jpeg',
   },
   {
     title: 'DE OPULENTA',
     subtitle: '',
-    // image: '/photos/Frame 55.png',
+    image: '/photos/Opulenta.jpeg',
   },
   {
     title: 'ORIENTALE',
     subtitle: '',
-    // image: '/photos/Orieltala.png',
+    image: '/photos/Orientale.jpeg',
   },
   {
     title: 'LAUTARESTI',
     subtitle: '',
-    // image: '/photos/Frame 63.3.png',
+    image: '/photos/Lautaresti.jpeg',
   },
 ]; 

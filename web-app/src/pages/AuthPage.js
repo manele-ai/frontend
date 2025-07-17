@@ -142,7 +142,7 @@ export default function AuthPage() {
             </div>
             
             <button type="submit" className="auth-button" disabled={loading}>
-              {loading ? 'Se trimite...' : 'Trimite Email Resetare'}
+              <span className="auth-button-text">{loading ? 'Se trimite...' : 'Trimite Email Resetare'}</span>
             </button>
             
             <button
@@ -244,13 +244,13 @@ export default function AuthPage() {
             </div>
           )}
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading 
+            <span className="auth-button-text">{loading 
               ? 'Se procesează...' 
               : (isLogin ? 'Autentificare' : 'Înregistrare')
-            }
+            }</span>
           </button>
           <div className="auth-divider">
-            <span>sau</span>
+            
           </div>
           <button
             type="button"

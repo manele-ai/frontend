@@ -67,9 +67,9 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="home-page">
-      <div className="container">
-        {/* Hero Section */}
+    <div className="generate-page">
+      {/* Hero Section */}
+      <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
             <h2 className="hero-title">Configureaza maneaua</h2>
@@ -80,7 +80,10 @@ export default function GeneratePage() {
             <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
           </div>
         </div>
-        
+      </div>
+
+      {/* Main Content Container */}
+      <div className="main-content-container">
         {/* Modern Round Slider */}
         <div className="mode-slider-container">
           <div className="mode-slider">

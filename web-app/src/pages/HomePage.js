@@ -23,7 +23,6 @@ function HeroCard() {
 }
 
 function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }) {
-  // Extrage URL-ul imaginii din background string
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
   
   return (
@@ -31,6 +30,7 @@ function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }
       className="style-example-card" 
       style={{ backgroundImage: `url(${imageUrl})` }}
     >
+      <div className="style-example-card-overlay"></div>
       <div className="style-example-card-content">
         <h2 className="style-example-title">{title}</h2>
         <p className="style-example-subtitle">{subtitle}</p>
@@ -46,8 +46,13 @@ export default function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="home-page">
-      <div className="container">
+      {/* Hero Section */}
+      <div className="hero-section">
         <HeroCard />
+      </div>
+
+      {/* Main Content Container */}
+      <div className="main-content-container">
         <div className="styles-grid">
           {styles.map((style, index) => (
             <ReusableCard

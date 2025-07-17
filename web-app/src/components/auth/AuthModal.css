@@ -106,8 +106,8 @@
   cursor: not-allowed;
 }
 
-/* Button Styles */
-.auth-button {
+/* Button Styles - renamed to avoid conflicts with AuthPage */
+.auth-modal-button {
   background-color: #FFD700;
   color: #1a1a1a;
   border: none;
@@ -120,12 +120,12 @@
   letter-spacing: 1px;
 }
 
-.auth-button:hover:not(:disabled) {
+.auth-modal-button:hover:not(:disabled) {
   background-color: #e6c200;
   transform: translateY(-2px);
 }
 
-.auth-button:disabled {
+.auth-modal-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
@@ -165,7 +165,7 @@
 .auth-link-button {
   background: none;
   border: none;
-  color: #FFD700;
+  color: #23242b;
   font-size: 14px;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -175,7 +175,7 @@
 }
 
 .auth-link-button:hover {
-  color: #e6c200;
+  color: #393a46;
   text-decoration-color: #e6c200;
 }
 
@@ -211,7 +211,7 @@
     font-size: 16px;
   }
   
-  .auth-button,
+  .auth-modal-button,
   .google-auth-button {
     padding: 14px 20px;
     font-size: 15px;
@@ -236,7 +236,7 @@
     font-size: 14px;
   }
   
-  .auth-button,
+  .auth-modal-button,
   .google-auth-button {
     padding: 12px 16px;
     font-size: 14px;

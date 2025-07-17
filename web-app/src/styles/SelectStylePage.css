@@ -8,7 +8,7 @@
 
 .select-style-page .style-card {
   position: relative;
-  border-radius: 22px;
+  border-radius: 20px;
   overflow: hidden;
   aspect-ratio: 16 / 7;
   min-width: 300px;
@@ -17,9 +17,21 @@
   justify-content: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   width: 100%;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.select-style-page .style-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  border-radius: 20px;
 }
 
 .select-style-page .style-card.selected::after {
@@ -42,7 +54,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 22px;
+  border-radius: 20px;
   padding: 0;
   z-index: 4;
   pointer-events: none;
@@ -107,13 +119,41 @@
   cursor: not-allowed;
 }
 
+/* Hero Section - cu background gradient */
+.select-style-page .hero-section {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 0px 20px 20px 20px;
+  padding: 2.5%;
+  margin-bottom: 32px;
+}
+
+/* Main Content Container - fără background */
+.select-style-page .main-content-container {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
 /* Responsive styles for mobile */
 @media (max-width: 768px) {
   .select-style-page .home-page {
     padding: 10px;
   }
   
-  .select-style-page .container {
+  .select-style-page .hero-section {
+    width: 100%;
+    padding: 15px;
+  }
+  
+  .select-style-page .main-content-container {
     width: 100%;
     gap: 15px;
   }
@@ -122,7 +162,6 @@
   .select-style-page .hero-card {
     flex-direction: row;
     gap: 15px;
-    padding: 15px;
     min-height: auto;
     justify-content: space-between;
   }
@@ -191,5 +230,15 @@
     font-size: 14px;
     padding: 12px 32px;
     margin: 24px auto 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .select-style-page .hero-section {
+    padding: 10px;
+  }
+  
+  .select-style-page .main-content-container {
+    padding: 0 10px;
   }
 } 

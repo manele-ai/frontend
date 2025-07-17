@@ -5,16 +5,31 @@
   width: 100%;
   padding: 15px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   background-color: #1a1a1a;
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   overflow-y: auto;
-  padding-bottom: 110px;
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
-.container {
+/* Hero Section - cu background gradient */
+.home-page .hero-section {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 0px 20px 20px 20px;
+  padding: 2.5%;
+  margin-bottom: 32px;
+}
+
+/* Main Content Container - fără background */
+.home-page .main-content-container {
   width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -25,17 +40,13 @@
 
 .hero-card {
   display: inline-flex;
-  padding: 2.5%;
   justify-content: flex-start;
   align-items: center;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
-  border-radius: 0px 20px 20px 20px;
   min-height: unset;
   width: 100%;
   position: relative;
   overflow: hidden;
   box-shadow: none;
-  margin-bottom: 32px;
   gap: 10%;
 }
 
@@ -141,6 +152,7 @@
   font-weight: 500;
   line-height: normal;
   letter-spacing: -0.2px;
+  text-align: center;
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -193,9 +205,21 @@
   align-items: center;
   overflow: hidden;
   position: relative;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.style-example-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  border-radius: 20px;
 }
 
 .style-example-card-content {
@@ -220,7 +244,12 @@
     padding: 10px;
   }
   
-  .container {
+  .home-page .hero-section {
+    width: 100%;
+    padding: 15px;
+  }
+  
+  .home-page .main-content-container {
     width: 100%;
     gap: 15px;
   }
@@ -229,7 +258,6 @@
   .hero-card {
     flex-direction: row;
     gap: 15px;
-    padding: 15px;
     min-height: auto;
     justify-content: space-between;
   }
@@ -303,6 +331,16 @@
   
   .style-example-card-button .hero-btn-text {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page .hero-section {
+    padding: 10px;
+  }
+  
+  .home-page .main-content-container {
+    padding: 0 10px;
   }
 }
 

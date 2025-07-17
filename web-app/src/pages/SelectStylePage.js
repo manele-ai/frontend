@@ -18,10 +18,11 @@ function HeroCard() {
   );
 }
 
-function StyleCard({ title, subtitle, selected, onClick }) {
+function StyleCard({ title, subtitle, image, selected, onClick }) {
   return (
     <div
       className={`style-card${selected ? ' selected' : ''}`}
+      style={{ backgroundImage: `url(${image})` }}
       onClick={onClick}
       tabIndex={0}
       role="button"
@@ -49,14 +50,20 @@ export default function SelectStylePage() {
 
   return (
     <div className="home-page select-style-page">
-      <div className="container">
+      {/* Hero Section */}
+      <div className="hero-section">
         <HeroCard />
+      </div>
+
+      {/* Main Content Container */}
+      <div className="main-content-container">
         <div className="styles-grid">
           {styles.map((style) => (
             <StyleCard
               key={style.title}
               title={style.title}
               subtitle={style.subtitle}
+              image={style.image}
               selected={selectedStyle === style.title}
               onClick={() => setSelectedStyle(style.title)}
             />
@@ -69,12 +76,7 @@ export default function SelectStylePage() {
         >
           Continuă
         </button>
-        {/* Exemplu: afișează stilul selectat */}
-        {selectedStyle && (
-          <div style={{ textAlign: 'center', marginTop: 24, fontWeight: 600, color: '#eab111' }}>
-            Stil selectat: {selectedStyle}
-          </div>
-        )}
+        
       </div>
     </div>
   );

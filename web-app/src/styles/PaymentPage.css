@@ -8,6 +8,7 @@
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding: 20px;
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
 .payment-page .container {
