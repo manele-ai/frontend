@@ -5,6 +5,7 @@
 export const COLLECTIONS = {
   /** Collection storing audio generation requests and their statuses */
   GENERATE_SONG_TASKS: 'tasks',
+  TASK_STATUSES: 'taskStatuses',
   /** Collection storing user data */
   USERS: 'users',
   /** Collection storing generated songs */

@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v2";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { COLLECTIONS } from "../constants/collections";
@@ -22,7 +23,7 @@ export function getPeriodKeys(ts: Date) {
   };
 }
 
-export const onSongCreatedHandler = onDocumentCreated(
+export const updateLeaderboardOnSongCreated = onDocumentCreated(
   `${COLLECTIONS.SONGS}/{songId}`,
   async (event) => {
     const songId = event.params.songId;
@@ -59,18 +60,18 @@ export const onSongCreatedHandler = onDocumentCreated(
       
       // Update the task document
       batch.update(taskRef, {
-        songIds: admin.firestore.FieldValue.arrayUnion(songId),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        songIds: FieldValue.arrayUnion(songId),
+        updatedAt: FieldValue.serverTimestamp(),
         status: "completed"
       });
       
       // Update the user document
       batch.update(userRef, {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         // Update all-time stats using dot notation to avoid overwriting
-        'stats.numSongsGenerated': admin.firestore.FieldValue.increment(1),
-        'stats.sumDonationsTotal': admin.firestore.FieldValue.increment(songData.userGenerationInput.wantsDonation ? 1 : 0),
-        'stats.numDedicationsGiven': admin.firestore.FieldValue.increment(songData.userGenerationInput.wantsDedication ? 1 : 0)
+        'stats.numSongsGenerated': FieldValue.increment(1),
+        'stats.sumDonationsTotal': FieldValue.increment(songData.userGenerationInput.wantsDonation ? 1 : 0),
+        'stats.numDedicationsGiven': FieldValue.increment(songData.userGenerationInput.wantsDedication ? 1 : 0)
       });
 
       // Update the stats per timeframe
@@ -114,8 +115,8 @@ export const onSongCreatedHandler = onDocumentCreated(
               .doc(userId);
 
             batch.set(statRef, {
-              count: admin.firestore.FieldValue.increment(bucket.value),
-              lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+              count: FieldValue.increment(bucket.value),
+              lastUpdated: FieldValue.serverTimestamp()
             }, { merge: true });
           }
         });

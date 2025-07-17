@@ -1,4 +1,4 @@
-import { MusicApi } from "../../types/music-api";
+import { Database, MusicApi } from "../../types";
 
 export const TASK_STATUS_ORDER = [
     'PENDING',
@@ -32,4 +32,27 @@ export function hasAdvanced(prev: MusicApi.TaskStatus, next: MusicApi.TaskStatus
 
 export function hasRegressed(prev: MusicApi.TaskStatus, next: MusicApi.TaskStatus): boolean {
     return TASK_STATUS_ORDER_MAP[next] < TASK_STATUS_ORDER_MAP[prev];
+}
+
+/**
+ * Maps the external API's TaskStatus to our internal GenerationStatus
+ * and provides appropriate error messages for failure states.
+ */
+export function mapExternalStatus(externalStatus: MusicApi.TaskStatus): {
+  status: Database.GenerationStatus;
+  error?: string;
+} {
+  if (externalStatus === "SUCCESS") {
+    return { status: "completed" };
+  } else if (["TEXT_SUCCESS", "FIRST_SUCCESS"].includes(externalStatus)) {
+    return { status: "partial" };
+  } else if ([
+    "CREATE_TASK_FAILED",
+    "GENERATE_AUDIO_FAILED",
+    "CALLBACK_EXCEPTION",
+    "SENSITIVE_WORD_ERROR"
+  ].includes(externalStatus)) {
+    return { status: "failed", error: "Music generation failed" };
+  }
+  return { status: "processing" };
 }

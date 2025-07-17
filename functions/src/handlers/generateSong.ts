@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { initiateMusicGeneration } from "../api/music-api";
@@ -8,7 +9,7 @@ import { COLLECTIONS } from "../constants/collections";
 import { Database, Requests } from "../types";
 import { enqueuePollGenerationStatusTask } from "./tasks/pollGenerationStatus";
 
-export const generateSongHandler = onCall<Requests.GenerateSong>(
+export const generateSong = onCall<Requests.GenerateSong>(
   async (request) => {
     // Ensure user is authenticated
     const {data, auth} = request;
@@ -47,14 +48,16 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
       );
 
       const externalTaskId = musicApiResponse.data.taskId;
-      
-      const newTask: Database.GenerateSongTask = {
+
+      const batch = db.batch();
+      // Write new task and its mirrored task status
+      const newTaskRef = db.collection(COLLECTIONS.GENERATE_SONG_TASKS).doc();
+      batch.set(newTaskRef, {
         userId: auth.uid,
         externalId: externalTaskId,
-        status: "processing",
         externalStatus: "PENDING",
-        createdAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+        createdAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+        updatedAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
         userGenerationInput: {
           style: data.style,
           title: data.title,
@@ -65,13 +68,32 @@ export const generateSongHandler = onCall<Requests.GenerateSong>(
           wantsDonation: data.wantsDonation,
           donationAmount: data.donationAmount
         }
-      };
-      const newTaskRef = await db.collection(COLLECTIONS.GENERATE_SONG_TASKS).add(newTask);
+      } as Database.GenerateSongTask);
+
+      const newTaskStatusRef = db.collection(COLLECTIONS.TASK_STATUSES).doc(newTaskRef.id);
+      batch.set(newTaskStatusRef, {
+        status: "processing",
+        userId: auth.uid,
+        userGenerationInput: {
+          style: data.style,
+          title: data.title,
+          from: data.from,
+          to: data.to,
+          dedication: data.dedication,
+          wantsDedication: data.wantsDedication,
+          wantsDonation: data.wantsDonation,
+          donationAmount: data.donationAmount
+        },
+        createdAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+        updatedAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+      } as Database.TaskStatus);
+
+      await batch.commit();
 
       // Enqueue a task to poll the generation status
       try {
         await enqueuePollGenerationStatusTask(newTaskRef.id, {
-          scheduleDelaySeconds: 60,
+          scheduleDelaySeconds: 0, // send after 3 seconds
           dispatchDeadlineSeconds: 30,
         });
       } catch (error: any) {

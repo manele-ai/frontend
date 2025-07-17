@@ -1,144 +1,58 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import '../styles/SongItem.css';
+import AudioPlayer from './AudioPlayer';
 
 export default function SongItem({ song, isActive, onPlayPause, onDownload }) {
-  const audioRef = useRef(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
-
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-      setIsLoading(false);
-    };
-
-    const handleEnded = () => {
-      onPlayPause(song);
-      setCurrentTime(0);
-    };
-
-    const handleError = (e) => {
-      // Only show error if we're actually trying to play
-      if (isActive) {
-        console.error('Audio playback error:', e);
-        setError('Error playing audio. Please try again.');
-      }
-      setIsLoading(false);
-    };
-
-    const handleCanPlay = () => {
-      setIsLoading(false);
-      if (isActive) {
-        audio.play().catch(() => {
-          // Only show error if play() fails
-          setError('Error playing audio. Please try again.');
-        });
-      }
-    };
-
-    const handleWaiting = () => {
-      setIsLoading(true);
-    };
-
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('canplay', handleCanPlay);
-    audio.addEventListener('waiting', handleWaiting);
-
-    // Load or unload audio based on active state
-    if (isActive) {
-      setError(null);
-      setIsLoading(true);
-      audio.src = song.audioUrl;
-      audio.load();
-    } else {
-      audio.pause();
-      audio.src = '';
-      setCurrentTime(0);
-      setError(null);
-      setIsLoading(false);
+  // Get the appropriate audio URL based on availability
+  const getAudioUrl = () => {
+    if (song.storage?.url) {
+      return song.storage.url;
     }
-
-    return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('canplay', handleCanPlay);
-      audio.removeEventListener('waiting', handleWaiting);
-      audio.pause();
-      audio.src = '';
-    };
-  }, [song.audioUrl, isActive, song]);
-
-  const handleSeek = (e) => {
-    const newTime = e.target.value;
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
+    if (song.apiData?.audioUrl) {
+      return song.apiData.audioUrl;
+    }
+    if (song.apiData?.streamAudioUrl) {
+      console.log("song.apiData.streamAudioUrl", song.apiData.streamAudioUrl);
+      return song.apiData.streamAudioUrl;
+    }
+    return null;
   };
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+  const audioUrl = getAudioUrl();
+  const canDownload = song.storage?.url || song.apiData?.audioUrl;
 
   return (
     <div className="song-item">
-      <audio ref={audioRef} />
-      
-      <div className="song-header">
-        <h3 className="song-title">{song.title || 'Manea fără nume'}</h3>
+      <div className="song-info">
+        <h3 className="song-title">{song.apiData?.title || 'Manea fără nume'}</h3>
         <p className="song-date">
-          Generat pe {song.createTime ? new Date(song.createTime).toLocaleDateString('ro-RO') : 'data necunoscută'}
+          Generat pe {song.createdAt ? new Date(song.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 'data necunoscută'}
         </p>
       </div>
 
-      <div className="song-playback">
-        <div className="player-controls">
-          <button 
-            className="play-pause-button" 
-            onClick={() => onPlayPause(song)}
-            disabled={isLoading}
-          >
-            {isLoading ? '⌛' : isActive ? '⏸️' : '▶️'}
-          </button>
-          
-          <div className="progress-container">
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              value={currentTime}
-              onChange={handleSeek}
-              className="progress-bar"
-              disabled={!isActive || isLoading}
-            />
-            <div className="time-display">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
+      {audioUrl ? (
+        <div className="player-with-download">
+          <AudioPlayer
+            audioUrl={audioUrl}
+            isPlaying={isActive}
+            onPlayPause={() => onPlayPause(song)}
+            onError={setError}
+          />
+          {canDownload && (
+            <button
+              className="download-button"
+              onClick={() => onDownload(song)}
+              title="Descarcă melodia"
+            >
+              📥
+            </button>
+          )}
         </div>
-
-        <button
-          className="download-button"
-          onClick={() => onDownload(song)}
-          title="Descarcă melodia"
-        >
-          📥
-        </button>
-      </div>
+      ) : (
+        <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
+      )}
 
       {error && isActive && (
         <div className="error-message">{error}</div>

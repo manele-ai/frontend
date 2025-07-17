@@ -1,45 +1,106 @@
 import * as functions from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { isEqual } from "lodash";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
 
 /**
- * Cloud Function that triggers when a song document is written (created/updated) in the songs collection.
- * It creates/updates a corresponding document in the mirrored collection with public song data.
+ * Extracts public fields from a song document according to SongDataPublic type
  */
-export const mirrorSongsPublicHandler = onDocumentWritten(
+function extractPublicFields(songData: Database.SongData): Database.SongDataPublic {
+  // Ensure we have defaults for userGenerationInput
+  const userInput = songData.userGenerationInput || {
+    title: "Untitled",
+    style: "Default",
+    from: "",
+    to: "",
+    dedication: "",
+    wantsDedication: false,
+    wantsDonation: false,
+    donationAmount: 0,
+  };
+
+  // Ensure we have defaults for apiData
+  const apiData = songData.apiData || {
+    audioUrl: "",
+    streamAudioUrl: "",
+    imageUrl: "",
+    title: "",
+    duration: 0,
+  };
+
+  return {
+    taskId: songData.taskId,
+    userId: songData.userId,
+    createdAt: songData.createdAt,
+    updatedAt: songData.updatedAt,
+    storage: songData.storage ? {
+      url: songData.storage.url,
+      sizeBytes: songData.storage.sizeBytes,
+      contentType: songData.storage.contentType,
+    } : null,
+    userGenerationInput: {
+      title: userInput.title || "Untitled",
+      style: userInput.style || "Default",
+      from: userInput.from || "",
+      to: userInput.to || "",
+      dedication: userInput.dedication || "",
+      wantsDedication: userInput.wantsDedication || false,
+      wantsDonation: userInput.wantsDonation || false,
+      donationAmount: userInput.donationAmount || 0,
+    },
+    apiData: {
+      audioUrl: apiData.audioUrl || "",
+      streamAudioUrl: apiData.streamAudioUrl || "",
+      imageUrl: apiData.imageUrl || "",
+      title: apiData.title || "",
+      duration: apiData.duration || 0,
+    }
+  };
+}
+
+/**
+ * Cloud Function that triggers when a song document is written (created/updated/deleted) in the songs collection.
+ * It maintains a corresponding public version in the public songs collection.
+ */
+export const mirrorSongsPublic = onDocumentWritten(
   `${COLLECTIONS.SONGS}/{songId}`,
   async (event) => {
-    const afterData = event.data?.after.data() as Database.SongData;
-    if (!afterData) return; // Do nothing if song deleted
+    if (!event.data) {
+      console.warn('No event data available');
+      return;
+    }
 
     const songId = event.params.songId;
+    const beforeData = event.data.before.data() as Database.SongData | undefined;
+    const afterData = event.data.after.data() as Database.SongData | undefined;
+
     try {
-      // Create/update public song document with only the public fields
-      const publicSongData: Database.SongDataPublic = {
-        externalAudioUrl: afterData.apiData.audioUrl || "",
-        storage: afterData.storage || null,
-        userGenerationInput: {
-          title: afterData.userGenerationInput.title,
-          from: afterData.userGenerationInput.from,
-          to: afterData.userGenerationInput.to,
-          dedication: afterData.userGenerationInput.dedication,
-          wantsDedication: afterData.userGenerationInput.wantsDedication,
-          wantsDonation: afterData.userGenerationInput.wantsDonation,
-          donationAmount: afterData.userGenerationInput.donationAmount,
-          style: afterData.userGenerationInput.style,
-        }
-      };
-
-      await event.data?.after.ref.firestore
+      // Get reference to the public document
+      const publicSongRef = event.data.after.ref.firestore
         .collection(COLLECTIONS.PUBLIC_SONGS)
-        .doc(songId)
-        .set(publicSongData);
+        .doc(songId);
 
-      console.info(`Successfully synced public song data for song ${songId}`);
-      
+      // Handle deletion
+      if (!afterData) {
+        await publicSongRef.delete();
+        return;
+      }
+
+      // Extract public fields from before/after data
+      const beforePublicData = beforeData ? extractPublicFields(beforeData) : null;
+      const afterPublicData = extractPublicFields(afterData);
+
+      // If updating and no relevant fields changed, skip the write
+      if (beforeData && isEqual(beforePublicData, afterPublicData)) {
+        return;
+      }
+
+      // Create or update public document
+      await publicSongRef.set(afterPublicData);
+            
     } catch (error) {
-      console.error(`Error in onSongUpdated for song ${songId}:`, error);
+      console.error(`Error in mirrorSongsPublicHandler for song ${songId}:`, error);
       throw new functions.https.HttpsError(
         'internal',
         'Failed to sync public song data'

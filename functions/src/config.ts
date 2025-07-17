@@ -1,5 +1,10 @@
 import admin from "firebase-admin";
 import { defineString } from "firebase-functions/params";
+import { setGlobalOptions } from "firebase-functions/v2";
+
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
 
 // Define parameters for environment variables
 // These can be set in .env files for local emulation (e.g. .env.local, .env.<project_id>)
@@ -42,4 +47,8 @@ export const openaiApiKey = defineString(
 
 export const db = admin.firestore();
 export const storage = admin.storage();
-export const songsBucket = storage.bucket(firebaseStorageBucket.value());
+export const songsBucket = storage.bucket();
+
+setGlobalOptions({
+  region: REGION,
+});

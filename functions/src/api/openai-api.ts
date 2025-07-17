@@ -29,18 +29,6 @@ interface ChatCompletionResponse {
   }[];
 }
 
-// TODO: need to separate display text from text value in UI and create a shared type for styles
-// const STYLES = [
-//     'Jale ( Guta/Salam Vechi)',
-//     'De Petrecere ( Bem 7 zile )',
-//     'Comerciale ( BDLP )',
-//     'Lautaresti',
-//     'Muzica Populara',
-//     'Manele live',
-//     'De Opulenta',
-//     'Orientale'
-//   ];
-
 const SYSTEM_PROMPT = `You are one of the best Romanian manelists. You will create lyrics for manele songs.`;
 
 const BASE_PROMPT_TEMPLATE = `
@@ -63,21 +51,21 @@ MUST:
 function getPromptJsonTemplateFromStyle(style: string) {
   console.log(`Getting prompt for style: "'${style}'"`);
   switch (style) {
-    case "Comerciale ( BDLP )":
+    case "comerciale":
       return comercialePrompt;
-    case "De Opulenta":
+    case "opulenta":
       return deOpulentaPrompt;
-    case "Jale ( Guta/Salam Vechi)":
+    case "jale":
       return jalePrompt;
-    case "Lautaresti":
+    case "lautaresti":
       return lautarestiPrompt;
-    case "Manele live":
+    case "live":
       return maneleLivePrompt;
-    case "Muzica Populara":
+    case "populare":
       return muzicaPopularaPrompt;
-    case "Orientale":
+    case "orientale":
       return orientalePrompt;
-    case "De Petrecere ( Bem 7 zile )":
+    case "petrecere":
       return petrecerePrompt;
     default:
       throw new Error(`Invalid style: ${style}`);

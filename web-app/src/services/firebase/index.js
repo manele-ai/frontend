@@ -8,7 +8,7 @@ import { firebaseConfig, useEmulators } from './config';
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const functions = getFunctions(app);
+export const functions = getFunctions(app, 'europe-central2');
 
 // Connect to emulators if in development
 if (useEmulators) {

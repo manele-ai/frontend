@@ -1,6 +1,5 @@
 import admin from "firebase-admin";
 import { MusicApi } from "./music-api";
-import { Shared } from "./shared";
 
 // ============= Database Types =============
 // Prefix with 'DB' to clearly identify Firestore stored types
@@ -16,10 +15,15 @@ export namespace Database {
     donationAmount?: number;
   }
 
+  export type GenerationStatus = 
+  | 'processing'
+  | 'partial'
+  | 'completed'
+  | 'failed';
+
   export interface GenerateSongTask {
     userId: string;
     externalId: string;
-    status: Shared.GenerationStatus;
     externalStatus: MusicApi.TaskStatus;
     error?: string;
     createdAt: admin.firestore.Timestamp;
@@ -27,6 +31,16 @@ export namespace Database {
     lastStatusPollAt?: admin.firestore.Timestamp;
     songIds?: string[];
     userGenerationInput: UserGenerationInput;
+  }
+
+  export interface TaskStatus {
+    userId: string;
+    status: GenerationStatus;
+    songId?: string;
+    error?: string;
+    userGenerationInput: UserGenerationInput;
+    createdAt: admin.firestore.Timestamp;
+    updatedAt: admin.firestore.Timestamp;
   }
   
   export interface User {
@@ -76,12 +90,22 @@ export namespace Database {
   }
 
   export interface SongDataPublic {
-    externalAudioUrl: string;
+    taskId: string;
+    userId: string;
+    createdAt: admin.firestore.Timestamp;
+    updatedAt: admin.firestore.Timestamp;
     storage: {
       url: string;
       sizeBytes: number;
       contentType: string;
     } | null;
     userGenerationInput: UserGenerationInput;
+    apiData: {
+      audioUrl: string;
+      streamAudioUrl: string;
+      imageUrl: string;
+      title: string;
+      duration: number;
+    }
   }
 }

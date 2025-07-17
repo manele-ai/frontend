@@ -1,5 +1,5 @@
 // API functions for the web app using Firebase Functions
-import { downloadSong, generateSong, getGenerationStatus } from '../services/firebase/functions';
+import { generateSong } from '../services/firebase/functions';
 
 /**
  * @param {object} data
@@ -11,39 +11,6 @@ export async function generateManeaSong(data) {
     const result = await generateSong(data);
     return result;
   } catch (e) {
-    throw e;
-  }
-}
-
-/**
- * @param {string} taskId
- * @returns {Promise<{status: 'processing' | 'completed' | 'failed', songData?: object, error?: string}>}
- */
-export async function pollManeaSongResult(taskId) {
-  try {
-    const result = await getGenerationStatus({ taskId });
-    return result;
-  } catch (e) {
-    throw e;
-  }
-}
-
-// 3. Trigger la finalizarea generării piesei (optional)
-export async function triggerManeaSongComplete(taskId) {
-  try {
-    // This could be a separate Firebase Function if needed
-    console.log('Song generation completed for task:', taskId);
-    return { success: true };
-  } catch (e) {
-    throw e;
-  }
-}
-
-export async function downloadManeaSong(songId) {
-  try {
-    const result = await downloadSong({ songId });
-    return result;
-  } catch(e) {
     throw e;
   }
 }

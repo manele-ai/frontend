@@ -64,8 +64,8 @@ export default function SelectStylePage() {
               title={style.title}
               subtitle={style.subtitle}
               image={style.image}
-              selected={selectedStyle === style.title}
-              onClick={() => setSelectedStyle(style.title)}
+              selected={selectedStyle === style.value}
+              onClick={() => setSelectedStyle(style.value)}
             />
           ))}
         </div>
