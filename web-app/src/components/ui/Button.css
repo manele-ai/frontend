@@ -1,15 +1,13 @@
-.button {
-  font-family: inherit;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  outline: none;
+/* Toate stilurile globale pentru butoane au fost eliminate. Stilurile de buton trebuie definite local în componente sau pagini. */
+
+/* Poți păstra doar stări speciale dacă e nevoie:
+.button--loading { ... }
+.button--disabled { ... }
+*/
+
+button:disabled, .button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .button:focus-visible {
@@ -17,63 +15,13 @@
   outline-offset: 2px;
 }
 
-/* Variants */
-.button--primary {
-  background-color: #eab111;
-  color: #23242b;
-  box-shadow: 0 2px 6px rgba(234, 177, 17, 0.3);
-}
-
-.button--primary:hover:not(.button--disabled) {
-  background-color: #eab111;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(234, 177, 17, 0.3);
-}
-
-.button--secondary {
-  background-color: #23242b;
-  color: #eab111;
-  border: 1.5px solid #eab111;
-}
-
-.button--secondary:hover:not(.button--disabled) {
-  background-color: #2a2b32;
-  border-color: #eab111;
-  color: #eab111;
-}
-
-.button--ghost {
-  background-color: transparent;
-  color: #eab111;
-  border: 1.5px solid transparent;
-}
-
-.button--ghost:hover:not(.button--disabled) {
-  background-color: rgba(234, 177, 17, 0.1);
-  border-color: #eab111;
-}
-
 /* Sizes */
-.button--small {
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 6px;
-}
-
-.button--medium {
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 8px;
-}
-
-.button--large {
-  padding: 16px 32px;
-  font-size: 18px;
-  border-radius: 10px;
-}
+/* Elimin variantele de mărime care suprascriu font-size */
+/* .button--small, .button--medium, .button--large { ... } */
 
 /* States */
 .button--disabled {
+  background: var(--gold-gradient);
   opacity: 0.7;
   cursor: not-allowed;
   transform: none !important;

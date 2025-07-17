@@ -6,6 +6,7 @@
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding-top: 80px; /* Compensate for header */
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
 .container {
@@ -17,7 +18,7 @@
 .title {
   font-size: 32px;
   font-weight: bold;
-  color: var(--text-primary);
+  color: var(--gold-gradient-end);
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1px;
@@ -33,9 +34,7 @@
   transition: opacity 0.2s;
 }
 
-.back-button:hover {
-  opacity: 0.8;
-}
+
 
 /* Timeframe tabs */
 .timeframe-tabs {
@@ -64,13 +63,12 @@
   font-size: 1em;
 }
 
-.tab-button:hover {
-  background: var(--background-hover);
-}
+
 
 .tab-button.active {
-  background: var(--primary);
-  color: white;
+  background: var(--gold-gradient);
+  color: #23242b;
+  border-color: var(--gold-gradient-end);
 }
 
 .leaderboard-container {
@@ -119,12 +117,13 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--primary);
-  color: white;
+  color: var(--gold-gradient-end);
+  background: var(--gold-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  border-color: var(--gold-gradient-end);
 }
 
 .loading-container {

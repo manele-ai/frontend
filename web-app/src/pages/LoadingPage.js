@@ -11,13 +11,69 @@ export default function LoadingPage() {
   const [status, setStatus] = useState('Se pregătește generarea...');
   const [error, setError] = useState(null);
   const [taskId, setTaskId] = useState(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentPlayingIndex, setCurrentPlayingIndex] = useState(null);
   const generationStartedRef = useRef(false);
   const pollingRef = useRef(null);
+  const audioRef = useRef(new Audio('/music/mohanveena-indian-guitar-374179.mp3'));
+
+  // Funcție pentru redarea/pauza audio
+  const handlePlayClick = (index) => {
+    if (currentPlayingIndex === index) {
+      // Dacă aceeași piesă este deja în redare, o oprește
+      audioRef.current.pause();
+      setIsPlaying(false);
+      setCurrentPlayingIndex(null);
+    } else {
+      // Dacă o altă piesă este în redare, o oprește și redă pe cea nouă
+      if (currentPlayingIndex !== null) {
+        audioRef.current.pause();
+      }
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+      setCurrentPlayingIndex(index);
+    }
+  };
+
+  // Event listener pentru când audio-ul se termină
+  useEffect(() => {
+    const audio = audioRef.current;
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentPlayingIndex(null);
+    };
+
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   // Extrage datele din HomePage
   const {
     style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
   } = location.state || {};
+
+  // Animația barei de loading pe 2 minute
+  useEffect(() => {
+    const duration = 120000; // 2 minute în milisecunde
+    const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
+    const increment = (interval / duration) * 100;
+    
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
+        return prev + increment;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Trimite requestul la mount
   useEffect(() => {
@@ -67,14 +123,14 @@ export default function LoadingPage() {
         const result = await pollManeaSongResult(taskId);
         if (result.status === 'completed' && result.songData) {
           clearInterval(pollingRef.current);
-          navigate('/result', {
-            state: {
-              songData: result.songData,
-              style,
-              title,
-              lyricsDetails
-            }
-          });
+          // navigate('/result', {
+          //   state: {
+          //     songData: result.songData,
+          //     style,
+          //     title,
+          //     lyricsDetails
+          //   }
+          // });
         } else if (result.status === 'failed') {
           clearInterval(pollingRef.current);
           setError(result.error || 'Generarea piesei a eșuat. Încearcă din nou.');
@@ -97,6 +153,7 @@ export default function LoadingPage() {
     generationStartedRef.current = false;
     setTaskId(null);
     setStatus('Se pregătește generarea...');
+    setLoadingProgress(0);
   };
 
   if (error) {
@@ -105,12 +162,12 @@ export default function LoadingPage() {
         <div className="loading-container">
           <h1 className="loading-title">Eroare</h1>
           <p className="loading-status">{error}</p>
-          <button className="button" onClick={handleRetry}>
-            Încearcă din nou
+          <button className="hero-btn button" onClick={handleRetry}>
+            <span className="hero-btn-text">Încearcă din nou</span>
           </button>
-          <button className="button" onClick={() => navigate('/')}
+          <button className="hero-btn button" onClick={() => navigate('/')}
             style={{ marginTop: 12 }}>
-            Înapoi la început
+            <span className="hero-btn-text">Înapoi la început</span>
           </button>
         </div>
       </div>
@@ -120,19 +177,93 @@ export default function LoadingPage() {
   return (
     <div className="loading-page">
       <div className="loading-container">
+        {/* Bara de loading */}
+        <div className="loading-bar-container">
+          <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
+        </div>
+        
         <h1 className="loading-title">Se generează maneaua...</h1>
-        <p style={{ fontSize: 13, color: '#a2a5bd', marginTop: -18, marginBottom: 18 }}>
+        <p className="loading-subtitle">
           Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '32px 0' }}>
-          <div className="spinner" style={{ width: 60, height: 60, borderWidth: 6, marginBottom: 24 }}></div>
+        
+        {/* Container pentru piese */}
+        <div className="songs-container">
+          <h2 className="songs-title">Piese generate</h2>
+          <div className="songs-list">
+            {/* Piesa 1 */}
+            <div className="loading-song-item">
+              <div className="song-image-placeholder"></div>
+              <div className="song-info">
+                <div className="song-artist">Manele AI</div>
+                <div className="song-name">Mohan Veena - Indian Guitar</div>
+              </div>
+              <img 
+                src="/icons/Play.png" 
+                alt="Play" 
+                className="play-icon" 
+                onClick={() => handlePlayClick(0)}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
+            
+            {/* Piesa 2 */}
+            <div className="loading-song-item">
+              <div className="song-image-placeholder"></div>
+              <div className="song-info">
+                <div className="song-artist">Manele AI</div>
+                <div className="song-name">Mohan Veena - Indian Guitar</div>
+              </div>
+              <img 
+                src="/icons/Play.png" 
+                alt="Play" 
+                className="play-icon" 
+                onClick={() => handlePlayClick(1)}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
+            
+            {/* Piesa 3 */}
+            <div className="loading-song-item">
+              <div className="song-image-placeholder"></div>
+              <div className="song-info">
+                <div className="song-artist">Manele AI</div>
+                <div className="song-name">Mohan Veena - Indian Guitar</div>
+              </div>
+              <img 
+                src="/icons/Play.png" 
+                alt="Play" 
+                className="play-icon" 
+                onClick={() => handlePlayClick(2)}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
+            
+            {/* Piesa 4 */}
+            <div className="loading-song-item">
+              <div className="song-image-placeholder"></div>
+              <div className="song-info">
+                <div className="song-artist">Manele AI</div>
+                <div className="song-name">Mohan Veena - Indian Guitar</div>
+              </div>
+              <img 
+                src="/icons/Play.png" 
+                alt="Play" 
+                className="play-icon" 
+                onClick={() => handlePlayClick(3)}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '32px 0', width: '100%' }}>
           <img
             src={GIF}
             alt="gif loading manea"
-            style={{ width: 180, height: 120, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 16px #0008', marginBottom: 12 }}
+            style={{ width: '100%', height: 320, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 16px #0008', marginBottom: 12 }}
           />
         </div>
-        <p className="loading-status">{status}</p>
       </div>
     </div>
   );

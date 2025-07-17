@@ -6,6 +6,7 @@
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding-top: 80px; /* Compensate for header */
+  padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
 .container {
@@ -154,10 +155,7 @@
   flex-shrink: 0;
 }
 
-.download-button:hover {
-  background-color: #45a049;
-  transform: scale(1.1);
-}
+
 
 .no-songs {
   text-align: center;

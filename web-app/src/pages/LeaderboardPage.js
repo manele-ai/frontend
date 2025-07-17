@@ -64,13 +64,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="leaderboard-page">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
-        ← Înapoi
-      </button>
-
+      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">Clasament</h1>
         

@@ -107,17 +107,10 @@ export default function PaymentPage() {
 
   return (
     <div className="payment-page">
-      <button 
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
-        ← Înapoi
-      </button>
-
+      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">Plată</h1>
         <p className="subtitle">Finalizează comanda pentru a genera maneaua</p>
-
         <Elements stripe={stripePromise}>
           <PaymentForm 
             style={style}

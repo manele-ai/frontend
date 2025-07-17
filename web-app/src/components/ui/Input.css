@@ -6,7 +6,7 @@
 }
 
 .input-label {
-  color: #eab111;
+  color: var(--gold-gradient-end);
   font-weight: 700;
   font-size: 15px;
   margin-bottom: 2px;
@@ -28,7 +28,7 @@
 
 .input-field:focus {
   outline: none;
-  border-color: #eab111;
+  border-color: var(--gold-gradient-end);
   box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
 }
 
