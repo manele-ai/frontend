@@ -70,12 +70,7 @@
   margin-bottom: 8px;
   transition: all 0.3s ease;
   box-sizing: border-box;
-}
-
-.auth-input:focus {
-  outline: none;
-  border-color: #eab111;
-  box-shadow: 0 0 0 3px rgba(234, 177, 17, 0.1);
+  border-radius: 8px;
 }
 
 .auth-input::placeholder {
@@ -313,13 +308,4 @@
 .auth-button:disabled,
 .google-button:disabled {
   animation: pulse 1.5s infinite;
-}
-
-/* Focus styles for accessibility */
-.auth-input:focus-visible,
-.auth-button:focus-visible,
-.google-button:focus-visible,
-.auth-link-button:focus-visible {
-  outline: 2px solid #FFD700;
-  outline-offset: 2px;
 } 

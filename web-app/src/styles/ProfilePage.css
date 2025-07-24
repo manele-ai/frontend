@@ -4,8 +4,9 @@
   width: 100%;
   padding: 15px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   background-color: #1a1a1a;
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -16,18 +17,19 @@
 .container {
   display: flex;
   flex-direction: column;
-  padding: 2.5%;
-  justify-content: flex-start;
   align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1034px;
+  padding: 20px 25px;
+  gap: 0;
+  margin-bottom: 40px;
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   border-radius: 0px 20px 20px 20px;
   min-height: unset;
-  width: 100%;
   position: relative;
   overflow: hidden;
   box-shadow: none;
-  margin-bottom: 32px;
-  gap: 20px;
 }
 
 .title {
@@ -49,7 +51,9 @@
   align-items: center;
   text-align: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
+  width: 100%;
+  /* max-width: 1034px; eliminat, lăsăm doar pe .container */
 }
 
 .profile-avatar {
@@ -227,12 +231,6 @@
   flex-shrink: 0;
   align-self: stretch;
   box-sizing: border-box;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #eab111;
-  box-shadow: 0 0 0 3px rgba(234, 177, 17, 0.1);
 }
 
 .form-input::placeholder {
@@ -442,6 +440,52 @@
   font-size: 16px;
 }
 
+.profile-songs-card {
+  background: #23242b;
+  border-radius: 18px;
+  box-shadow: none;
+  padding: 32px 32px 24px 32px;
+  margin: 32px auto 0 auto;
+  width: 100%;
+  max-width: 1334px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.profile-song-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.song-styles-filter {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.style-filter-btn {
+  background: #23242b;
+  color: #e9d7b7;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+}
+
+.style-filter-btn.active {
+  background: linear-gradient(90deg, #ffeecd 0%, #cfaf6e 100%);
+  color: #23242b;
+  font-weight: 600;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .profile-page {
@@ -487,5 +531,51 @@
     left: 15px;
     padding: 8px 12px;
     font-size: 12px;
+  }
+} 
+
+@media (max-width: 600px) {
+  .song-styles-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+    position: relative;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  .song-styles-filter::-webkit-scrollbar {
+    display: none;
+  }
+  .style-filter-btn {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    font-size: 14px;
+  }
+  /* Fade effect left */
+  .song-styles-filter::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 18px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to right, #23242b 80%, transparent 100%);
+    z-index: 2;
+  }
+  /* Fade effect right */
+  .song-styles-filter::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 18px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to left, #23242b 80%, transparent 100%);
+    z-index: 2;
   }
 } 
