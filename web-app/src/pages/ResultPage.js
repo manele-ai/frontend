@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import { db } from '../services/firebase';
@@ -8,39 +8,119 @@ import { downloadFile } from '../utils';
 
 export default function ResultPage() {
   const location = useLocation();
-  const { songId } = location.state || {};
-  
   const navigate = useNavigate();
+
+  // Extract params passed via navigation state or URL query (e.g. ?request_id=abc)
+  const { songId: songIdState, requestId: requestIdState } = location.state || {};
+  const queryParams = new URLSearchParams(location.search);
+  const requestIdParam = queryParams.get('request_id');
+
+  const [requestId] = useState(requestIdState || requestIdParam || null);
+  const [taskId, setTaskId] = useState(null);
+  const [songId, setSongId] = useState(songIdState || null);
+
+  const genReqUnsubRef = useRef(null);
+  const taskStatusUnsubRef = useRef(null);
+  const songUnsubRef = useRef(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
+  const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Subscribe to song data updates when component loads
+  // ---- Listen to Generation Request if we only have requestId ----
   useEffect(() => {
-    if (!songId) {
-      setError('No song ID provided');
-      return;
-    }
+    if (!requestId) return;
 
-    // Set up real-time listener
-    const unsubscribe = onSnapshot(
-      doc(db, 'songsPublic', songId),
-      (doc) => {
-        if (!doc.exists()) {
-          console.log("Song does not exist yet, loading...");
-        } else {
-          setSongData(doc.data());
+    genReqUnsubRef.current = onSnapshot(
+      doc(db, 'generationRequests', requestId),
+      (snap) => {
+        if (!snap.exists()) {
+          setError('Cererea de generare nu a fost găsită.');
+          return;
+        }
+        const data = snap.data();
+
+        if (data.paymentStatus === 'failed') {
+          setError('Plata a eșuat. Reîncearcă.');
+          return;
+        }
+
+        if (data.taskId && !taskId) {
+          setTaskId(data.taskId);
+          setStatusMsg('Generarea piesei este în curs...');
         }
       },
       (err) => {
-        console.error('Error fetching song:', err);
-        setError(err.message || 'Failed to load song');
+        console.error(err);
+        setError('Eroare la citirea cererii de generare.');
       }
     );
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    return () => {
+      if (genReqUnsubRef.current) genReqUnsubRef.current();
+    };
+  }, [requestId, taskId]);
+
+  // ---- Listen to taskStatus when taskId is available ----
+  useEffect(() => {
+    if (!taskId) return;
+
+    taskStatusUnsubRef.current = onSnapshot(
+      doc(db, 'taskStatuses', taskId),
+      (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+
+        switch (data.status) {
+          case 'processing':
+            setStatusMsg('AI-ul compune piesa...');
+            break;
+          case 'partial':
+            setStatusMsg('Piesa este aproape gata...');
+            break;
+          case 'completed':
+            if (data.songId) {
+              setSongId(data.songId);
+            }
+            break;
+          case 'failed':
+            setError(data.error || 'Generarea a eșuat.');
+            break;
+          default:
+            break;
+        }
+      },
+      (err) => {
+        console.error(err);
+        setError('Eroare la citirea statusului taskului.');
+      }
+    );
+
+    return () => {
+      if (taskStatusUnsubRef.current) taskStatusUnsubRef.current();
+    };
+  }, [taskId]);
+
+  // ---- Listen to song document when songId available ----
+  useEffect(() => {
+    if (!songId) return;
+
+    const unsub = onSnapshot(
+      doc(db, 'songsPublic', songId),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setSongData(docSnap.data());
+        }
+      },
+      (err) => {
+        console.error(err);
+        setError('Eroare la încărcarea piesei.');
+      }
+    );
+
+    return () => unsub();
   }, [songId]);
 
   const handlePlayPause = () => {
@@ -96,7 +176,7 @@ export default function ResultPage() {
     );
   }
 
-  // Show loading state
+  // Show loading state while waiting for song or status
   if (!songData) {
     return (
       <div className="result-page">
@@ -105,7 +185,7 @@ export default function ResultPage() {
           <div className="player-box">
             <div className="loading-container">
               <div className="spinner" />
-              <p className="status-message">Se încarcă datele piesei... Te rugăm să aștepți.</p>
+              <p className="status-message">{statusMsg}</p>
             </div>
           </div>
         </div>

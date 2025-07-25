@@ -31,6 +31,7 @@ export namespace Database {
     lastStatusPollAt?: admin.firestore.Timestamp;
     songIds?: string[];
     userGenerationInput: UserGenerationInput;
+    requestId: string;
   }
 
   export interface TaskStatus {
@@ -38,9 +39,21 @@ export namespace Database {
     status: GenerationStatus;
     songId?: string;
     error?: string;
+    requestId: string;
     userGenerationInput: UserGenerationInput;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
+  }
+
+  export interface GenerationRequest {
+    userId: string;
+    taskId?: string;
+    paymentStatus: 'pending' | 'success' | 'failed';
+    error?: string;
+    paymentSessionId?: string;
+    createdAt: admin.firestore.Timestamp;
+    updatedAt: admin.firestore.Timestamp;
+    userGenerationInput: UserGenerationInput;
   }
   
   export interface User {
@@ -49,6 +62,7 @@ export namespace Database {
     photoURL?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
+    numCredits: number;
     stats: {
       numSongsGenerated: number
       numDedicationsGiven: number;

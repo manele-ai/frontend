@@ -45,6 +45,28 @@ export const openaiApiKey = defineString(
   },
 );
 
+export const stripeSecretKey = defineString(
+  "STRIPE_SECRET_KEY",
+  {
+    description: "Secret API key for Stripe",
+  },
+);
+
+export const stripePriceId = defineString(
+  "STRIPE_PRICE_ID",
+  {
+    description: "Stripe Price ID for one credit purchase",
+  },
+);
+
+export const frontendBaseUrl = defineString(
+  "FRONTEND_BASE_URL",
+  {
+    description: "Base URL of the front-end (e.g. https://yourapp.com)",
+    default: "http://localhost:3000",
+  },
+);
+
 export const db = admin.firestore();
 export const storage = admin.storage();
 export const songsBucket = storage.bucket();
