@@ -34,7 +34,7 @@ export const onGenerationRequestPaymentSuccess = onDocumentWritten(
         requestId,
         {
           scheduleDelaySeconds: 0,
-          dispatchDeadlineSeconds: 10, // 10 seconds
+          dispatchDeadlineSeconds: 15, // 15 seconds
         }
       );
 

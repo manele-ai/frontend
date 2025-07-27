@@ -1,11 +1,8 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import Stripe from 'stripe';
-import { db, frontendBaseUrl, REGION, stripePriceId, stripeSecretKey } from "../config";
+import { db, frontendBaseUrl, REGION, stripe, stripePriceId } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database, Requests } from "../types";
-
-const stripe = new Stripe(stripeSecretKey.value(), {} as any);
 
 /**
  * Creates a generation request and handles checkout url creation.
@@ -22,6 +19,10 @@ const stripe = new Stripe(stripeSecretKey.value(), {} as any);
 export const createGenerationRequest = onCall<Requests.GenerateSong>(
   { region: REGION },
   async (request) => {
+    if (!stripe) {
+      throw new HttpsError('internal', 'Stripe not initialized');
+    }
+
     const { data, auth } = request;
 
     if (!auth) {
@@ -96,7 +97,7 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
                 quantity: 1,
               },
             ],
-            success_url: `${frontendBaseUrl.value()}/loading?request_id=${result.requestId}`,
+            success_url: `${frontendBaseUrl.value()}/result?request_id=${result.requestId}`,
             cancel_url: `${frontendBaseUrl.value()}/generate`,
             metadata: {
               userId: auth.uid,
@@ -116,7 +117,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
           return {
             requestId: result.requestId,
             paymentStatus: 'pending',
-            checkoutUrl: session.url
+            checkoutUrl: session.url,
+            sessionId: session.id
           };
         } catch (error) {
           console.error('Stripe session creation error:', error);

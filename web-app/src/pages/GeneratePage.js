@@ -2,6 +2,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { db } from 'services/firebase';
+import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import { createGenerationRequest } from '../services/firebase/functions';
@@ -66,15 +67,24 @@ export default function GeneratePage() {
       };
 
       const response = await createGenerationRequest(params);
+      console.log("response", response);
       
       if (response.paymentStatus === 'success') {
         // Generation started, go to loading page
         navigate('/loading', { 
           state: { requestId: response.requestId }
         });
-      } else if (response.checkoutUrl) {
-        // Need payment, redirect to Stripe
-        window.location.href = response.checkoutUrl;
+      } else {
+        if (response.sessionId) {
+          // Need payment, redirect to Stripe
+          const stripe = await getStripe();
+          const { error } = await stripe.redirectToCheckout({ sessionId: response.sessionId });
+          if (error) {
+            setError('A apărut o eroare la plata. Încearcă din nou.');
+          }
+        } else {
+          setError('A apărut o eroare. Încearcă din nou.');
+        }
       }
     } catch (err) {
       console.error(err);

@@ -9,7 +9,6 @@ import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
-import PaymentPage from './pages/PaymentPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
@@ -49,11 +48,6 @@ function App() {
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/payment" element={
-              <ProtectedRoute>
-                <PaymentPage />
               </ProtectedRoute>
             } />
             <Route path="/payment-success" element={

@@ -2,13 +2,18 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
+import ExampleSongsList from '../components/ExampleSongsList';
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
+const GIF = '/NeTf.gif';
+
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const mounted = useRef(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Extract params passed via navigation state or URL query (e.g. ?request_id=abc)
   const { songId: songIdState, requestId: requestIdState } = location.state || {};
@@ -19,47 +24,70 @@ export default function ResultPage() {
   const [taskId, setTaskId] = useState(null);
   const [songId, setSongId] = useState(songIdState || null);
 
-  const genReqUnsubRef = useRef(null);
-  const taskStatusUnsubRef = useRef(null);
-  const songUnsubRef = useRef(null);
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // Cleanup function for component unmount
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   // ---- Listen to Generation Request if we only have requestId ----
   useEffect(() => {
     if (!requestId) return;
 
-    genReqUnsubRef.current = onSnapshot(
-      doc(db, 'generationRequests', requestId),
-      (snap) => {
-        if (!snap.exists()) {
-          setError('Cererea de generare nu a fost găsită.');
-          return;
-        }
-        const data = snap.data();
+    let unsubscribe = null;
 
-        if (data.paymentStatus === 'failed') {
-          setError('Plata a eșuat. Reîncearcă.');
-          return;
-        }
+    const setupListener = async () => {
+      try {
+        unsubscribe = onSnapshot(
+          doc(db, 'generationRequests', requestId),
+          (snap) => {
+            if (!mounted.current) return;
+            
+            if (!snap.exists()) {
+              setError('Cererea de generare nu a fost găsită.');
+              return;
+            }
+            const data = snap.data();
 
-        if (data.taskId && !taskId) {
-          setTaskId(data.taskId);
-          setStatusMsg('Generarea piesei este în curs...');
+            if (data.paymentStatus === 'failed') {
+              setError('Plata a eșuat. Reîncearcă.');
+              return;
+            }
+
+            if (data.taskId && !taskId) {
+              setTaskId(data.taskId);
+              setStatusMsg('Generarea piesei este în curs...');
+            }
+          },
+          (err) => {
+            console.error('Generation request listener error:', err);
+            if (mounted.current) {
+              setError('Eroare la citirea cererii de generare.');
+            }
+          }
+        );
+      } catch (err) {
+        console.error('Setup generation request listener error:', err);
+        if (mounted.current) {
+          setError('Eroare la inițializarea ascultătorului pentru cererea de generare.');
         }
-      },
-      (err) => {
-        console.error(err);
-        setError('Eroare la citirea cererii de generare.');
       }
-    );
+    };
+
+    setupListener();
 
     return () => {
-      if (genReqUnsubRef.current) genReqUnsubRef.current();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [requestId, taskId]);
 
@@ -67,39 +95,56 @@ export default function ResultPage() {
   useEffect(() => {
     if (!taskId) return;
 
-    taskStatusUnsubRef.current = onSnapshot(
-      doc(db, 'taskStatuses', taskId),
-      (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
+    let unsubscribe = null;
 
-        switch (data.status) {
-          case 'processing':
-            setStatusMsg('AI-ul compune piesa...');
-            break;
-          case 'partial':
-            setStatusMsg('Piesa este aproape gata...');
-            break;
-          case 'completed':
-            if (data.songId) {
-              setSongId(data.songId);
+    const setupListener = async () => {
+      try {
+        unsubscribe = onSnapshot(
+          doc(db, 'taskStatuses', taskId),
+          (snap) => {
+            if (!mounted.current) return;
+
+            if (!snap.exists()) return;
+            const data = snap.data();
+
+            switch (data.status) {
+              case 'processing':
+                setStatusMsg('AI-ul compune piesa...');
+                break;
+              case 'partial':
+              case 'completed':
+                if (data.songId) {
+                  setSongId(data.songId);
+                }
+                break;
+              case 'failed':
+                setError(data.error || 'Generarea a eșuat.');
+                break;
+              default:
+                break;
             }
-            break;
-          case 'failed':
-            setError(data.error || 'Generarea a eșuat.');
-            break;
-          default:
-            break;
+          },
+          (err) => {
+            console.error('Task status listener error:', err);
+            if (mounted.current) {
+              setError('Eroare la citirea statusului taskului.');
+            }
+          }
+        );
+      } catch (err) {
+        console.error('Setup task status listener error:', err);
+        if (mounted.current) {
+          setError('Eroare la inițializarea ascultătorului pentru status.');
         }
-      },
-      (err) => {
-        console.error(err);
-        setError('Eroare la citirea statusului taskului.');
       }
-    );
+    };
+
+    setupListener();
 
     return () => {
-      if (taskStatusUnsubRef.current) taskStatusUnsubRef.current();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [taskId]);
 
@@ -107,21 +152,63 @@ export default function ResultPage() {
   useEffect(() => {
     if (!songId) return;
 
-    const unsub = onSnapshot(
-      doc(db, 'songsPublic', songId),
-      (docSnap) => {
-        if (docSnap.exists()) {
-          setSongData(docSnap.data());
-        }
-      },
-      (err) => {
-        console.error(err);
-        setError('Eroare la încărcarea piesei.');
-      }
-    );
+    let unsubscribe = null;
 
-    return () => unsub();
+    const setupListener = async () => {
+      try {
+        unsubscribe = onSnapshot(
+          doc(db, 'songsPublic', songId),
+          (docSnap) => {
+            if (!mounted.current) return;
+            
+            if (docSnap.exists()) {
+              setSongData(docSnap.data());
+            }
+          },
+          (err) => {
+            console.error('Song data listener error:', err);
+            if (mounted.current) {
+              setError('Eroare la încărcarea piesei.');
+            }
+          }
+        );
+      } catch (err) {
+        console.error('Setup song data listener error:', err);
+        if (mounted.current) {
+          setError('Eroare la inițializarea ascultătorului pentru piesă.');
+        }
+      }
+    };
+
+    setupListener();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [songId]);
+
+  // Add loading progress animation
+  useEffect(() => {
+    if (songData) return; // Don't animate if song is loaded
+    
+    const duration = 120000; // 2 minute în milisecunde
+    const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
+    const increment = (interval / duration) * 100;
+    
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
+        return prev + increment;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [songData]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -181,13 +268,26 @@ export default function ResultPage() {
     return (
       <div className="result-page">
         <div className="container">
-          <h1 className="title">Se încarcă...</h1>
-          <div className="player-box">
-            <div className="loading-container">
-              <div className="spinner" />
-              <p className="status-message">{statusMsg}</p>
-            </div>
+          <div className="loading-bar-container">
+            <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
           </div>
+          
+          <h1 className="title">Se generează maneaua...</h1>
+          <p className="subtitle">
+            Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
+          </p>
+          
+          <ExampleSongsList />
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '32px 0', width: '100%' }}>
+            <img
+              src={GIF}
+              alt="gif loading manea"
+              style={{ width: '100%', height: 320, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 16px #0008', marginBottom: 12 }}
+            />
+          </div>
+          
+          <p className="status-message">{statusMsg}</p>
         </div>
       </div>
     );
@@ -198,7 +298,6 @@ export default function ResultPage() {
 
   return (
     <div className="result-page">
-      {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">{songData.apiData.title || 'Piesa ta e gata!'}</h1>
         <p className="subtitle">

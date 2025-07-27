@@ -1,9 +1,9 @@
 import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getFunctions, TaskOptions } from "firebase-admin/functions";
-import { HttpsError } from "firebase-functions/lib/common/providers/https";
 import { onTaskDispatched } from "firebase-functions/tasks";
 import { logger } from "firebase-functions/v2";
+import { HttpsError } from "firebase-functions/v2/https";
 import { initiateMusicGeneration } from "../../api/music";
 import { generateLyricsAndStyle } from "../../api/openai";
 import { db, REGION } from "../../config";

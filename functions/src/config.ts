@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import { defineString } from "firebase-functions/params";
-import { setGlobalOptions } from "firebase-functions/v2";
+import { onInit, setGlobalOptions } from "firebase-functions/v2";
+import Stripe from "stripe";
 
 if (admin.apps.length === 0) {
   admin.initializeApp();
@@ -52,6 +53,14 @@ export const stripeSecretKey = defineString(
   },
 );
 
+export const stripeWebhookSecret = defineString(
+  "STRIPE_WEBHOOK_SECRET",
+  {
+    description: "Secret API key for Stripe",
+  },
+);
+
+
 export const stripePriceId = defineString(
   "STRIPE_PRICE_ID",
   {
@@ -74,3 +83,10 @@ export const songsBucket = storage.bucket();
 setGlobalOptions({
   region: REGION,
 });
+
+let stripe: Stripe | null = null;
+onInit(() => {
+  stripe = new Stripe(stripeSecretKey.value());
+});
+
+export { stripe };

@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
 import { FieldValue } from "firebase-admin/firestore";
-import { onRequest } from "firebase-functions/v2/https";
+import { HttpsError, onRequest } from "firebase-functions/v2/https";
 import Stripe from 'stripe';
-import { db, REGION, stripeSecretKey } from "../config";
+import { db, REGION, stripe, stripeWebhookSecret } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
 
-const stripe = new Stripe(stripeSecretKey.value(), {} as any);
-
 export const stripeWebhook = onRequest({ region: REGION }, async (req: Request, res: Response) => {
+  if (!stripe) {
+    throw new HttpsError('internal', 'Stripe not initialized');
+  }
+
   const sig = req.headers['stripe-signature'] as string | undefined;
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const endpointSecret = stripeWebhookSecret.value();
 
   if (!endpointSecret) {
     console.error('Missing STRIPE_WEBHOOK_SECRET env variable');

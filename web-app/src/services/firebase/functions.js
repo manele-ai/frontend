@@ -4,12 +4,12 @@ import { functions } from './index';
 /**
  * Creates a generation request and handles payment if needed
  * @param {object} data Generation parameters
- * @returns {Promise<{requestId: string, paymentStatus: 'success' | 'pending', checkoutUrl?: string}>}
+ * @returns {Promise<{requestId: string, paymentStatus: 'success' | 'pending', checkoutUrl?: string, sessionId?: string}>}
  */
 export const createGenerationRequest = async (data) => {
   const fn = httpsCallable(functions, 'createGenerationRequest');
   const result = await fn(data);
-  return /** @type {{requestId: string, paymentStatus: 'success' | 'pending', checkoutUrl?: string}} */ (result.data);
+  return /** @type {{requestId: string, paymentStatus: 'success' | 'pending', checkoutUrl?: string, sessionId?: string}} */ (result.data);
 };
 
 /**
