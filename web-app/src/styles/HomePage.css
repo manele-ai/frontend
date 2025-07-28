@@ -38,6 +38,11 @@
   gap: 10px;
 }
 
+
+
+
+
+/* Hero Section Styles - copiat din GeneratePage */
 .hero-card {
   display: inline-flex;
   justify-content: flex-start;
@@ -254,6 +259,8 @@
     gap: 15px;
   }
   
+
+  
   /* Hero section responsive */
   .hero-card {
     flex-direction: row;
@@ -278,15 +285,6 @@
     font-size: 12px;
     line-height: 1.4;
     text-align: left;
-  }
-  
-  .hero-btn.button {
-    width: 160px;
-    height: 45px;
-  }
-  
-  .hero-btn-text {
-    font-size: 16px;
   }
   
   .hero-card-img {

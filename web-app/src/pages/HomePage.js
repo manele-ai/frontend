@@ -3,24 +3,7 @@ import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import '../styles/HomePage.css';
 
-function HeroCard() {
-  const navigate = useNavigate();
-  return (
-    <div className="hero-card">
-      <div className="hero-card-content">
-        <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
-        <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
-        <Button variant="secondary" size="small" className="hero-btn" onClick={() => navigate('/select-style')}>
-          <span className="hero-btn-text">Generează acum</span>
-        </Button>
-      </div>
-      <div className="hero-card-img">
-        <div className="ellipse-bg"></div>
-        <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
-      </div>
-    </div>
-  );
-}
+
 
 function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }) {
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
@@ -48,7 +31,19 @@ export default function HomePage() {
     <div className="home-page">
       {/* Hero Section */}
       <div className="hero-section">
-        <HeroCard />
+        <div className="hero-card">
+          <div className="hero-card-content">
+            <h2 className="hero-title">Configureaza maneaua</h2>
+            <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+            <Button className="hero-btn style-example-card-button" onClick={() => navigate('/select-style')}>
+              <span className="hero-btn-text">Genereaza acum</span>
+            </Button>
+          </div>
+          <div className="hero-card-img">
+            <div className="ellipse-bg"></div>
+            <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
+          </div>
+        </div>
       </div>
 
       {/* Main Content Container */}

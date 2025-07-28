@@ -1,0 +1,204 @@
+.exemple-page {
+  min-height: 100vh;
+  background-color: #1a1a1a;
+  padding: 20px;
+  padding-bottom: 200px;
+}
+
+/* Hero Section - copiat din HomePage.css */
+.hero-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 0px 20px 20px 20px;
+  padding: 2.5%;
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+}
+
+.hero-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-title {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: #080A0B;
+  text-align: left;
+  margin: 0;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #080A0B;
+  text-align: left;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.hero-btn {
+  align-self: flex-start;
+  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #23242b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(207,175,110,0.3);
+}
+
+.hero-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #23242b;
+}
+
+.hero-card-img {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+}
+
+.ellipse-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-icon {
+  width: 80px;
+  height: 80px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Songs Card - copiat din ProfilePage.css */
+.exemple-songs-card {
+  background: #23242b;
+  border-radius: 18px;
+  box-shadow: none;
+  padding: 32px 32px 24px 32px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1034px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.exemple-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exemple-page {
+    padding: 16px;
+    padding-bottom: 200px;
+  }
+
+  .hero-section {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .hero-card {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .hero-btn {
+    align-self: center;
+    min-width: 180px;
+  }
+
+  .hero-card-img {
+    width: 150px;
+    height: 150px;
+  }
+
+  .hero-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .exemple-songs-card {
+    padding: 24px 20px 20px 20px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 24px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+  .hero-btn {
+    padding: 14px 24px;
+    font-size: 14px;
+    min-width: 160px;
+  }
+
+  .hero-btn-text {
+    font-size: 14px;
+  }
+} 

@@ -9,6 +9,7 @@ import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
 // import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
 import BottomMenu from './components/ui/BottomMenu';
+import ExemplePage from './pages/ExemplePage';
 import GeneratePage from './pages/GeneratePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
@@ -25,6 +26,7 @@ function App() {
             {/* Public routes */}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="/exemple" element={<ExemplePage />} />
             <Route path="/select-style" element={<SelectStylePage />} />
             <Route path="/generate" element={<GeneratePage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />

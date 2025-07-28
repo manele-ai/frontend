@@ -177,6 +177,4 @@ a {
   --gold-gradient-end: rgba(201,169,104,1);
 }
 
-body, .App {
-  background: #f5e6c5 !important;
-} 
+/* Removed global background override to allow local styling */ 
