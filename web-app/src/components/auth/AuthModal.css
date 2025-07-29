@@ -34,7 +34,11 @@
 }
 
 .auth-modal-header h2 {
-  color: #FFD700;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -53,7 +57,11 @@
 }
 
 .auth-modal-content h3 {
-  color: #FFD700;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
@@ -108,27 +116,57 @@
 
 /* Button Styles - renamed to avoid conflicts with AuthPage */
 .auth-modal-button {
-  background-color: #FFD700;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 12px;
-  padding: 16px 24px;
-  font-size: 16px;
-  font-weight: bold;
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
   cursor: pointer;
   transition: all 0.3s ease;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  margin: 0 auto;
 }
 
 .auth-modal-button:hover:not(:disabled) {
-  background-color: #e6c200;
-  transform: translateY(-2px);
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.auth-modal-button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
 }
 
 .auth-modal-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+.auth-modal-button .hero-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  text-align: center;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .google-auth-button {
@@ -163,20 +201,27 @@
 }
 
 .auth-link-button {
-  background: none;
+  background: transparent;
   border: none;
-  color: #23242b;
   font-size: 14px;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   text-decoration: underline;
   text-decoration-color: transparent;
-  transition: all 0.3s ease;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .auth-link-button:hover {
-  color: #393a46;
-  text-decoration-color: #e6c200;
+  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-decoration-color: rgba(201,169,104,0.5);
 }
 
 /* Error Styles */
@@ -211,7 +256,16 @@
     font-size: 16px;
   }
   
-  .auth-modal-button,
+  /* Stiluri responsive pentru butonul din modal */
+  .auth-modal-button {
+    width: 160px;
+    height: 45px;
+  }
+  
+  .auth-modal-button .hero-btn-text {
+    font-size: 14px;
+  }
+  
   .google-auth-button {
     padding: 14px 20px;
     font-size: 15px;
@@ -236,7 +290,16 @@
     font-size: 14px;
   }
   
-  .auth-modal-button,
+  /* Stiluri responsive pentru butonul din modal pe ecrane foarte mici */
+  .auth-modal-button {
+    width: 140px;
+    height: 40px;
+  }
+  
+  .auth-modal-button .hero-btn-text {
+    font-size: 12px;
+  }
+  
   .google-auth-button {
     padding: 12px 16px;
     font-size: 14px;

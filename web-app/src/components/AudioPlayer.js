@@ -75,11 +75,17 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       // Check if we need to set or update the source
       const currentSrc = audio.src || '';
       const newSrc = audioUrl || '';
-      if (!currentSrc || (currentSrc === '' && newSrc)) {
+      // Do not reload audio if src is already set and matches
+      if (!currentSrc) {
         if (audioUrl) {
           setIsLoading(true);
           audio.src = audioUrl;
           audio.load();
+        }
+      } else {
+        // Dacă sursa este deja setată și audio nu rulează, pornește de la currentTime
+        if (audio.paused && !isLoading) {
+          audio.play().catch(() => {});
         }
       }
     } else {
@@ -133,43 +139,42 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
   return (
     <div className="song-playback">
       <audio ref={audioRef} />
-      
-      <div className="player-controls">
+      <div className="song-slider-row">
+        <span className="time-display time-current">{formatTime(currentTime)}</span>
+        <input
+          type="range"
+          min="0"
+          max={duration || 0}
+          value={currentTime}
+          onChange={handleSeek}
+          className="progress-bar"
+          disabled={isLoading}
+          style={{ flex: 1, minWidth: 80, maxWidth: 360 }}
+        />
+        <span className="time-display time-duration">{formatTime(duration)}</span>
         <button 
           className="play-pause-button" 
           onClick={onPlayPause}
           disabled={isLoading}
         >
-          {isLoading ? '⌛' : isPlaying ? '⏸️' : '▶️'}
-        </button>
-        
-        <div className="progress-container">
-          {!isStreamUrl ? (
-            <>
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                className="progress-bar"
-                disabled={!isPlaying || isLoading}
-              />
-              <div className="time-display">
-                {formatTime(currentTime) && (
-                  <>
-                    <span>{formatTime(currentTime)}</span>
-                    {formatTime(duration) && <span>{formatTime(duration)}</span>}
-                  </>
-                )}
-              </div>
-            </>
-          ) : hasStartedPlaying && (
-            <div className="time-display stream-time">
-              {formatTime(currentTime) && <span>{formatTime(currentTime)}</span>}
-            </div>
+          {isLoading ? '⌛' : (
+            isPlaying ? (
+              // Icon pauză SVG cu gradient
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="pauseGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#ffeecc" />
+                    <stop offset="100%" stopColor="#cfaf6e" />
+                  </linearGradient>
+                </defs>
+                <rect x="6" y="5" width="4" height="14" rx="2" fill="url(#pauseGradient)" />
+                <rect x="14" y="5" width="4" height="14" rx="2" fill="url(#pauseGradient)" />
+              </svg>
+            ) : (
+              <img src="/icons/Play.png" alt="Play" className="play-icon" style={{ width: 24, height: 24 }} />
+            )
           )}
-        </div>
+        </button>
       </div>
 
       {error && isPlaying && (

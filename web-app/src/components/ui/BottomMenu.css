@@ -31,7 +31,7 @@
 }
 
 .bottom-menu-btn.active, .bottom-menu-btn:active {
-  background: var(--gold-gradient);
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   box-shadow: 0 2px 8px rgba(201,169,104,0.25);
 }
 
