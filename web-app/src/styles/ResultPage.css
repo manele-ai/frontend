@@ -22,8 +22,8 @@
   width: 100%;
 }
 
-/* Stiluri pentru butonul hero (importate din HomePage.css) */
-.hero-btn.button {
+/* Stiluri pentru butonul hero (specifice pentru ResultPage) */
+.result-page .hero-btn.button {
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
@@ -43,12 +43,14 @@
   font-weight: inherit;
   letter-spacing: inherit;
 }
-.hero-btn.button:hover {
+
+.result-page .hero-btn.button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
-.hero-btn.button:active {
+
+.result-page .hero-btn.button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }

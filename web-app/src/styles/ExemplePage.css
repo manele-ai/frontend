@@ -6,77 +6,122 @@
 }
 
 /* Hero Section - copiat din HomePage.css */
-.hero-section {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 32px auto;
+.exemple-page .hero-section {
+  width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   border-radius: 0px 20px 20px 20px;
   padding: 2.5%;
+  margin-bottom: 32px;
 }
 
-.hero-card {
-  display: flex;
+.exemple-page .hero-card {
+  display: inline-flex;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: space-between;
-  gap: 40px;
+  min-height: unset;
   width: 100%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+  gap: 10%;
 }
 
-.hero-card-content {
-  flex: 1;
+.exemple-page .hero-card-content {
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+  z-index: 2;
+  width: 50%;
 }
 
-.hero-title {
+.exemple-page .hero-card-img {
+  width: 30%;
+  height: 288px;
+  border-radius: 288px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.exemple-page .ellipse-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 288px;
+  background: linear-gradient(0deg, #FFF0DA 0%, #94641E 100%);
+  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
+  filter: blur(8px);
+  z-index: 1;
+}
+
+.exemple-page .hero-icon {
+  position: relative;
+  z-index: 2;
+  height: 180px;
+  width: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+}
+
+.exemple-page .hero-title {
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
   color: #080A0B;
   text-align: left;
-  margin: 0;
-  letter-spacing: 1px;
-  line-height: 1.2;
 }
 
-.hero-subtitle {
+.exemple-page .hero-subtitle {
   font-family: 'Satoshi', sans-serif;
+  font-style: normal;
   font-weight: 400;
-  font-size: 18px;
-  color: #080A0B;
+  font-size: 25px;
+  line-height: normal;
+  color: #000;
   text-align: left;
-  margin: 0;
-  line-height: 1.5;
-  opacity: 0.8;
 }
 
-.hero-btn {
-  align-self: flex-start;
-  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 16px 32px;
-  font-family: 'Satoshi', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #23242b;
+/* Stiluri pentru butonul din hero section (copiat din HomePage) */
+.exemple-page .hero-btn {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
-.hero-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(207,175,110,0.3);
+.exemple-page .hero-btn:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.exemple-page .hero-btn:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
 }
 
 .hero-btn-text {
@@ -84,33 +129,6 @@
   font-weight: 600;
   font-size: 16px;
   color: #23242b;
-}
-
-.hero-card-img {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 200px;
-}
-
-.ellipse-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-icon {
-  width: 80px;
-  height: 80px;
-  z-index: 1;
-  position: relative;
 }
 
 /* Songs Card - copiat din ProfilePage.css */
@@ -141,64 +159,85 @@
     padding-bottom: 200px;
   }
 
-  .hero-section {
-    padding: 20px;
-    margin-bottom: 24px;
+  .exemple-page .hero-section {
+    width: 100%;
+    padding: 15px;
   }
 
-  .hero-card {
-    flex-direction: column;
-    gap: 24px;
-    text-align: center;
+  .exemple-page .hero-card {
+    flex-direction: row;
+    gap: 15px;
+    min-height: auto;
+    justify-content: space-between;
   }
 
-  .hero-title {
-    font-size: 28px;
-    text-align: center;
+  .exemple-page .hero-card-content {
+    width: 60%;
+    align-items: flex-start;
+    gap: 12px;
   }
 
-  .hero-subtitle {
+  .exemple-page .hero-title {
     font-size: 16px;
-    text-align: center;
+    line-height: 1.3;
+    text-align: left;
   }
 
-  .hero-btn {
-    align-self: center;
-    min-width: 180px;
+  .exemple-page .hero-subtitle {
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: left;
   }
 
-  .hero-card-img {
-    width: 150px;
-    height: 150px;
+  .exemple-page .hero-card-img {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
   }
 
-  .hero-icon {
-    width: 60px;
-    height: 60px;
+  .exemple-page .hero-icon {
+    width: 100px;
+    height: 100px;
   }
 
-  .exemple-songs-card {
-    padding: 24px 20px 20px 20px;
-    margin: 0;
+  .exemple-page .ellipse-bg {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Stiluri responsive pentru butonul din hero section */
+  .exemple-page .hero-btn {
+    width: 160px;
+    height: 45px;
+    font-size: 14px;
+  }
+
+  .exemple-page .hero-btn .hero-btn-text {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-title {
-    font-size: 24px;
+  .exemple-page .hero-section {
+    padding: 10px;
   }
 
-  .hero-subtitle {
+  .exemple-page .hero-title {
     font-size: 14px;
   }
 
-  .hero-btn {
-    padding: 14px 24px;
-    font-size: 14px;
-    min-width: 160px;
+  .exemple-page .hero-subtitle {
+    font-size: 10px;
   }
 
-  .hero-btn-text {
-    font-size: 14px;
+  /* Stiluri responsive pentru butonul din hero section pe ecrane foarte mici */
+  .exemple-page .hero-btn {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .exemple-page .hero-btn .hero-btn-text {
+    font-size: 12px;
   }
 } 

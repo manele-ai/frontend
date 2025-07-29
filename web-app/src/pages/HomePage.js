@@ -33,9 +33,9 @@ export default function HomePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Configureaza maneaua</h2>
+            <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
             <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
-            <Button className="hero-btn style-example-card-button" onClick={() => navigate('/select-style')}>
+            <Button className="hero-btn hero-section-button" onClick={() => navigate('/select-style')}>
               <span className="hero-btn-text">Genereaza acum</span>
             </Button>
           </div>
