@@ -30,17 +30,17 @@ function dropUndefined<T>(input: T): T {
 }
 
 export const pollGenerationStatusTask = onTaskDispatched({
-    retryConfig: {                    // exponential back-off up to ~10 min
-      maxAttempts: 10,                 // try 8× before the task is dead-lettered
-      maxRetrySeconds: 6*60,
-      minBackoffSeconds: 5,
+    retryConfig: { // Every 10 seconds for 6 minutes = 36 attempts
+      maxAttempts: 36,
+      minBackoffSeconds: 10,
       maxBackoffSeconds: 10,
-      maxDoublings: 1,
+      maxDoublings: 0,
     },
     rateLimits: { 
-      maxConcurrentDispatches: 20,
-      maxDispatchesPerSecond: 10,
-    },  // stay under API rate limits
+      maxConcurrentDispatches: 1000, // don't matter?
+      maxDispatchesPerSecond: 50, // 50 tasks per second = 3,000 tasks per minute = 180,000 tasks per hour
+    },
+    memory: "128MiB",
   },
   async (req) => {
     const { taskId } = req.data || {};

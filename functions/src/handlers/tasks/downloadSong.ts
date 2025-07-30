@@ -25,13 +25,13 @@ export const getAudioFileSize = async (audioUrl: string): Promise<number> => {
 export const downloadSongTask = onTaskDispatched(
   {
     retryConfig: {
-      maxAttempts: 5,
-      minBackoffSeconds: 30,
-      maxBackoffSeconds: 4 * 60, // 4 minutes
-      maxDoublings: 3,
+      maxAttempts: 20,
+      minBackoffSeconds: 60, // 1 minute
+      maxBackoffSeconds: 4 * 60 * 60, // 4 hours
+      maxDoublings: 10,
     },
-    rateLimits: { maxConcurrentDispatches: 10 }, // Can handle more concurrent small files
-    memory: "256MiB",
+    rateLimits: { maxConcurrentDispatches: 5 }, // 5 tasks per second = 300 tasks per minute = 18,000 tasks per hour
+    memory: "128MiB",
   },
   async (req) => {
     const { songId } = req.data || {};

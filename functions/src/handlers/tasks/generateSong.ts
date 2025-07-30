@@ -18,9 +18,10 @@ export const generateSongTask = onTaskDispatched({
     maxRetrySeconds: 0,
   },
   rateLimits: {
-    maxConcurrentDispatches: 20,
+    maxConcurrentDispatches: 100, // don't matter?
     maxDispatchesPerSecond: 2, // 20 requests per 10 seconds = 2 per second
   },
+  memory: "128MiB",
 }, async (request) => {
   const { userId, generationData, requestId } = request.data;
 
