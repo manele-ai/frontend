@@ -48,8 +48,7 @@ export const onSubPeriodStartChange = onDocumentWritten({
         return;
     }
 
-    // Check if currentPeriodStart changed
-    const beforePeriodStart = before?.subscription?.currentPeriodStart;
+    const isNewSubscription = !before?.subscription && after.subscription;
     const afterPeriodStart = after.subscription.currentPeriodStart;
 
     if (!afterPeriodStart) {
@@ -57,12 +56,20 @@ export const onSubPeriodStartChange = onDocumentWritten({
         return;
     }
 
-    // Convert to seconds for consistent comparison
-    const beforeSeconds = beforePeriodStart?.seconds;
+    // Convert afterPeriodStart to seconds for consistent comparison
     const afterSeconds = afterPeriodStart.seconds;
 
-    if (beforeSeconds === afterSeconds) {
-        return;
+    // Process either new subscription or period start change
+    if (!isNewSubscription) {
+        // Check if currentPeriodStart changed
+        const beforePeriodStart = before?.subscription?.currentPeriodStart;
+
+        // Convert to seconds for consistent comparison
+        const beforeSeconds = beforePeriodStart?.seconds;
+
+        if (beforeSeconds === afterSeconds) {
+            return;
+        }
     }
 
     const userId = event.data?.after?.id;

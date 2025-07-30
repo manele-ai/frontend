@@ -71,8 +71,8 @@ export default function GeneratePage() {
       
       if (response.paymentStatus === 'success') {
         // Generation started, go to loading page
-        navigate('/loading', { 
-          state: { requestId: response.requestId }
+        navigate('/result', { 
+          state: { requestId: response.requestId, songId: null }
         });
       } else {
         if (response.sessionId) {

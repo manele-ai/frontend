@@ -50,8 +50,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
 
       const priceId = 
         paymentType === 'subscription_discount'
-        ? STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED.value()
-        : STRIPE_PRICE_ID_ONETIME_SUBSCRIBED.value();
+        ? STRIPE_PRICE_ID_ONETIME_SUBSCRIBED.value()
+        : STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED.value();
 
       // Create a Stripe session
       try {
