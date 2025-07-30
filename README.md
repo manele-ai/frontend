@@ -136,7 +136,11 @@ Mai intai instaleaza Stripe CLI: https://docs.stripe.com/stripe-cli.
 ```sh
 stripe listen --forward-to http://127.0.0.1:5001/manele-ai-dev-fa776/europe-central2/stripeWebhook 
 ```
-Mai trebuie adaugata variabila Stripe in .env frontend: REACT_APP_STRIPE_PUBLISHABLE_KEY.
+Duap ce ai rulat comanda de mai sus cu succes vei primi un webhook secret pe care trebuie sa-l pui in .env in backend
+in variabila `STRIPE_WEBHOOK_SECRET`.
+Acest cod incepe cu `whsec`.
+
+Mai trebuie adaugata variabila Stripe in .env frontend: REACT_APP_STRIPE_PUBLISHABLE_KEY. 
 
 Dupa poti folosi stripe local cu carduri de test: https://docs.stripe.com/testing#cards.
 
