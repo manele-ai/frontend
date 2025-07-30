@@ -8,7 +8,7 @@ import { initiateMusicGeneration } from "../../api/music";
 import { generateLyricsAndStyle } from "../../api/openai";
 import { db, REGION } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
-import { handleGenerationError } from "../../service/generation/handleGenerationError";
+import { handleGenerationFailed } from "../../service/generation/failure";
 import { Database, Requests } from "../../types";
 import { enqueuePollGenerationStatusTask } from "./pollGenerationStatus";
 
@@ -124,7 +124,7 @@ export const generateSongTask = onTaskDispatched({
       logger.error("Unknown error in generateSongTask:", error);
       errorMessage = 'Internal server error while initiating music generation.';
     }
-    await handleGenerationError(userId, requestId, errorMessage);
+    await handleGenerationFailed(userId, requestId, errorMessage);
   }
 });
 

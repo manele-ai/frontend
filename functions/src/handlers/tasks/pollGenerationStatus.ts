@@ -6,6 +6,7 @@ import { HttpsError } from "firebase-functions/v2/https";
 import { getTaskStatus } from "../../api/music";
 import { db, REGION } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
+import { handleGenerationFailed } from "../../service/generation/failure";
 import { Database } from "../../types";
 import { FAILURE_STATUSES, hasAdvanced, mapExternalStatus, SUCCESS_STATUSES } from "../utils/status";
 
@@ -58,6 +59,7 @@ export const pollGenerationStatusTask = onTaskDispatched({
       externalId: externalTaskId,
       userId,
       userGenerationInput,
+      requestId,
      } = taskDoc.data() as Database.GenerateSongTask;
 
     // Check db status first
@@ -83,15 +85,10 @@ export const pollGenerationStatusTask = onTaskDispatched({
         status: "failed",
         updatedAt: FieldValue.serverTimestamp(),
       });
+      await batch.commit();
 
       // Refund the credit to the user
-      const userRef = db.collection(COLLECTIONS.USERS).doc(userId);
-      batch.update(userRef, {
-        numCredits: FieldValue.increment(1),
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-
-      await batch.commit();
+      await handleGenerationFailed(userId, requestId, "Generation failed");
       return; // No retry
     }
 

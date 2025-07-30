@@ -51,6 +51,7 @@ export namespace Database {
     paymentStatus: 'pending' | 'success' | 'failed';
     paymentType: 'credits' | 'subscription_free' | 'subscription_discount' | 'onetime_unsubscribed';
     error?: string;
+    refundedAsCredit?: boolean;
     paymentSessionId?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
@@ -63,7 +64,6 @@ export namespace Database {
     photoURL?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
-    numCredits: number;
     stripeCustomerId?: string;
     creditsBalance?: number;
     lastSubPeriodCreditGrant?: admin.firestore.Timestamp;

@@ -2,7 +2,7 @@ import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { COLLECTIONS } from "../constants/collections";
-import { handleGenerationError } from "../service/generation/handleGenerationError";
+import { handleGenerationFailed } from "../service/generation/failure";
 import { Database, Requests } from "../types";
 import { enqueueGenerateSongTask } from "./tasks/generateSong";
 
@@ -41,7 +41,7 @@ export const onGenerationRequestPaymentSuccess = onDocumentWritten(
       logger.info(`Successfully enqueued generateSongTask for request ${requestId}`);
     } catch (error) {
       logger.error(`Error enqueueing generateSongTask for request ${requestId}:`, error);
-      await handleGenerationError(after.userId, requestId, 'Failed to enqueue generateSongTask.');
+      await handleGenerationFailed(after.userId, requestId, 'Failed to enqueue generateSongTask.');
       throw new HttpsError('internal', 'Failed to enqueue generateSongTask. Credit refunded.');
     }
   }

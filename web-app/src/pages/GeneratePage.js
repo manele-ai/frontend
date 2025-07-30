@@ -42,7 +42,7 @@ export default function GeneratePage() {
     // Grab user credits
     if (user && isAuthenticated) {
       getDoc(doc(db, "usersPublic", user.uid)).then(userDoc => {
-        setUserCredits(userDoc.data()?.numCredits ?? 0);
+        setUserCredits(userDoc.data()?.creditsBalance ?? 0);
       });
     } else {
       setUserCredits(0);
