@@ -131,8 +131,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   required
                 />
               </div>
-              <button type="submit" className="auth-button" disabled={authLoading}>
-                {authLoading ? 'Se trimite...' : 'Trimite Email Resetare'}
+              <button type="submit" className="auth-modal-button" disabled={authLoading}>
+                <span className="hero-btn-text">
+                  {authLoading ? 'Se trimite...' : 'Trimite Email Resetare'}
+                </span>
               </button>
               <button
                 type="button"
@@ -202,8 +204,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   />
                 </div>
               )}
-              <button type="submit" className="auth-button" disabled={authLoading}>
-                {authLoading ? 'Se procesează...' : (isLogin ? 'Autentificare' : 'Înregistrare')}
+              <button type="submit" className="auth-modal-button" disabled={authLoading}>
+                <span className="hero-btn-text">
+                  {authLoading ? 'Se procesează...' : (isLogin ? 'Autentificare' : 'Înregistrare')}
+                </span>
               </button>
               <button
                 type="button"

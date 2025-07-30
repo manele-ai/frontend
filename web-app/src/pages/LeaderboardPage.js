@@ -1,10 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Button from '../components/ui/Button';
 import { useLeaderboardData } from '../hooks/useLeaderboardData';
 import '../styles/LeaderboardPage.css';
 
-export default function LeaderboardPage() {
+function HeroCardLeaderboard() {
   const navigate = useNavigate();
+  return (
+    <div className="hero-card leaderboard-hero-card">
+      <div className="hero-card-content">
+        <h2 className="hero-title">Topul manelistilor</h2>
+        <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+        <Button variant="secondary" size="small" className="hero-btn" onClick={() => navigate('/select-style')}>
+          <span className="hero-btn-text">Generează acum</span>
+        </Button>
+      </div>
+      <div className="hero-card-img">
+        <div className="ellipse-bg"></div>
+        <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
+      </div>
+    </div>
+  );
+}
+
+export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState('songs');
   const [timeframe, setTimeframe] = useState('allTime'); // 'allTime' or 'today'
   const { data, loading, error } = useLeaderboardData();
@@ -64,58 +83,62 @@ export default function LeaderboardPage() {
 
   return (
     <div className="leaderboard-page">
-      {/* Butonul de Înapoi eliminat */}
-      <div className="container">
-        <h1 className="title">Clasament</h1>
-        
+      {/* Hero Section copiată din HomePage, ca un card separat */}
+      <div className="hero-section leaderboard-hero-section">
+        <HeroCardLeaderboard />
+      </div>
+      
+      {/* Butoanele de filtrare în exterior, cu design ca în ProfilePage */}
+      <div className="leaderboard-filters">
         <div className="timeframe-tabs">
           <button 
-            className={`tab-button ${timeframe === 'allTime' ? 'active' : ''}`}
+            className={`filter-btn ${timeframe === 'allTime' ? 'active' : ''}`}
             onClick={() => setTimeframe('allTime')}
           >
             Din totdeauna
           </button>
           <button 
-            className={`tab-button ${timeframe === 'today' ? 'active' : ''}`}
+            className={`filter-btn ${timeframe === 'today' ? 'active' : ''}`}
             onClick={() => setTimeframe('today')}
           >
             Astăzi
           </button>
         </div>
 
-        <div className="tabs">
+        <div className="category-tabs">
           <button 
-            className={`tab-button ${activeTab === 'songs' ? 'active' : ''}`}
+            className={`filter-btn ${activeTab === 'songs' ? 'active' : ''}`}
             onClick={() => setActiveTab('songs')}
           >
             Piese Generate
           </button>
           <button 
-            className={`tab-button ${activeTab === 'dedications' ? 'active' : ''}`}
+            className={`filter-btn ${activeTab === 'dedications' ? 'active' : ''}`}
             onClick={() => setActiveTab('dedications')}
           >
             Dedicații
           </button>
           <button 
-            className={`tab-button ${activeTab === 'donations' ? 'active' : ''}`}
+            className={`filter-btn ${activeTab === 'donations' ? 'active' : ''}`}
             onClick={() => setActiveTab('donations')}
           >
             Donații
           </button>
         </div>
-
-        <div className="leaderboard-container">
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p>Se încarcă clasamentul...</p>
-            </div>
-          ) : error ? (
-            <div className="error-message">{error}</div>
-          ) : (
-            renderTableContent()
-          )}
-        </div>
+      </div>
+      
+      {/* Cardul de clasament ca componentă separată */}
+      <div className="leaderboard-container">
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Se încarcă clasamentul...</p>
+          </div>
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          renderTableContent()
+        )}
       </div>
     </div>
   );

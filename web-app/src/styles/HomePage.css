@@ -38,6 +38,9 @@
   gap: 10px;
 }
 
+
+
+/* Hero Section Styles - copiat din GeneratePage */
 .hero-card {
   display: inline-flex;
   justify-content: flex-start;
@@ -111,8 +114,8 @@
   text-align: left;
 }
 
-/* Stiluri pentru butonul hero conform specificațiilor din imagini */
-.hero-btn.button {
+/* Stiluri pentru butonul hero (specifice pentru HomePage) */
+.home-page .hero-btn.button {
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
@@ -133,13 +136,13 @@
   letter-spacing: inherit;
 }
 
-.hero-btn.button:hover {
+.home-page .hero-btn.button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.hero-btn.button:active {
+.home-page .hero-btn.button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
@@ -158,6 +161,47 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+
+/* Stiluri pentru butonul din hero section */
+.hero-section-button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.hero-section-button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.hero-section-button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+/* Stiluri pentru butoanele din carduri - păstrate ca înainte */
+.style-example-card-button {
+  margin-top: 18px;
+  align-self: center;
+  width: auto;
+  min-width: 190.8px;
 }
 
 /* Card de exemplu sub hero section */
@@ -233,15 +277,20 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 8px; /* Adăugat gap pentru spațiere consistentă */
 }
 
 .style-example-card-button {
   margin-top: 18px;
+  align-self: center; /* Forțează centrarea */
+  width: auto; /* Permite butonului să-și ia lățimea naturală */
+  min-width: 190.8px; /* Păstrează lățimea minimă */
 }
 
 @media (max-width: 768px) {
   .home-page {
     padding: 10px;
+    padding-bottom: 150px;
   }
   
   .home-page .hero-section {
@@ -253,6 +302,8 @@
     width: 100%;
     gap: 15px;
   }
+  
+
   
   /* Hero section responsive */
   .hero-card {
@@ -280,13 +331,15 @@
     text-align: left;
   }
   
-  .hero-btn.button {
+  /* Butonul din hero section pe mobile */
+  .hero-section-button {
     width: 160px;
     height: 45px;
+    font-size: 14px;
   }
   
-  .hero-btn-text {
-    font-size: 16px;
+  .hero-section-button .hero-btn-text {
+    font-size: 14px;
   }
   
   .hero-card-img {
@@ -325,12 +378,25 @@
   }
   
   .style-example-card-button {
-    padding: 8px 16px;
-    font-size: 12px;
+    padding: 6px 12px; /* Redus de la 8px 16px */
+    font-size: 11px; /* Redus de la 12px */
+    align-self: center;
+    width: 160px; /* Setat explicit pentru mobile */
+    min-width: 160px; /* Redus de la 150px */
   }
   
   .style-example-card-button .hero-btn-text {
-    font-size: 12px;
+    font-size: 11px; /* Redus de la 12px */
+  }
+  
+  /* Stiluri responsive pentru butoanele hero din HomePage */
+  .home-page .hero-btn.button {
+    width: 160px;
+    height: 45px;
+  }
+  
+  .home-page .hero-btn.button .hero-btn-text {
+    font-size: 14px;
   }
 }
 
@@ -341,6 +407,39 @@
   
   .home-page .main-content-container {
     padding: 0 10px;
+  }
+  
+  /* Butonul din hero section pe ecrane foarte mici */
+  .hero-section-button {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+  
+  .hero-section-button .hero-btn-text {
+    font-size: 12px;
+  }
+  
+  /* Butoane și mai mici pe ecrane foarte mici */
+  .style-example-card-button {
+    padding: 4px 10px; /* Redus și mai mult */
+    font-size: 10px; /* Redus și mai mult */
+    width: 140px; /* Setat explicit pentru mobile mic */
+    min-width: 140px; /* Redus și mai mult */
+  }
+  
+  .style-example-card-button .hero-btn-text {
+    font-size: 10px; /* Redus și mai mult */
+  }
+  
+  /* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
+  .home-page .hero-btn.button {
+    width: 140px;
+    height: 40px;
+  }
+  
+  .home-page .hero-btn.button .hero-btn-text {
+    font-size: 12px;
   }
 }
 

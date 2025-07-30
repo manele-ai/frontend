@@ -7,7 +7,7 @@
       }
 
       .cls-2 {
-        fill: #eab111;
+        fill:  rgba(201,169,104,1);
       }
     </style>
   </defs>

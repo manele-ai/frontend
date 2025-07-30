@@ -188,7 +188,7 @@
 .generate-page .input-label {
   display: block;
   color: #F1D292;
-  text-align: center;
+  text-align: left;
   font-family: 'Satoshi', sans-serif;
   font-size: 18px;
   font-style: normal;
@@ -216,12 +216,6 @@
   flex-shrink: 0;
   align-self: stretch;
   box-sizing: border-box;
-}
-
-.generate-page .input:focus {
-  outline: none;
-  border-color: #eab111;
-  box-shadow: 0 0 0 3px rgba(234, 177, 17, 0.1);
 }
 
 .generate-page .input::placeholder {

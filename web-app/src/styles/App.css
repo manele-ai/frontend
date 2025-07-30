@@ -26,20 +26,8 @@ code {
   background-color: #181A20;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+/* Eliminat padding global pe .container pentru a nu suprascrie paddingul local din pagini */
 
-.title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #eab111;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-  text-align: center;
-}
 
 .subtitle {
   font-size: 18px;
@@ -175,18 +163,12 @@ a {
     padding-top: 50px; /* Adjusted for smaller header on mobile */
   }
   
-  .container {
-    padding: 0 15px;
-  }
+  /* Eliminat padding global pe .container pentru mobile */
   
 
 }
 
-@media (max-width: 480px) {
-  .container {
-    padding: 0 10px;
-  }
-} 
+/* Eliminat padding global pe .container pentru mobile */ 
 
 :root {
   --app-bg-gradient: linear-gradient(180deg, rgba(43,43,43,1) 0%, rgba(8,10,11,1) 100%);
@@ -195,6 +177,4 @@ a {
   --gold-gradient-end: rgba(201,169,104,1);
 }
 
-body, .App {
-  background: #f5e6c5 !important;
-} 
+/* Removed global background override to allow local styling */ 

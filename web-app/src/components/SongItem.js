@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../styles/SongItem.css';
 import AudioPlayer from './AudioPlayer';
 
-export default function SongItem({ song, isActive, onPlayPause, onDownload }) {
+export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel }) {
   const [error, setError] = useState(null);
 
   // Get the appropriate audio URL based on availability
@@ -24,36 +24,35 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload }) {
   const canDownload = song.storage?.url || song.apiData?.audioUrl;
 
   return (
-    <div className="song-item">
-      <div className="song-info">
-        <h3 className="song-title">{song.apiData?.title || 'Manea fără nume'}</h3>
-        <p className="song-date">
-          Generat pe {song.createdAt ? new Date(song.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 'data necunoscută'}
-        </p>
+    <div className="song-item song-row-layout">
+      <div className="song-info-row">
+        <img
+          className="song-cover"
+          src={song.apiData?.imageUrl || 'https://via.placeholder.com/48'}
+          alt="cover"
+          width={48}
+          height={48}
+        />
+        <div className="song-title-style-col">
+          <span className="song-title song-title-inline">{song.apiData?.title || 'Manea fără nume'}</span>
+          {styleLabel && (
+            <span className="song-style-label">{styleLabel}</span>
+          )}
+        </div>
       </div>
-
-      {audioUrl ? (
-        <div className="player-with-download">
+      {audioUrl && (
+        <div className="song-playback-inline song-playback-left">
           <AudioPlayer
             audioUrl={audioUrl}
             isPlaying={isActive}
             onPlayPause={() => onPlayPause(song)}
             onError={setError}
           />
-          {canDownload && (
-            <button
-              className="download-button"
-              onClick={() => onDownload(song)}
-              title="Descarcă melodia"
-            >
-              📥
-            </button>
-          )}
         </div>
-      ) : (
+      )}
+      {(!audioUrl) && (
         <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
       )}
-
       {error && isActive && (
         <div className="error-message">{error}</div>
       )}

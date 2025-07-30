@@ -10,6 +10,8 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+// import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
+import ExemplePage from './pages/ExemplePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import SelectStylePage from './pages/SelectStylePage';
@@ -25,6 +27,7 @@ function App() {
             {/* Public routes */}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="/exemple" element={<ExemplePage />} />
             <Route path="/select-style" element={<SelectStylePage />} />
             <Route path="/generate" element={<GeneratePage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />

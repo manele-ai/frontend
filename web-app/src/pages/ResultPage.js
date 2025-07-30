@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
+import Button from '../components/ui/Button';
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
@@ -299,11 +300,8 @@ export default function ResultPage() {
   return (
     <div className="result-page">
       <div className="container">
-        <h1 className="title">{songData.apiData.title || 'Piesa ta e gata!'}</h1>
-        <p className="subtitle">
-          Stil: <span className="style-highlight">{songData.userGenerationInput.style || 'Nespecificat'}</span>
-        </p>
-        
+        <h1 className="result-title" style={{ marginBottom: 12 }}>{songData.apiData.title || 'Piesa ta e gata!'}</h1>
+       
         <div className="player-box">
           <img
             src={songData.apiData.imageUrl || 'https://via.placeholder.com/150'}
@@ -313,21 +311,34 @@ export default function ResultPage() {
           
           {audioUrl ? (
             <>
-              <AudioPlayer
-                audioUrl={audioUrl}
-                isPlaying={isPlaying}
-                onPlayPause={handlePlayPause}
-                onError={setError}
-              />
+              {/* Player audio încadrat într-un container cu fundal gri */}
+              <div className="result-player-container">
+                <AudioPlayer
+                  audioUrl={audioUrl}
+                  isPlaying={isPlaying}
+                  onPlayPause={handlePlayPause}
+                  onError={setError}
+                />
+              </div>
+              {/* Spațiu între player și butoane */}
+              <div style={{ marginBottom: 28 }} />
               {canDownload && (
-                <button
-                  className="download-btn"
+                <Button
+                  className="hero-btn"
                   onClick={handleDownload}
                   disabled={isDownloading}
+                  style={{ marginBottom: 16 }}
                 >
-                  <span>{isDownloading ? 'Se descarcă...' : 'Descarcă'}</span>
-                </button>
+                  <span className="hero-btn-text">{isDownloading ? 'Se descarcă...' : 'Descarcă piesa'}</span>
+                </Button>
               )}
+              <Button
+                className="hero-btn"
+                style={{ marginTop: 0 }}
+                onClick={() => navigate('/select-style')}
+              >
+                <span className="hero-btn-text">Generează manea nouă</span>
+              </Button>
             </>
           ) : (
             <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
+import SongItem from '../components/SongItem';
+import { styles } from '../data/stylesData';
+import { useSongs } from '../hooks/useSongs';
 import '../styles/ProfilePage.css';
 
 export default function ProfilePage() {
@@ -14,6 +17,41 @@ export default function ProfilePage() {
   });
   const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const { songs, loading: songsLoading, error: songsError } = useSongs();
+  const [activeSong, setActiveSong] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState('all');
+
+  // Filtrare piese după stil
+  const filteredSongs = selectedStyle === 'all'
+    ? songs
+    : songs.filter(song => song.userGenerationInput?.style === selectedStyle);
+
+  const handlePlayPause = (song) => {
+    if (activeSong?.id === song.id) {
+      setActiveSong(null);
+    } else {
+      setActiveSong(song);
+    }
+  };
+
+  const handleDownload = async (song) => {
+    try {
+      const downloadUrl = song.storage?.url || song.apiData?.audioUrl;
+      if (!downloadUrl) {
+        throw new Error('No download URL available');
+      }
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${song.apiData?.title || 'manea'}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error downloading song:', err);
+      alert('Eroare la descărcarea melodiei');
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +133,7 @@ export default function ProfilePage() {
 
           <div className="profile-stats">
             <div className="stat-item">
-              <span className="stat-number">{userProfile?.songIds?.length || 0}</span>
+              <span className="stat-number">{songs.length}</span>
               <span className="stat-label">Piese generate</span>
             </div>
           </div>
@@ -170,6 +208,54 @@ export default function ProfilePage() {
         {error && (
           <div className="error-message">
             {error}
+          </div>
+        )}
+      </div>
+      {/* Card cu piesele generate de user */}
+      <div className="profile-songs-card">
+        {/* Bara de filtre stiluri */}
+        <div className="song-styles-filter">
+          <button
+            className={`style-filter-btn${selectedStyle === 'all' ? ' active' : ''}`}
+            onClick={() => setSelectedStyle('all')}
+          >
+            Toate manelele
+          </button>
+          {styles.map((style) => (
+            <button
+              key={style.value}
+              className={`style-filter-btn${selectedStyle === style.value ? ' active' : ''}`}
+              onClick={() => setSelectedStyle(style.value)}
+            >
+              {style.title.charAt(0) + style.title.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+        {songsLoading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Se încarcă melodiile...</p>
+          </div>
+        ) : songsError ? (
+          <div className="error-message">{songsError}</div>
+        ) : (
+          <div className="profile-song-list">
+            {filteredSongs.length > 0 ? (
+              filteredSongs.map((song) => (
+                <SongItem
+                  key={song.id}
+                  song={song}
+                  isActive={activeSong?.id === song.id}
+                  onPlayPause={handlePlayPause}
+                  onDownload={handleDownload}
+                  styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
+                />
+              ))
+            ) : (
+              <div className="no-songs">
+                <p>Nu există piese pentru acest stil.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

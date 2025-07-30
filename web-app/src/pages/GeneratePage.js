@@ -148,16 +148,16 @@ export default function GeneratePage() {
         <div className="mode-slider-container">
           <div className="mode-slider">
             <button
-              className={`mode-slider-option ${mode === 'easy' ? 'active' : ''}`}
-              onClick={() => setMode('easy')}
-            >
-              <span className="mode-slider-text">Easy</span>
-            </button>
-            <button
               className={`mode-slider-option ${mode === 'hard' ? 'active' : ''}`}
               onClick={() => setMode('hard')}
             >
               <span className="mode-slider-text">Complex</span>
+            </button>
+            <button
+              className={`mode-slider-option ${mode === 'easy' ? 'active' : ''}`}
+              onClick={() => setMode('easy')}
+            >
+              <span className="mode-slider-text">Easy</span>
             </button>
           </div>
         </div>

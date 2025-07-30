@@ -2,11 +2,15 @@
   position: relative;
   min-height: 100vh;
   padding: 20px;
-  background: var(--background);
+  background-color: #1a1a1a;
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding-top: 80px; /* Compensate for header */
-  padding-bottom: 150px; /* Extra space for bottom menu */
+  padding-bottom: 200px; /* Extra space for bottom menu */
+}
+
+.leaderboard-page .title {
+  background: transparent;
 }
 
 .container {
@@ -16,9 +20,10 @@
 }
 
 .title {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--gold-gradient-end);
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: #080A0B;
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1px;
@@ -72,11 +77,36 @@
 }
 
 .leaderboard-container {
-  background: var(--background-secondary);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  width: 338px;
+  padding: 20px 25px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  border-radius: 20px;
+  background: #2B2B2B;
+  margin: 0 auto;
   overflow-x: auto;
+}
+
+/* Stiluri pentru scrollbar-ul din cardul de clasament */
+.leaderboard-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.leaderboard-container::-webkit-scrollbar-track {
+  background: #2B2B2B;
+  border-radius: 4px;
+}
+
+.leaderboard-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 4px;
+}
+
+.leaderboard-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
 }
 
 .leaderboard-table {
@@ -153,11 +183,202 @@
   padding: 20px;
 }
 
+/* HERO SECTION LEADERBOARD (copiat și adaptat din HomePage.css) */
+.leaderboard-hero-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 0px 20px 20px 20px;
+  padding: 2.5%;
+}
+
+.leaderboard-hero-card {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  gap: 10%;
+}
+
+.leaderboard-hero-card .hero-card-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 2;
+  width: 50%;
+}
+
+.leaderboard-hero-card .hero-card-img {
+  width: 30%;
+  height: 288px;
+  border-radius: 288px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.leaderboard-hero-card .ellipse-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 288px;
+  background: linear-gradient(0deg, #FFF0DA 0%, #94641E 100%);
+  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
+  filter: blur(8px);
+  z-index: 1;
+}
+
+.leaderboard-hero-card .hero-icon {
+  position: relative;
+  z-index: 2;
+  height: 180px;
+  width: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+}
+
+.leaderboard-hero-card .hero-title {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: #080A0B;
+  text-align: left;
+}
+
+.leaderboard-hero-card .hero-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: normal;
+  color: #000;
+  text-align: left;
+}
+
+.leaderboard-hero-card .hero-btn.button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.leaderboard-hero-card .hero-btn.button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.leaderboard-hero-card .hero-btn.button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+.leaderboard-hero-card .hero-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  text-align: center;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Butoanele de filtrare din exterior, cu design ca în ProfilePage */
+.leaderboard-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.timeframe-tabs,
+.category-tabs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: #23242b;
+  color: #e9d7b7;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+}
+
+.filter-btn.active {
+  background: linear-gradient(90deg, #ffeecd 0%, #cfaf6e 100%);
+  color: #23242b;
+  font-weight: 600;
+}
+
+/* Responsive design pentru butoanele de filtrare */
+@media (max-width: 600px) {
+  .timeframe-tabs,
+  .category-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 20px;
+  }
+  
+  .timeframe-tabs::-webkit-scrollbar,
+  .category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .filter-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .leaderboard-page {
     padding: 15px;
     padding-top: 70px;
+    padding-bottom: 200px; /* Extra space for bottom menu on mobile */
   }
   
   .container {
