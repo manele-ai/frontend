@@ -4,7 +4,7 @@ import { MusicApi } from "./music-api";
 // ============= Database Types =============
 // Prefix with 'DB' to clearly identify Firestore stored types
 export namespace Database {
-  interface UserGenerationInput {
+  export interface UserGenerationInput {
     style: string;
     title: string;
     from?: string;
@@ -49,6 +49,7 @@ export namespace Database {
     userId: string;
     taskId?: string;
     paymentStatus: 'pending' | 'success' | 'failed';
+    paymentType: 'credits' | 'subscription_free' | 'subscription_discount' | 'onetime_unsubscribed';
     error?: string;
     paymentSessionId?: string;
     createdAt: admin.firestore.Timestamp;
@@ -63,6 +64,21 @@ export namespace Database {
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     numCredits: number;
+    stripeCustomerId?: string;
+    creditsBalance?: number;
+    lastSubPeriodCreditGrant?: admin.firestore.Timestamp;
+    subscription?: {
+      stripeSubscriptionId: string;
+      status: string;
+      priceId: string;
+      currentPeriodStart: admin.firestore.Timestamp;
+      currentPeriodEnd: admin.firestore.Timestamp;
+      cancelAtPeriodEnd: boolean;
+      paymentMethod: {
+        last4: string;
+        brand: string;
+      } | null;
+    }
     stats: {
       numSongsGenerated: number
       numDedicationsGiven: number;

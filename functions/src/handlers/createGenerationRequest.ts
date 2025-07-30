@@ -1,8 +1,12 @@
 import { FieldValue } from "firebase-admin/firestore";
+import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { db, frontendBaseUrl, REGION, stripe, stripePriceId } from "../config";
+import { db, REGION, stripe, STRIPE_PRICE_ID_ONETIME_SUBSCRIBED, STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED } from "../config";
 import { COLLECTIONS } from "../constants/collections";
-import { Database, Requests } from "../types";
+import { createGenerationRequestTransaction } from "../service/generation/generation-request";
+import { createOneTimeCheckoutSession } from "../service/payment/checkout-session";
+import { createCustomer, getCustomerIdByUserId } from "../service/payment/customer";
+import { Requests } from "../types";
 
 /**
  * Creates a generation request and handles checkout url creation.
@@ -25,116 +29,67 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
 
     const { data, auth } = request;
 
-    if (!auth) {
+    if (!auth || !auth.uid) {
       throw new HttpsError('unauthenticated', 'Not authenticated.');
     }
 
+    let customerId = await getCustomerIdByUserId(auth.uid);
+    if (!customerId) {
+      // Create a customer
+      customerId = await createCustomer(auth.uid, auth.token?.email || '');
+    }
+    
+
     try {
-      const result = await db.runTransaction(async (transaction) => {
-        // 1. Read user's credits
-        const userRef = db.collection(COLLECTIONS.USERS).doc(auth.uid);
-        const userDoc = await transaction.get(userRef);
-        
-        if (!userDoc.exists) {
-          throw new HttpsError('not-found', 'User not found');
-        }
+      const { requestId, paymentType, paymentStatus }  = await createGenerationRequestTransaction(auth.uid, data);
+   
+      // If payment not needed, return immediately
+      if (paymentStatus === 'success') {
+        return { requestId, paymentStatus };
+      }
 
-        const userData = userDoc.data() as Database.User;
-        const hasCredits = (userData.numCredits || 0) >= 1;
+      const priceId = 
+        paymentType === 'subscription_discount'
+        ? STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED.value()
+        : STRIPE_PRICE_ID_ONETIME_SUBSCRIBED.value();
 
-        // 2. Create the generation request document
-        const generationRequestRef = db.collection(COLLECTIONS.GENERATION_REQUESTS).doc();
-        const now = FieldValue.serverTimestamp();
-
-        const generationRequest: Database.GenerationRequest = {
-          userId: auth.uid,
-          paymentStatus: hasCredits ? 'success' : 'pending',
-          createdAt: now as any,
-          updatedAt: now as any,
-          userGenerationInput: {
-            style: data.style,
-            title: data.title,
-            from: data.from,
-            to: data.to,
-            dedication: data.dedication,
-            wantsDedication: data.wantsDedication,
-            wantsDonation: data.wantsDonation,
-            donationAmount: data.donationAmount
-          }
-        };
-
-        // 3. If user has credits, decrement them in the same transaction
-        if (hasCredits) {
-          transaction.update(userRef, {
-            numCredits: FieldValue.increment(-1),
-            updatedAt: now
-          });
-        }
-
-        // 4. Write the generation request
-        transaction.set(generationRequestRef, generationRequest);
-
-        return {
-          requestId: generationRequestRef.id,
-          hasCredits
-        };
-      });
-
-      if (result.hasCredits) {
-        return {
-          requestId: result.requestId,
-          paymentStatus: 'success'
-        };
-      } else {
-        // 5. If user needs to pay, create a Stripe session
-        try {
-          const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [
-              {
-                price: stripePriceId.value(),
-                quantity: 1,
-              },
-            ],
-            success_url: `${frontendBaseUrl.value()}/result?request_id=${result.requestId}`,
-            cancel_url: `${frontendBaseUrl.value()}/generate`,
-            metadata: {
-              userId: auth.uid,
-              generationRequestId: result.requestId,
-              credits: '1'
-            },
-          });
-
-          // Update the generation request with the session ID
+      // Create a Stripe session
+      try {
+          const session = await createOneTimeCheckoutSession(
+            auth.uid,
+            customerId,
+            requestId,
+            priceId
+          );
+          // Attach Stripe session id to generation request
           await db.collection(COLLECTIONS.GENERATION_REQUESTS)
-            .doc(result.requestId)
+            .doc(requestId)
             .update({
               paymentSessionId: session.id,
               updatedAt: FieldValue.serverTimestamp()
             });
 
           return {
-            requestId: result.requestId,
+            requestId,
             paymentStatus: 'pending',
             checkoutUrl: session.url,
             sessionId: session.id
           };
-        } catch (error) {
-          console.error('Stripe session creation error:', error);
-          // If Stripe fails, mark the request as failed
-          await db.collection(COLLECTIONS.GENERATION_REQUESTS)
-            .doc(result.requestId)
-            .update({
-              paymentStatus: 'failed',
-              error: 'Failed to create payment session',
-              updatedAt: FieldValue.serverTimestamp()
-            });
-          throw new HttpsError('internal', 'Failed to create payment session');
-        }
+      } catch (error) {
+        // Note: don't worry about credit refund here because we returned early if credits used
+        logger.error('Error in createGenerationRequest:', error);
+        // If Stripe fails, mark the request as failed
+        await db.collection(COLLECTIONS.GENERATION_REQUESTS)
+          .doc(requestId)
+          .update({
+            paymentStatus: 'failed',
+            error: 'Failed to create payment session',
+            updatedAt: FieldValue.serverTimestamp()
+          });
+        throw new HttpsError('internal', 'Failed to create payment session');
       }
     } catch (error) {
-      console.error('Error in createGenerationRequest:', error);
+      logger.error('Error in createGenerationRequest:', error);
       if (error instanceof HttpsError) {
         throw error;
       }

@@ -22,13 +22,13 @@ export const generateSong = async (data) => {
   return /** @type {{taskId: string, externalTaskId: string}} */ (result.data);
 };
 
+
 /**
- * Create a Stripe checkout session for purchasing credits.
- * @param {{credits: number}} data
- * @returns {Promise<{sessionId: string, url: string}>}
+ * Create a Stripe checkout session for purchasing a subscription.
+ * @returns {Promise<{checkoutUrl: string, sessionId: string}>}
  */
-export const createStripeCheckoutSession = async (data) => {
-  const fn = httpsCallable(functions, 'createStripeCheckoutSession');
-  const result = await fn(data);
-  return /** @type {{sessionId: string, url: string}} */ (result.data);
+export const createSubscriptionCheckoutSession = async () => {
+  const fn = httpsCallable(functions, 'createSubscriptionCheckoutSession');
+  const result = await fn();
+  return /** @type {{checkoutUrl: string, sessionId: string}} */ (result.data);
 };

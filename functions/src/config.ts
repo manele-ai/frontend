@@ -46,14 +46,14 @@ export const openaiApiKey = defineString(
   },
 );
 
-export const stripeSecretKey = defineString(
+export const STRIPE_SECRET_KEY = defineString(
   "STRIPE_SECRET_KEY",
   {
     description: "Secret API key for Stripe",
   },
 );
 
-export const stripeWebhookSecret = defineString(
+export const STRIPE_WEBHOOK_SECRET = defineString(
   "STRIPE_WEBHOOK_SECRET",
   {
     description: "Secret API key for Stripe",
@@ -61,10 +61,25 @@ export const stripeWebhookSecret = defineString(
 );
 
 
-export const stripePriceId = defineString(
-  "STRIPE_PRICE_ID",
+export const STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED = defineString(
+  "STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED",
   {
-    description: "Stripe Price ID for one credit purchase",
+    description: "Stripe Price ID for one-time song purchase for unsubscribed users",
+  },
+);
+
+export const STRIPE_PRICE_ID_ONETIME_SUBSCRIBED = defineString(
+  "STRIPE_PRICE_ID_ONETIME_SUBSCRIBED",
+  {
+    description: "Stripe Price ID for one-time song purchase for subscribed users",
+  },
+);
+
+
+export const STRIPE_PRICE_ID_SUBSCRIPTION = defineString(
+  "STRIPE_PRICE_ID_SUBSCRIPTION",
+  {
+    description: "Stripe Price ID for subscription",
   },
 );
 
@@ -86,7 +101,7 @@ setGlobalOptions({
 
 let stripe: Stripe | null = null;
 onInit(() => {
-  stripe = new Stripe(stripeSecretKey.value());
+  stripe = new Stripe(STRIPE_SECRET_KEY.value());
 });
 
 export { stripe };
