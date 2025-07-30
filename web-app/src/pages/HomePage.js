@@ -1,8 +1,12 @@
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
 import { getStripe } from 'services/stripe';
+import { useAuth } from '../components/auth/AuthContext';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
+import { db } from '../services/firebase';
 import '../styles/HomePage.css';
 
 
@@ -30,6 +34,35 @@ function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    const checkSubscriptionStatus = async () => {
+      if (user) {
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const subscriptionStatus = userData.subscription?.status;
+            setIsSubscribed(subscriptionStatus === 'active');
+          } else {
+            setIsSubscribed(false);
+          }
+        } catch (error) {
+          console.error('Error checking subscription status:', error);
+          setIsSubscribed(false);
+        }
+      } else {
+        setIsSubscribed(false);
+      }
+    };
+
+    checkSubscriptionStatus();
+    const interval = setInterval(checkSubscriptionStatus, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, [user]);
 
   const onClickSubscription = async () => {
     const { sessionId } = await createSubscriptionCheckoutSession();
@@ -60,14 +93,14 @@ export default function HomePage() {
               <Button className="hero-btn hero-section-button" onClick={() => navigate('/select-style')}>
                 <span className="hero-btn-text">Genereaza acum</span>
               </Button>
-              <Button 
-                variant="primary" 
-                size="small" 
-                className="hero-btn subscription-btn"
-                onClick={onClickSubscription}
-              >
-                <span>Abonează-te</span>
-              </Button>
+              {!isSubscribed && (
+                <Button 
+                  className="hero-btn hero-section-button"
+                  onClick={onClickSubscription}
+                >
+                  <span className="hero-btn-text">Abonează-te</span>
+                </Button>
+              )}
             </div>
           </div>
           <div className="hero-card-img">

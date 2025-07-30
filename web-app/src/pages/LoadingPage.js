@@ -139,11 +139,11 @@ export default function LoadingPage() {
               return;
             }
             // Navigate to result page with song data
-            navigate('/result', {
-              state: {
-                songId: taskStatus.songId,
-              }
-            });
+            // navigate('/result', {
+            //   state: {
+            //     songId: taskStatus.songId,
+            //   }
+            // });
             break;
           case 'failed':
             setError(taskStatus.error || 'Generarea piesei a eșuat. Încearcă din nou.');

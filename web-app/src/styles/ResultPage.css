@@ -25,7 +25,7 @@
 /* Stiluri pentru butonul hero (specifice pentru ResultPage) */
 .result-page .hero-btn.button {
   box-sizing: border-box;
-  width: 190.8px;
+  width: 280px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
@@ -54,7 +54,7 @@
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
-.hero-btn-text {
+.result-page .hero-btn-text {
   font-family: 'Satoshi', sans-serif;
   font-size: 20px;
   font-style: normal;
@@ -107,7 +107,7 @@
 }
 
 .subtitle {
-  color: #a2a5bd;
+  color: #000000;
   font-size: 18px;
   margin-bottom: 30px;
 }
@@ -285,7 +285,7 @@
 
 .loading-bar {
   height: 100%;
-  background-color: #4CAF50;
+  background-color: #1e1e1e;
   transition: width 0.1s ease-in-out;
 }
 
@@ -300,7 +300,7 @@
 /* Subtitle */
 .subtitle {
   font-size: 18px;
-  color: #666;
+  color: #000000;
   text-align: center;
   margin: 16px 0;
 }
@@ -335,6 +335,14 @@
     font-size: 16px;
   }
   
+  .result-page .hero-btn.button {
+    width: 240px;
+  }
+  
+  .result-page .hero-btn-text {
+    font-size: 18px;
+  }
+  
   .modern-play-button {
     width: 70px;
     height: 70px;
@@ -366,5 +374,29 @@
 @media (max-width: 480px) {
   .container {
     padding-bottom: 40px;
+  }
+  
+  .result-page .hero-btn.button {
+    width: 280px;
+    height: 45px;
+  }
+  
+  .result-page .hero-btn-text {
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .result-page .hero-btn.button {
+    width: 260px;
+    height: 42px;
+  }
+  
+  .result-page .hero-btn-text {
+    font-size: 13px;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
   }
 } 

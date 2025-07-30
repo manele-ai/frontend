@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import SongItem from '../components/SongItem';
+import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { useSongs } from '../hooks/useSongs';
 import '../styles/ProfilePage.css';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, userProfile, updateUserProfile, loading } = useAuth();
+  const { user, userProfile, updateUserProfile, loading, signOut } = useAuth();
   
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -88,6 +89,15 @@ export default function ProfilePage() {
     setError('');
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="profile-page">
@@ -154,6 +164,13 @@ export default function ProfilePage() {
             >
               <span className="hero-btn-text">Generează manea</span>
             </button>
+
+            <Button
+              className="action-button hero-btn"
+              onClick={handleLogout}
+            >
+              <span className="hero-btn-text">LogOut</span>
+            </Button>
           </div>
         ) : (
           <div className="profile-actions">

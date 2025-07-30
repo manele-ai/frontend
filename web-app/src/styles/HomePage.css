@@ -163,12 +163,12 @@
 }
 
 /* Subscription Button Styles */
-.subscription-btn {
-  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%) !important;
-  color: #000000 !important;
+.home-page .subscription-btn {
+  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
+  color: #000000;
   font-weight: 600;
-  border: 2px solid #B8860B !important;
-  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid #B8860B;
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
   transform: translateY(0);
@@ -177,20 +177,24 @@
   overflow: hidden;
 }
 
-.subscription-btn:hover {
+.home-page .subscription-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-.subscription-btn span {
-  color: #000000 !important;
+/* Override global .hero-btn-text for subscription button */
+.home-page .subscription-btn span {
+  color: #000000;
   font-size: 1.1em;
   letter-spacing: 0.5px;
   font-weight: 700;
   text-transform: uppercase;
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: #000000 !important;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: #000000;
+  font-family: 'Satoshi', sans-serif;
+  line-height: normal;
+  text-align: center;
 }
 
 /* Stiluri pentru butonul din hero section */

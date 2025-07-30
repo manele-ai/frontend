@@ -19,7 +19,7 @@
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   border-radius: 0px 20px 20px 20px;
   min-height: unset;
-  width: 50%;
+  width: 80%;
   position: relative;
   overflow: hidden;
   box-shadow: none;
@@ -41,10 +41,10 @@
 
 .loading-bar {
   height: 100%;
-  background: linear-gradient(0deg, rgba(231, 170, 43, 1) 0%, rgba(255, 240, 218, 1) 100%);
+  background: #808080;
   border-radius: 100px;
   transition: width 0.1s ease;
-  box-shadow: 0 0 10px rgba(231, 170, 43, 0.3);
+  box-shadow: 0 0 10px rgba(128, 128, 128, 0.3);
 }
 
 .loading-title {

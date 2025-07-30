@@ -14,7 +14,7 @@
   padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
-.container {
+.profile-page .container {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -32,7 +32,7 @@
   box-shadow: none;
 }
 
-.title {
+.profile-page .title {
   font-size: 32px;
   font-weight: bold;
   color: var(--gold-gradient-end);
@@ -494,15 +494,13 @@
     padding-bottom: 150px; /* Adjusted for smaller header */
   }
   
-  .container {
+  .profile-page .container {
     padding-top: 10px;
   }
   
-  .title {
+  .profile-page .title {
     font-size: 28px;
   }
-  
-
   
   .profile-content {
     gap: 12px;
