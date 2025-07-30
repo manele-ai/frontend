@@ -13,11 +13,6 @@ export const isDevelopment = process.env.NODE_ENV === 'development';
 export const useEmulators = process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true' || 
                            window.location.hostname === 'localhost';
 
-// Stripe configuration
-export const stripeConfig = {
-  publishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_example'
-};
-
 // App configuration
 export const appConfig = {
   name: 'Manele IO',

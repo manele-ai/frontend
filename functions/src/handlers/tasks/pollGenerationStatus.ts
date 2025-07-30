@@ -3,7 +3,7 @@ import { getFunctions, TaskOptions } from "firebase-admin/functions";
 import { logger } from "firebase-functions";
 import { onTaskDispatched } from "firebase-functions/tasks";
 import { HttpsError } from "firebase-functions/v2/https";
-import { getTaskStatus } from "../../api/music-api";
+import { getTaskStatus } from "../../api/music";
 import { db, REGION } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
 import { Database } from "../../types";
@@ -83,6 +83,14 @@ export const pollGenerationStatusTask = onTaskDispatched({
         status: "failed",
         updatedAt: FieldValue.serverTimestamp(),
       });
+
+      // Refund the credit to the user
+      const userRef = db.collection(COLLECTIONS.USERS).doc(userId);
+      batch.update(userRef, {
+        numCredits: FieldValue.increment(1),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
       await batch.commit();
       return; // No retry
     }

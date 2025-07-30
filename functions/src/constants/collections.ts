@@ -14,6 +14,8 @@ export const COLLECTIONS = {
   PUBLIC_USERS: 'usersPublic',
   /** Collection storing public song data */
   PUBLIC_SONGS: 'songsPublic',
+  /** Collection storing generation requests with payment status */
+  GENERATION_REQUESTS: 'generationRequests',
 } as const;
 
 // Type for collection names

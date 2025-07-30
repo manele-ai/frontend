@@ -1,16 +1,17 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import BottomMenu from './components/ui/BottomMenu';
 import Header from './components/ui/Header';
 import AuthPage from './pages/AuthPage';
+import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import LoadingPage from './pages/LoadingPage';
 import MySongsPage from './pages/MySongsPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 // import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
-import BottomMenu from './components/ui/BottomMenu';
 import ExemplePage from './pages/ExemplePage';
-import GeneratePage from './pages/GeneratePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import SelectStylePage from './pages/SelectStylePage';
@@ -52,11 +53,11 @@ function App() {
                 <ProfilePage />
               </ProtectedRoute>
             } />
-            {/* <Route path="/pay" element={
+            <Route path="/payment-success" element={
               <ProtectedRoute>
-                <PaymentPage />
+                <PaymentSuccessPage />
               </ProtectedRoute>
-            } /> */}
+            } />
           </Routes>
           <BottomMenu />
         </div>

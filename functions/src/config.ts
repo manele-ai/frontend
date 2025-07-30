@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import { defineString } from "firebase-functions/params";
-import { setGlobalOptions } from "firebase-functions/v2";
+import { onInit, setGlobalOptions } from "firebase-functions/v2";
+import Stripe from "stripe";
 
 if (admin.apps.length === 0) {
   admin.initializeApp();
@@ -45,6 +46,51 @@ export const openaiApiKey = defineString(
   },
 );
 
+export const STRIPE_SECRET_KEY = defineString(
+  "STRIPE_SECRET_KEY",
+  {
+    description: "Secret API key for Stripe",
+  },
+);
+
+export const STRIPE_WEBHOOK_SECRET = defineString(
+  "STRIPE_WEBHOOK_SECRET",
+  {
+    description: "Secret API key for Stripe",
+  },
+);
+
+
+export const STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED = defineString(
+  "STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED",
+  {
+    description: "Stripe Price ID for one-time song purchase for unsubscribed users",
+  },
+);
+
+export const STRIPE_PRICE_ID_ONETIME_SUBSCRIBED = defineString(
+  "STRIPE_PRICE_ID_ONETIME_SUBSCRIBED",
+  {
+    description: "Stripe Price ID for one-time song purchase for subscribed users",
+  },
+);
+
+
+export const STRIPE_PRICE_ID_SUBSCRIPTION = defineString(
+  "STRIPE_PRICE_ID_SUBSCRIPTION",
+  {
+    description: "Stripe Price ID for subscription",
+  },
+);
+
+export const frontendBaseUrl = defineString(
+  "FRONTEND_BASE_URL",
+  {
+    description: "Base URL of the front-end (e.g. https://yourapp.com)",
+    default: "http://localhost:3000",
+  },
+);
+
 export const db = admin.firestore();
 export const storage = admin.storage();
 export const songsBucket = storage.bucket();
@@ -52,3 +98,10 @@ export const songsBucket = storage.bucket();
 setGlobalOptions({
   region: REGION,
 });
+
+let stripe: Stripe | null = null;
+onInit(() => {
+  stripe = new Stripe(STRIPE_SECRET_KEY.value());
+});
+
+export { stripe };

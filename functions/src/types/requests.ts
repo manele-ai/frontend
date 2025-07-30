@@ -17,4 +17,8 @@ export namespace Requests {
   export interface GetStatus {
     taskId: string;
   }
+
+  export interface CreateStripeCheckoutSession {
+    credits: number; // number of credits to purchase
+  }
 }

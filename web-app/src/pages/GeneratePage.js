@@ -1,7 +1,11 @@
+import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { db } from 'services/firebase';
+import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
+import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
 
@@ -18,9 +22,15 @@ export default function GeneratePage() {
   const [donationAmount, setDonationAmount] = useState('');
   const [mode, setMode] = useState('hard');
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [userCredits, setUserCredits] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
+  // Store generation params to use after auth
+  const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
+
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   // Set selected style from navigation state
   useEffect(() => {
     if (location.state?.selectedStyle) {
@@ -28,42 +38,92 @@ export default function GeneratePage() {
     }
   }, [location.state]);
 
-  const handleGoToPay = async () => {
+  useEffect(() => {
+    // Grab user credits
+    if (user && isAuthenticated) {
+      getDoc(doc(db, "usersPublic", user.uid)).then(userDoc => {
+        setUserCredits(userDoc.data()?.numCredits ?? 0);
+      });
+    } else {
+      setUserCredits(0);
+    }
+  }, [user, isAuthenticated]);
+
+  const sendGenerationRequest = async () => {
+    setIsProcessing(true);
+    setError(null);
+    try {
+      const params = {
+        style: selectedStyle,
+        title: songName,
+        from: fromName,
+        to: toName,
+        dedication,
+        lyricsDetails: songDetails,
+        wantsDedication,
+        wantsDonation,
+        donationAmount,
+        mode
+      };
+
+      const response = await createGenerationRequest(params);
+      console.log("response", response);
+      
+      if (response.paymentStatus === 'success') {
+        // Generation started, go to loading page
+        navigate('/result', { 
+          state: { requestId: response.requestId, songId: null }
+        });
+      } else {
+        if (response.sessionId) {
+          // Need payment, redirect to Stripe
+          const stripe = await getStripe();
+          const { error } = await stripe.redirectToCheckout({ sessionId: response.sessionId });
+          if (error) {
+            setError('A apărut o eroare la plata. Încearcă din nou.');
+          }
+        } else {
+          setError('A apărut o eroare. Încearcă din nou.');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError('A apărut o eroare. Încearcă din nou.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleGenerateOrGoToPay = async () => {
+    const params = {
+      style: selectedStyle,
+      title: songName,
+      from: fromName,
+      to: toName,
+      dedication,
+      lyricsDetails: songDetails,
+      wantsDedication,
+      wantsDonation,
+      donationAmount,
+      mode
+    };
+
     if (!isAuthenticated) {
+      // Store params and show auth modal
+      setPendingGenerationParams(params);
       setShowAuthModal(true);
       return;
     }
-    navigate('/loading', {
-      state: {
-        style: selectedStyle,
-        from: fromName,
-        to: toName,
-        dedication,
-        title: songName,
-        lyricsDetails: songDetails,
-        wantsDedication,
-        wantsDonation,
-        donationAmount,
-        mode
-      }
-    });
+
+    await sendGenerationRequest();
   };
 
-  const handleAuthSuccess = () => {
-    navigate('/loading', {
-      state: {
-        style: selectedStyle,
-        from: fromName,
-        to: toName,
-        dedication,
-        title: songName,
-        lyricsDetails: songDetails,
-        wantsDedication,
-        wantsDonation,
-        donationAmount,
-        mode
-      }
-    });
+  const handleAuthSuccess = async () => {
+    // After successful auth, send the generation request if we have pending params
+    if (pendingGenerationParams) {
+      await sendGenerationRequest();
+      setPendingGenerationParams(null);
+    }
   };
 
   return (
@@ -217,13 +277,17 @@ export default function GeneratePage() {
             <span className="hero-btn-text">Înapoi</span>
           </button>
           <button 
-            className={`hero-btn button generate-button ${!songName.trim() ? 'disabled' : ''}`} 
-            onClick={handleGoToPay}
-            disabled={!songName.trim()}
+            className={`hero-btn button generate-button ${!songName.trim() || isProcessing ? 'disabled' : ''}`} 
+            onClick={handleGenerateOrGoToPay}
+            disabled={!songName.trim() || isProcessing}
           >
-            <span className="hero-btn-text">Plătește</span>
+            <span className="hero-btn-text">
+              {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
+            </span>
           </button>
         </div>
+
+        {error && <div className="error-message">{error}</div>}
 
         {/* Auth Modal Component */}
         <AuthModal

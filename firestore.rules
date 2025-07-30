@@ -49,6 +49,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ---------- /generationRequests collection ------------
+    //   • Client can READ their own requests.
+    //   • No client writes allowed.
+    match /generationRequests/{taskId} {
+      allow read: if request.auth != null && 
+                    request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
     // ---------- /tasks collection ------------
     //   • Completely blocked to clients.
     match /tasks/{taskId} {

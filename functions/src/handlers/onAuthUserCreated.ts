@@ -30,7 +30,8 @@ export const onAuthUserCreated = beforeUserCreated(async (event) => {
         numSongsGenerated: 0,
         numDedicationsGiven: 0,
         sumDonationsTotal: 0,
-      }
+      },
+      numCredits: 0,
     };
 
     await userRef.set(userData);
