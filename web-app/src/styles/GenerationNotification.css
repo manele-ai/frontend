@@ -1,0 +1,135 @@
+.generation-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border-radius: 20px;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s ease-out;
+}
+
+.generation-notification:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.generation-notification.complete {
+  border-image: linear-gradient(90deg, #4CAF50 0%, #45a049 100%) 1;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 80%;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  flex-shrink: 0;
+}
+
+.generation-notification.complete .notification-icon {
+  background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+}
+
+.check-icon {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.spinner {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  animation: spin 1s linear infinite;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-subtitle {
+  color: #cccccc;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .generation-notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+    border-radius: 16px;
+  }
+  
+  .notification-content {
+    gap: 10px;
+  }
+  
+  .notification-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .spinner {
+    font-size: 16px;
+  }
+  
+  .check-icon {
+    font-size: 18px;
+  }
+  
+  .notification-title {
+    font-size: 13px;
+  }
+  
+  .notification-subtitle {
+    font-size: 11px;
+  }
+} 

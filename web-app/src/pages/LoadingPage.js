@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { generateManeaSong } from '../api';
 import ExampleSongsList from '../components/ExampleSongsList';
+import { useGeneration } from '../context/GenerationContext';
 import { db } from '../services/firebase';
 import '../styles/LoadingPage.css';
 
@@ -11,6 +12,7 @@ const GIF = '/NeTf.gif';
 export default function LoadingPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { startGeneration } = useGeneration();
   const [status, setStatus] = useState('Se pregătește generarea...');
   const [error, setError] = useState(null);
   const [taskId, setTaskId] = useState(null);
@@ -55,21 +57,15 @@ export default function LoadingPage() {
       return;
     }
 
-    const startGeneration = async () => {
+    const startGenerationProcess = async () => {
       try {
         setStatus('Se trimit datele către AI...');
         setError(null);
         generationStartedRef.current = true;
         
-        console.log("Sending generation request with data:", {
-          style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
-        });
-        
         const result = await generateManeaSong({
           style, from, to, dedication, title, lyricsDetails, wantsDedication, wantsDonation, donationAmount, mode
         });
-        
-        console.log("Generation API response:", result);
         
         if (!result || !result.taskId) {
           throw new Error('Nu s-a primit un ID valid pentru task.');
@@ -77,6 +73,17 @@ export default function LoadingPage() {
         
         setTaskId(result.taskId);
         setStatus('AI-ul compune maneaua...');
+        
+        // Set generation context for navigation
+        startGeneration(result.taskId);
+        
+        // Navigate to result page with the task ID
+        navigate('/result', { 
+          state: { 
+            requestId: result.taskId, 
+            songId: null 
+          } 
+        });
       } catch (err) {
         console.error("Generation error:", err);
         setError(err.message || 'Eroare la generare. Încearcă din nou.');
@@ -85,7 +92,7 @@ export default function LoadingPage() {
       }
     };
 
-    startGeneration();
+    startGenerationProcess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]); // Only depend on navigate since other values are from location.state
 
@@ -117,7 +124,6 @@ export default function LoadingPage() {
         }
 
         const taskStatus = doc.data();
-        console.log("Full taskStatus document:", taskStatus);
         
         if (!taskStatus) {
           console.error("Document data is undefined:", taskId);
@@ -132,7 +138,6 @@ export default function LoadingPage() {
             break;
           case 'partial':
           case 'completed':
-            console.log("taskStatus.songId", taskStatus.songId);
             if (!taskStatus.songId) {
               setError('A aparut o eroare. Încearcă din nou.');
               setStatus('');
