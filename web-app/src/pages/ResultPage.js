@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
 import Button from '../components/ui/Button';
+import { useGeneration } from '../context/GenerationContext';
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
@@ -13,8 +14,14 @@ const GIF = '/NeTf.gif';
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { clearGeneration, startGeneration, isGenerating, updateSongId, generationSongId } = useGeneration();
   const mounted = useRef(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  
+  // Initialize loading progress from localStorage or 0
+  const [loadingProgress, setLoadingProgress] = useState(() => {
+    const saved = localStorage.getItem('resultPageLoadingProgress');
+    return saved ? parseFloat(saved) : 0;
+  });
 
   // Extract params passed via navigation state or URL query (e.g. ?request_id=abc)
   const { songId: songIdState, requestId: requestIdState } = location.state || {};
@@ -24,6 +31,26 @@ export default function ResultPage() {
   const [requestId] = useState(requestIdState || requestIdParam || null);
   const [taskId, setTaskId] = useState(null);
   const [songId, setSongId] = useState(songIdState || null);
+
+  // Set generation state when we have a requestId (from Stripe payment)
+  useEffect(() => {
+    if (requestId && !isGenerating) {
+      startGeneration(requestId);
+    }
+  }, [requestId, isGenerating, startGeneration]);
+
+  // Reset loading progress when starting a new generation
+  useEffect(() => {
+    if (requestId) {
+      const savedRequestId = localStorage.getItem('resultPageRequestId');
+      if (savedRequestId !== requestId) {
+        // Reset loading progress for new generation
+        setLoadingProgress(0);
+        localStorage.setItem('resultPageLoadingProgress', '0');
+        localStorage.setItem('resultPageRequestId', requestId);
+      }
+    }
+  }, [requestId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
@@ -116,6 +143,8 @@ export default function ResultPage() {
               case 'completed':
                 if (data.songId) {
                   setSongId(data.songId);
+                  // Update generation context with song ID when it becomes available
+                  updateSongId(data.songId);
                 }
                 break;
               case 'failed':
@@ -168,7 +197,12 @@ export default function ResultPage() {
               
               // Clear generation state when song is fully loaded
               if (songData && songData.apiData && songData.apiData.title) {
-                // clearGeneration(); // This line is removed as per the edit hint
+                // Update the generation context with the song ID first
+                updateSongId(songId);
+                // Clear localStorage items when song is complete
+                localStorage.removeItem('resultPageLoadingProgress');
+                localStorage.removeItem('resultPageRequestId');
+                // Don't clear generation state - let the notification handle it
               }
             }
           },
@@ -194,11 +228,15 @@ export default function ResultPage() {
         unsubscribe();
       }
     };
-  }, [songId]); // Removed clearGeneration from dependency array
+  }, [songId, clearGeneration]); // Added clearGeneration to dependency array
 
   // Add loading progress animation
   useEffect(() => {
-    if (songData) return; // Don't animate if song is loaded
+    if (songData) {
+      // Clear loading progress when song is loaded
+      localStorage.removeItem('resultPageLoadingProgress');
+      return;
+    }
     
     const duration = 120000; // 2 minute în milisecunde
     const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
@@ -206,11 +244,14 @@ export default function ResultPage() {
     
     const timer = setInterval(() => {
       setLoadingProgress(prev => {
-        if (prev >= 100) {
+        const newProgress = prev + increment;
+        if (newProgress >= 100) {
           clearInterval(timer);
+          localStorage.setItem('resultPageLoadingProgress', '100');
           return 100;
         }
-        return prev + increment;
+        localStorage.setItem('resultPageLoadingProgress', newProgress.toString());
+        return newProgress;
       });
     }, interval);
 

@@ -5,12 +5,14 @@ import { db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
+import { useGeneration } from '../context/GenerationContext';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
 
 export default function GeneratePage() {
   const { user, isAuthenticated } = useAuth();
+  const { startGeneration } = useGeneration();
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
   const [toName, setToName] = useState('');
@@ -101,10 +103,10 @@ export default function GeneratePage() {
       };
 
       const response = await createGenerationRequest(params);
-      console.log("response", response);
       
       if (response.paymentStatus === 'success') {
         // Generation started, go to loading page
+        startGeneration(response.requestId);
         navigate('/result', { 
           state: { requestId: response.requestId, songId: null }
         });
@@ -354,15 +356,22 @@ export default function GeneratePage() {
           <button className="hero-btn button generate-back-button" onClick={() => navigate('/select-style')}>
             <span className="hero-btn-text">Înapoi</span>
           </button>
-          <button 
-            className={`hero-btn button generate-button ${!songName.trim() || isProcessing ? 'disabled' : ''}`} 
-            onClick={handleGenerateOrGoToPay}
-            disabled={!songName.trim() || isProcessing}
-          >
-            <span className="hero-btn-text">
-              {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
-            </span>
-          </button>
+          {(() => {
+            const isDisabled = !songName.trim() || isProcessing;
+            return (
+              <button 
+                className={`hero-btn button generate-button ${isDisabled ? 'disabled' : ''}`} 
+                onClick={() => {
+                  handleGenerateOrGoToPay();
+                }}
+                disabled={isDisabled}
+              >
+                <span className="hero-btn-text">
+                  {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
+                </span>
+              </button>
+            );
+          })()}
         </div>
 
         {error && <div className="error-message">{error}</div>}
