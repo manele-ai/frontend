@@ -208,20 +208,12 @@
   transition: all 0.3s ease;
   text-decoration: underline;
   text-decoration-color: transparent;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #000000;
 }
 
 .auth-link-button:hover {
-  background: linear-gradient(90deg, rgba(255,238,204,1) 0%, rgba(207,175,110,1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-decoration-color: rgba(201,169,104,0.5);
+  color: #333333;
+  text-decoration-color: rgba(0,0,0,0.5);
 }
 
 /* Error Styles */

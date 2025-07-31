@@ -20,6 +20,7 @@ export default function GeneratePage() {
   const [wantsDedication, setWantsDedication] = useState(false);
   const [wantsDonation, setWantsDonation] = useState(false);
   const [donationAmount, setDonationAmount] = useState('');
+  const [donorName, setDonorName] = useState('');
   const [mode, setMode] = useState('hard');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
@@ -38,6 +39,19 @@ export default function GeneratePage() {
     }
   }, [location.state]);
 
+  // Reset donation and dedication when switching to easy mode
+  useEffect(() => {
+    if (mode === 'easy') {
+      setWantsDedication(false);
+      setWantsDonation(false);
+      setDonationAmount('');
+      setDonorName('');
+      setFromName('');
+      setToName('');
+      setDedication('');
+    }
+  }, [mode]);
+
   useEffect(() => {
     // Grab user credits
     if (user && isAuthenticated) {
@@ -48,6 +62,25 @@ export default function GeneratePage() {
       setUserCredits(0);
     }
   }, [user, isAuthenticated]);
+
+  // Calculate price based on mode and options
+  const calculatePrice = () => {
+    let basePrice = 29.99;
+    
+    // If complex mode and dedication is checked, add 30 RON
+    if (mode === 'hard' && wantsDedication) {
+      basePrice += 30;
+    }
+    
+    // If donation is checked, add the donation amount
+    if (wantsDonation && donationAmount) {
+      basePrice += parseFloat(donationAmount) || 0;
+    }
+    
+    return basePrice;
+  };
+
+  const finalPrice = calculatePrice();
 
   const sendGenerationRequest = async () => {
     setIsProcessing(true);
@@ -63,6 +96,7 @@ export default function GeneratePage() {
         wantsDedication,
         wantsDonation,
         donationAmount,
+        donorName,
         mode
       };
 
@@ -105,6 +139,7 @@ export default function GeneratePage() {
       wantsDedication,
       wantsDonation,
       donationAmount,
+      donorName,
       mode
     };
 
@@ -256,6 +291,18 @@ export default function GeneratePage() {
             </div>
             {wantsDonation && (
               <div className="input-group">
+                <label className="input-label">Numele celui care aruncă cu bani</label>
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Ex: Gheorghiță Varicelă"
+                  value={donorName}
+                  onChange={(e) => setDonorName(e.target.value)}
+                />
+              </div>
+            )}
+            {wantsDonation && (
+              <div className="input-group">
                 <label className="input-label">
                   Alege suma pe care vrei sa o arunci la manele si se va specifica in piesa (RON)
                 </label>
@@ -270,6 +317,37 @@ export default function GeneratePage() {
             )}
           </>
         )}
+
+        {/* Price Display */}
+        <div className="price-container-wrapper">
+        <div className="price-container">
+          <div className="price-card">
+            <h3 className="price-title">Preț final</h3>
+            <div className="price-amount">
+              <span className="price-value">{finalPrice.toFixed(2)}</span>
+              <span className="price-currency">RON</span>
+            </div>
+              {mode === 'hard' && wantsDedication && (
+                <div className="price-item">
+                  <span className="price-item-label">Dedicație:</span>
+                  <span className="price-item-value">+30.00 RON</span>
+                </div>
+              )}
+              {wantsDonation && donationAmount && (
+                <div className="price-item">
+                  <span className="price-item-label">Aruncat cu bani:</span>
+                  <span className="price-item-value">+{parseFloat(donationAmount) || 0} RON</span>
+                </div>
+              )}
+            <div className="price-breakdown">
+              <div className="price-item">
+                <span className="price-item-label">Preț de bază:</span>
+                <span className="price-item-value">29.99 RON</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
 
         {/* Buttons at the bottom */}
         <div className="buttons-container">

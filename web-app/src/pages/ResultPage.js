@@ -163,7 +163,13 @@ export default function ResultPage() {
             if (!mounted.current) return;
             
             if (docSnap.exists()) {
-              setSongData(docSnap.data());
+              const songData = docSnap.data();
+              setSongData(songData);
+              
+              // Clear generation state when song is fully loaded
+              if (songData && songData.apiData && songData.apiData.title) {
+                // clearGeneration(); // This line is removed as per the edit hint
+              }
             }
           },
           (err) => {
@@ -188,7 +194,7 @@ export default function ResultPage() {
         unsubscribe();
       }
     };
-  }, [songId]);
+  }, [songId]); // Removed clearGeneration from dependency array
 
   // Add loading progress animation
   useEffect(() => {

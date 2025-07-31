@@ -434,7 +434,86 @@
   color: transparent;
 }
 
+.generate-page .price-container-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
+/* Price Display Styles */
+.generate-page .price-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 35%;
+}
+
+.generate-page .price-card {
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.generate-page .price-title {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #080A0B;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.generate-page .price-amount {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.generate-page .price-value {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #080A0B;
+}
+
+.generate-page .price-currency {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #080A0B;
+}
+
+.generate-page .price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.generate-page .price-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.generate-page .price-item-label {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #080A0B;
+}
+
+.generate-page .price-item-value {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #080A0B;
+}
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -563,5 +642,53 @@
   .generate-page .generate-button {
     width: 160px;
     height: 45px;
+  }
+} 
+
+/* Responsive styles for price display */
+@media (max-width: 768px) {
+  .generate-page .price-card {
+    padding: 20px;
+  }
+  
+  .generate-page .price-title {
+    font-size: 18px;
+  }
+  
+  .generate-page .price-value {
+    font-size: 28px;
+  }
+  
+  .generate-page .price-currency {
+    font-size: 16px;
+  }
+
+  .generate-page .price-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .generate-page .price-card {
+    padding: 16px;
+  }
+  
+  .generate-page .price-title {
+    font-size: 16px;
+  }
+  
+  .generate-page .price-value {
+    font-size: 24px;
+  }
+  
+  .generate-page .price-currency {
+    font-size: 14px;
+  }
+  
+  .generate-page .price-item-label,
+  .generate-page .price-item-value {
+    font-size: 12px;
   }
 } 
