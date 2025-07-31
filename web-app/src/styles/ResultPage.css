@@ -87,15 +87,17 @@
 
 
 
-.container {
+.result-page .container {
   width: 100%;
-  max-width: 420px;
+  max-width: 600px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 20px;
   padding-bottom: 24px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
 }
 
 .title {
@@ -323,7 +325,7 @@
     padding-top: 70px; /* Adjusted for smaller header */
   }
   
-  .container {
+  .result-page .container {
     padding-top: 10px;
   }
   
@@ -372,7 +374,7 @@
 } 
 
 @media (max-width: 480px) {
-  .container {
+  .result-page .container {
     padding-bottom: 40px;
   }
   
