@@ -2,6 +2,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../components/auth/AuthContext';
 import { db } from '../services/firebase';
+import { syncGenerationStatusForUser } from '../services/firebase/functions';
 
 export function useSongs() {
   const { user } = useAuth();
@@ -18,6 +19,10 @@ export function useSongs() {
       }
 
       try {
+        // Run sync in background
+        // TODO: do we need to disable if user currently has a song in progress? Probably not
+        syncGenerationStatusForUser().catch(console.error);
+
         const songsRef = collection(db, 'songsPublic');
         const q = query(songsRef, where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);

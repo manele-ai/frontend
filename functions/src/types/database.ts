@@ -29,7 +29,8 @@ export namespace Database {
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     lastStatusPollAt?: admin.firestore.Timestamp;
-    songIds?: string[];
+    songIds?: string[]; // ignore for now
+    songId?: string;
     userGenerationInput: UserGenerationInput;
     requestId: string;
   }

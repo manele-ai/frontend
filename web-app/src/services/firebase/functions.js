@@ -32,3 +32,13 @@ export const createSubscriptionCheckoutSession = async () => {
   const result = await fn();
   return /** @type {{checkoutUrl: string, sessionId: string}} */ (result.data);
 };
+
+/**
+ * Syncs the generation status for a user.
+ * @returns {Promise<{updates: {songId?: string, taskId: string, status: string}[]}}>}
+ */
+export const syncGenerationStatusForUser = async () => {
+  const fn = httpsCallable(functions, 'syncGenerationStatusForUser');
+  const result = await fn();
+  return /** @type {{updates: {songId?: string, taskId: string, status: string}[]}} */ (result.data);
+};

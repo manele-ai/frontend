@@ -1,5 +1,8 @@
 // Export functions to be deployed
 export { createGenerationRequest } from './handlers/createGenerationRequest';
+export { syncGenerationStatusForUser } from './handlers/syncGenerationStatus';
+
+// Triggers
 export { onGenerationRequestPaymentSuccess } from "./handlers/triggers/onGenerationRequestPaymentSuccess";
 export { mirrorSongsPublic } from './handlers/triggers/song/mirrorSongsPublic';
 export { onSongAudioUrlCreated } from './handlers/triggers/song/onSongAudioUrlCreated';
