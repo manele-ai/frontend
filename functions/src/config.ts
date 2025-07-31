@@ -60,18 +60,10 @@ export const STRIPE_WEBHOOK_SECRET = defineString(
   },
 );
 
-
-export const STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED = defineString(
-  "STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED",
+export const STRIPE_PRICE_ID_SONG = defineString(
+  "STRIPE_PRICE_ID_SONG",
   {
-    description: "Stripe Price ID for one-time song purchase for unsubscribed users",
-  },
-);
-
-export const STRIPE_PRICE_ID_ONETIME_SUBSCRIBED = defineString(
-  "STRIPE_PRICE_ID_ONETIME_SUBSCRIBED",
-  {
-    description: "Stripe Price ID for one-time song purchase for subscribed users",
+    description: "Stripe Price ID for song purchase",
   },
 );
 
@@ -80,6 +72,13 @@ export const STRIPE_PRICE_ID_SUBSCRIPTION = defineString(
   "STRIPE_PRICE_ID_SUBSCRIPTION",
   {
     description: "Stripe Price ID for subscription",
+  },
+);
+
+export const STRIPE_COUPON_ID_SUBSCRIBED_SONG = defineString(
+  "STRIPE_COUPON_ID_SUBSCRIBED_SONG",
+  {
+    description: "Stripe Coupon ID for subscribed song purchase",
   },
 );
 

@@ -1,10 +1,10 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { db, REGION, stripe, STRIPE_PRICE_ID_ONETIME_SUBSCRIBED, STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED } from "../config";
+import { db, REGION, stripe, STRIPE_PRICE_ID_SONG } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { createGenerationRequestTransaction } from "../service/generation/generation-request";
-import { createOneTimeCheckoutSession } from "../service/payment/checkout-session";
+import { createSongCheckoutSession } from "../service/payment/checkout-session";
 import { createCustomer, getCustomerIdByUserId } from "../service/payment/customer";
 import { Requests } from "../types";
 
@@ -48,19 +48,18 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
         return { requestId, paymentStatus };
       }
 
-      const priceId = 
-        paymentType === 'subscription_discount'
-        ? STRIPE_PRICE_ID_ONETIME_SUBSCRIBED.value()
-        : STRIPE_PRICE_ID_ONETIME_UNSUBSCRIBED.value();
+      const priceId = STRIPE_PRICE_ID_SONG.value();
+      const applySubscriptionDiscount = paymentType === 'subscription_discount' ;
 
       // Create a Stripe session
       try {
-          const session = await createOneTimeCheckoutSession(
-            auth.uid,
+          const session = await createSongCheckoutSession({
+            userId: auth.uid,
             customerId,
             requestId,
-            priceId
-          );
+            priceId,
+            applySubscriptionDiscount,
+          });
           // Attach Stripe session id to generation request
           await db.collection(COLLECTIONS.GENERATION_REQUESTS)
             .doc(requestId)
