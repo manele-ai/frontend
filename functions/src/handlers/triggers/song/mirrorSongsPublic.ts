@@ -1,8 +1,8 @@
 import * as functions from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { isEqual } from "lodash";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
 
 /**
  * Extracts public fields from a song document according to SongDataPublic type

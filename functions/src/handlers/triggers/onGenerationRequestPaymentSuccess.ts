@@ -1,10 +1,10 @@
 import { HttpsError } from "firebase-functions/https";
 import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { COLLECTIONS } from "../constants/collections";
-import { handleGenerationFailed } from "../service/generation/failure";
-import { Database, Requests } from "../types";
-import { enqueueGenerateSongTask } from "./tasks/generateSong";
+import { COLLECTIONS } from "../../constants/collections";
+import { handleGenerationFailed } from "../../service/generation/failure";
+import { Database, Requests } from "../../types";
+import { enqueueGenerateSongTask } from "../tasks/generateSong";
 
 export const onGenerationRequestPaymentSuccess = onDocumentWritten(
   `${COLLECTIONS.GENERATION_REQUESTS}/{requestId}`,

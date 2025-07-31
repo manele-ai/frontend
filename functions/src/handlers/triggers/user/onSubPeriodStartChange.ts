@@ -1,9 +1,9 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { db, REGION } from "../config";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
+import { db, REGION } from "../../../config";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
 
 /**
  * Cloud Function that triggers when a user's subscription period starts.

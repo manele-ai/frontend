@@ -1,12 +1,12 @@
 // Export functions to be deployed
 export { createGenerationRequest } from './handlers/createGenerationRequest';
-export { mirrorSongsPublic } from './handlers/mirrorSongsPublic';
-export { mirrorUsersPublic } from './handlers/mirrorUsersPublic';
-export { onAuthUserCreated } from './handlers/onAuthUserCreated';
-export { onGenerationRequestPaymentSuccess } from "./handlers/onGenerationRequestPaymentSuccess";
-export { onSongAudioUrlCreated } from './handlers/onSongAudioUrlCreated';
-export { onSubPeriodStartChange } from './handlers/onSubPeriodStartChange';
-export { updateLeaderboardOnSongCreated } from './handlers/updateLeaderboardOnSongCreated';
+export { onGenerationRequestPaymentSuccess } from "./handlers/triggers/onGenerationRequestPaymentSuccess";
+export { mirrorSongsPublic } from './handlers/triggers/song/mirrorSongsPublic';
+export { onSongAudioUrlCreated } from './handlers/triggers/song/onSongAudioUrlCreated';
+export { updateLeaderboardOnSongCreated } from './handlers/triggers/song/updateLeaderboardOnSongCreated';
+export { mirrorUsersPublic } from './handlers/triggers/user/mirrorUsersPublic';
+export { onAuthUserCreated } from './handlers/triggers/user/onAuthUserCreated';
+export { onSubPeriodStartChange } from './handlers/triggers/user/onSubPeriodStartChange';
 
 // Export tasks
 export { downloadSongTask } from "./handlers/tasks/downloadSong";

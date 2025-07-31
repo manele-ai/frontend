@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
 
 /**
  * Cloud Function that triggers when a user document is written (created/updated/deleted) in the users collection.

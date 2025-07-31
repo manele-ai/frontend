@@ -2,8 +2,8 @@ import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v2";
 import { beforeUserCreated } from "firebase-functions/v2/identity";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
 
 /**
  * Cloud Function that triggers when a new user is created in Firebase Auth.

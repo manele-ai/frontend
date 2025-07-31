@@ -1,9 +1,9 @@
 import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
-import { enqueueDownloadSongTask } from "./tasks/downloadSong";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
+import { enqueueDownloadSongTask } from "../../tasks/downloadSong";
 
 export const onSongAudioUrlCreated = onDocumentWritten(
   `${COLLECTIONS.SONGS}/{songId}`,

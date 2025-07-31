@@ -2,8 +2,8 @@ import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v2";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { COLLECTIONS } from "../constants/collections";
-import { Database } from "../types";
+import { COLLECTIONS } from "../../../constants/collections";
+import { Database } from "../../../types";
 
 export function getPeriodKeys(ts: Date) {
   const y = ts.getUTCFullYear();
