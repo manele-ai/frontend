@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "manele-ai-dev-fa776",
-    "staging": "manele-io-testing",
+    "default": "manele-io-test",
+    "staging": "manele-io-test",
     "prod": "manele-io-prod"
   }
 }
