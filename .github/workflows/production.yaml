@@ -1,31 +1,31 @@
-name: Vercel Staging Deployment
+name: Vercel Production Deployment
 
 on:
     push:
         branches:
-            - staging
+            - main
     pull_request:
         branches:
-            - staging
+            - main
 
 jobs:
-    Deploy-Staging:
+    Deploy-Production:
         runs-on: ubuntu-latest
-        environment: Staging
+        environment: Production
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           # These are public, don't worry
           FIREBASE_REGION: europe-central2
-          FIREBASE_PROJECT_ID: manele-io-test
+          FIREBASE_PROJECT_ID: manele-io-testing
           REACT_APP_STRIPE_PUBLISHABLE_KEY: pk_test_51RoNSY52PGkk7WNvAXBljO2IYGljmOW5dLgiJ1cdnEHRcgkCtHDsuD3v93bvpE9mNpXNGUU0fq38banmvAP0rRwB00newRAyiz
-          REACT_APP_FIREBASE_API_KEY: AIzaSyAd-_OJQfpGyMBh9wKA_526ZtMUvMOUtqQ
-          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-test.firebaseapp.com
-          REACT_APP_FIREBASE_PROJECT_ID: manele-io-test
-          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io-test.firebasestorage.app
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 473723194717
-          REACT_APP_FIREBASE_APP_ID: 1:473723194717:web:b1e1e9d2cdb7c7964d2cb4
-          REACT_APP_FIREBASE_MEASUREMENT_ID: G-W7YVXY1W5T
+          REACT_APP_FIREBASE_API_KEY: AIzaSyDO8Q9uHEFrPcS2ep-JABAN4eI0v1gQFww
+          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-testing.firebaseapp.com
+          REACT_APP_FIREBASE_PROJECT_ID: manele-io-testing
+          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io-testing.firebasestorage.app
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 555349769112
+          REACT_APP_FIREBASE_APP_ID: 1:555349769112:web:ebefecc513ed5b98e209ed
+          REACT_APP_FIREBASE_MEASUREMENT_ID: G-7Z71ZS98GC
         steps:
             - uses: actions/checkout@v3
             - name: Install Node.js
@@ -53,15 +53,15 @@ jobs:
                 credentials_json: ${{ secrets.GCP_SA_KEY }}
 
             - name: Install Firebase CLI
-              run: npm install -g firebase-tools@latest
+              run: npm install -g firebase-tools@latest 
 
             - name: Generate .env file for Functions
               run: |
                 mkdir -p functions
-                cat <<EOF > functions/.env
+                cat <<EOF > functions/.env.${{ secrets.FIREBASE_PROJECT_ID }}
                 THIRD_PARTY_API_BASE_URL=${{ secrets.THIRD_PARTY_API_BASE_URL }}
                 THIRD_PARTY_API_KEY=${{ secrets.THIRD_PARTY_API_KEY }}
-                MP3_STORAGE_BUCKET=manele-io-test.firebasestorage.app
+                MP3_STORAGE_BUCKET=${{ secrets.MP3_STORAGE_BUCKET }}
                 OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
                 STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
                 STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
