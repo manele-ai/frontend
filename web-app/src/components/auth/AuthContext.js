@@ -11,6 +11,7 @@ import {
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../../services/firebase';
+import { createUserIfNotExists } from '../../services/firebase/functions';
 
 // User context structure
 const AuthContext = createContext({
@@ -36,18 +37,28 @@ export function AuthProvider({ children }) {
   // Fetch user profile from Firestore
   const fetchUserProfile = async (uid) => {
     try {
-      const userDoc = await getDoc(doc(db, 'users', uid));
+      const userDoc = await getDoc(doc(db, 'usersPublic', uid));
       if (userDoc.exists()) {
         return { id: userDoc.id, ...userDoc.data() };
       }
-      return null;
+      
+      // If user document doesn't exist, create it
+      await createUserIfNotExists({
+        displayName: auth.currentUser?.displayName || '',
+        photoURL: auth.currentUser?.photoURL || ''
+      });
+      
+      // Fetch the newly created document
+      const newUserDoc = await getDoc(doc(db, 'usersPublic', uid));
+      return { id: newUserDoc.id, ...newUserDoc.data() };
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error fetching/creating user profile:', error);
       return null;
     }
   };
 
   // Update user profile
+  // TODO: fix this
   const updateUserProfile = async (updates) => {
     if (!user) throw new Error('No user authenticated');
 
@@ -106,7 +117,8 @@ export function AuthProvider({ children }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       // Fetch user profile
-      await fetchUserProfile(user.uid);
+      const profile = await fetchUserProfile(user.uid);
+      setUserProfile(profile);
       // setUserProfile(profile); // profile is fetched onAuthStateChanged
       // return user; // REMOVE, should return void
     } catch (error) {
@@ -129,7 +141,8 @@ export function AuthProvider({ children }) {
       const user = userCredential.user;
 
       // Check if user profile exists, if not create it
-      let profile = await fetchUserProfile(user.uid);
+      const profile = await fetchUserProfile(user.uid);
+      setUserProfile(profile);
 
       // setUserProfile(profile); // profile is fetched onAuthStateChanged
       // return user; // REMOVE, should return void
