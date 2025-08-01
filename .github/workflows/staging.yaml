@@ -48,12 +48,12 @@ jobs:
 
             # Deploy backend to Firebase
             - name: Authenticate to Google Cloud
-              uses: google-github-actions/auth@v1
+              uses: google-github-actions/auth@v2
               with:
                 credentials_json: ${{ secrets.GCP_SA_KEY }}
 
             - name: Install Firebase CLI
-              run: npm install -g firebase-tools@latest
+              run: npm install -g firebase-tools@13.18.0
 
             - name: Generate .env file for Functions
               run: |
