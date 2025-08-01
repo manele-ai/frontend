@@ -71,6 +71,11 @@ jobs:
                 FRONTEND_BASE_URL=https://staging-9bha86vbc1980bca71.manele.io
                 EOF
 
+            - name: Build Firebase functions
+              run: |
+                cd functions
+                npm install
+                npm run build
             # Functions are deployed to https://{REGION}-{PROJECT_ID}.cloudfunctions.net/{functionName}
             - name: Deploy Firebase
               run: firebase deploy \
