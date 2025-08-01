@@ -12,6 +12,18 @@ jobs:
     Deploy-Staging:
         runs-on: ubuntu-latest
         environment: Staging
+        # These are public, don't worry
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          REACT_APP_STRIPE_PUBLISHABLE_KEY: pk_test_51RoNSY52PGkk7WNvAXBljO2IYGljmOW5dLgiJ1cdnEHRcgkCtHDsuD3v93bvpE9mNpXNGUU0fq38banmvAP0rRwB00newRAyiz
+          REACT_APP_FIREBASE_API_KEY: AIzaSyDO8Q9uHEFrPcS2ep-JABAN4eI0v1gQFww
+          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-testing.firebaseapp.com
+          REACT_APP_FIREBASE_PROJECT_ID: manele-io-testing
+          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io-testing.firebasestorage.app
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 555349769112
+          REACT_APP_FIREBASE_APP_ID: 1:555349769112:web:ebefecc513ed5b98e209ed
+          REACT_APP_FIREBASE_MEASUREMENT_ID: G-7Z71ZS98GC
         steps:
 
             - uses: actions/checkout@v3
