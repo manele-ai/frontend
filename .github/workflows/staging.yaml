@@ -78,6 +78,7 @@ jobs:
                 npm run build
             # Functions are deployed to https://{REGION}-{PROJECT_ID}.cloudfunctions.net/{functionName}
             - name: Deploy Firebase
-              run: firebase deploy \
-                --only functions,firestore,storage \
-                --project $FIREBASE_PROJECT_ID
+              run: |
+                firebase deploy \
+                  --only functions,firestore,storage \
+                  --project "$FIREBASE_PROJECT_ID"
