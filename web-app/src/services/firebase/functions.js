@@ -42,3 +42,14 @@ export const syncGenerationStatusForUser = async () => {
   const result = await fn();
   return /** @type {{updates: {songId?: string, taskId: string, status: string}[]}} */ (result.data);
 };
+
+/**
+ * Creates a user if they don't exist.
+ * @param {object} data
+ * @returns {Promise<{success: boolean, exists: boolean}>}
+ */
+export const createUserIfNotExists = async (data) => {
+  const fn = httpsCallable(functions, 'createUserIfNotExists');
+  const result = await fn(data);
+  return /** @type {{success: boolean, exists: boolean}} */ (result.data);
+};
