@@ -1,0 +1,1 @@
+Write the lyrics of an oriental-style Romanian manea. The theme can include passion, temptation, mystery, or seduction. Use exotic metaphors, bold romantic language, and mystical references. The chorus should be hypnotic, sensual, and easy to chant. Use simple, catchy rhymes with a dreamy tone.

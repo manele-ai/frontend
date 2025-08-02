@@ -1,0 +1,1 @@
+Write the lyrics of a manea inspired by Romanian popular music. Focus on village life, family, values, love, and traditional pride. Use respectful language, rural imagery, and cultural references. Keep rhymes folk-like, and the chorus should be heartfelt, familiar, and singable by all generations.

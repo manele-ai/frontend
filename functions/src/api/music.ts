@@ -17,10 +17,13 @@ export async function initiateMusicGeneration(
   style: string,
 ): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
+    if (!lyrics || !title || !style) {
+      throw new Error("Missing required arguments for music generation");
+    }
     const requestBody: MusicApi.GenerateRequest = {
       prompt: lyrics,
-      style: style || "Romanian manea in a party mood. Song must be in Romanian language.",
-      title: title || "Maneaua verii",
+      style: style,
+      title: title,
       customMode: true,
       instrumental: false,
       model: "V4_5",

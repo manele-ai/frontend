@@ -11,7 +11,7 @@ import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
 
 export default function GeneratePage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, waitForAuthReady } = useAuth();
   const { startGeneration } = useGeneration();
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
@@ -158,8 +158,19 @@ export default function GeneratePage() {
   const handleAuthSuccess = async () => {
     // After successful auth, send the generation request if we have pending params
     if (pendingGenerationParams) {
-      await sendGenerationRequest();
-      setPendingGenerationParams(null);
+      try {
+        await waitForAuthReady();
+        
+        // Now we can safely proceed with the generation request
+        if (isAuthenticated && user) {
+          await sendGenerationRequest();
+          setPendingGenerationParams(null);
+        } else {
+          setError('Autentificarea nu s-a finalizat corect. Te rugăm să încerci din nou.');
+        }
+      } catch (error) {
+        setError('A apărut o eroare la autentificare. Te rugăm să încerci din nou.');
+      }
     }
   };
 

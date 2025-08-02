@@ -9,7 +9,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { auth, db } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
 
@@ -25,7 +25,9 @@ const AuthContext = createContext({
   signOut: async () => Promise.resolve(),
   resetPassword: async (email) => Promise.resolve(),
   updateUserProfile: async (updates) => Promise.resolve(),
-  isAuthenticated: false
+  isAuthenticated: false,
+  // EDIT 2: rename to waitForAuthReady
+  waitForAuthReady: async () => Promise.resolve(),
 });
 
 export function AuthProvider({ children }) {
@@ -33,6 +35,19 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // EDIT 3: add resolver ref
+  const readyResolvers = useRef([]);
+
+  // EDIT 4: implement waitForAuthReady
+  const waitForAuthReady = () => {
+    return new Promise((resolve) => {
+      if (!loading) {
+        resolve();
+      } else {
+        readyResolvers.current.push(resolve);
+      }
+    });
+  };
 
   // Fetch user profile from Firestore
   const fetchUserProfile = async (uid) => {
@@ -196,6 +211,14 @@ export function AuthProvider({ children }) {
     return () => unsub && unsub();
   }, []);
 
+  // EDIT 5: flush resolvers when loading changes to false
+  useEffect(() => {
+    if (!loading && readyResolvers.current.length > 0) {
+      readyResolvers.current.forEach((res) => res());
+      readyResolvers.current = [];
+    }
+  }, [loading]);
+
   const value = {
     user,
     userProfile,
@@ -207,7 +230,9 @@ export function AuthProvider({ children }) {
     signOut: signOutUser,
     resetPassword,
     updateUserProfile,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    // EDIT 6: expose waitForAuthReady in context value
+    waitForAuthReady,
   };
 
   return (

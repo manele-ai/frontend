@@ -1,15 +1,7 @@
 import axios from "axios";
 import { logger } from "firebase-functions/v2";
-import { HttpsError } from "firebase-functions/v2/https";
+import { readFileSync } from 'fs';
 import { openaiApiKey } from "../config";
-import comercialePrompt from "../data/prompts/styles/comerciale.json";
-import deOpulentaPrompt from "../data/prompts/styles/de-opulenta.json";
-import jalePrompt from "../data/prompts/styles/jale.json";
-import lautarestiPrompt from "../data/prompts/styles/lautaresti.json";
-import maneleLivePrompt from "../data/prompts/styles/manele-live.json";
-import muzicaPopularaPrompt from "../data/prompts/styles/muzica-populara.json";
-import orientalePrompt from "../data/prompts/styles/orientale.json";
-import petrecerePrompt from "../data/prompts/styles/petrecere.json";
 
 const apiClient = axios.create({
   baseURL: "https://api.openai.com/v1",
@@ -30,47 +22,43 @@ interface ChatCompletionResponse {
   }[];
 }
 
-const SYSTEM_PROMPT = `You are one of the best Romanian manelists. You will create lyrics for manele songs.`;
+const OUTPUT_FORMAT_PROMPT = `
+# FORMATUL OUTPUT-ULUI
+- Prima linie va fi <VERSURI> ca marcator pentru versurile care urmeaza.
+- Dupa acceea vei scoate ca ouput doar versurile cu demarcatoarele ei de structura (e.g., Refren, Vers 1, etc.)
+- Nu vei adauga nimic in plus.
 
-const BASE_PROMPT_TEMPLATE = `
-MANEA_STYLE: [MANEA_STYLE]
-
-LYRICS INSTRUCTION:
-[LYRICS_INSTRUCTION]
-
-STYLE_DESCRIPTION:
-[STYLE_DESCRIPTION]
-
-TASK: Create the lyrics for the manea song by taking into account the MANEA_STYLE, LYRICS_INSTRUCTION, and STYLE_DESCRIPTION. Return both in JSON format with the key "lyrics".
-
-MUST:
-- Lyrics must be in Romanian language.
-- Lyrics  must be text only, no markdown, no emojis or other formatting.
-- Respond only in JSON format with the key: "lyrics".
+Exemplu:
+<VERSURI>
+Vers 1:
+...
+Vers 2:
+...
 `;
 
-function getPromptJsonTemplateFromStyle(style: string) {
-  logger.log(`Getting prompt for style: "'${style}'"`);
-  switch (style) {
-    case "comerciale":
-      return comercialePrompt;
-    case "opulenta":
-      return deOpulentaPrompt;
-    case "jale":
-      return jalePrompt;
-    case "lautaresti":
-      return lautarestiPrompt;
-    case "live":
-      return maneleLivePrompt;
-    case "populare":
-      return muzicaPopularaPrompt;
-    case "orientale":
-      return orientalePrompt;
-    case "petrecere":
-      return petrecerePrompt;
-    default:
-      throw new Error(`Invalid style: ${style}`);
-  }
+// We add this at the end of user prompt and in the system prompt too
+const USER_REQUESTS_PROMPT = `
+# CERINTA UTILIZATORULUI
+- Tema principala este: [TEMA_PRINCIPALA]
+
+Vei indeplini cerinta utilizatorului.
+`;
+
+function fillInUserRequests({ title } : {title: string}) {
+  return USER_REQUESTS_PROMPT.replace("[TEMA_PRINCIPALA]", title);
+}
+
+function buildUserPrompt(userRequests: string, { style } : {style: string}) {
+  const filePath = `../data/prompts/${style}/LYRICS_PROMPT.md`;
+  const lyricsPrompt = readFileSync(filePath, 'utf8');
+
+  return [lyricsPrompt, OUTPUT_FORMAT_PROMPT, userRequests].join("\n\n");
+}
+
+function buildSystemPrompt(userRequests: string, { style } : {style: string}) {
+  const filePath = `../data/prompts/${style}/SYSTEM_PROMPT.md`;
+  const systemPromptStartSpecificToStyle = readFileSync(filePath, 'utf8');
+  return [systemPromptStartSpecificToStyle, OUTPUT_FORMAT_PROMPT].join("\n\n");
 }
 
 function findTextContentInResponse(response: ChatCompletionResponse): string {
@@ -83,8 +71,18 @@ function findTextContentInResponse(response: ChatCompletionResponse): string {
   throw new Error("No text content found in OpenAI response");
 }
 
+function parseResponseText(responseText: string): string {
+  const trimmedText = responseText.trim();
+  if (!trimmedText.startsWith('<VERSURI>')) {
+    throw new Error('Response text must start with <VERSURI> tag');
+  }
+  // Remove the <VERSURI> tag and trim any whitespace
+  const lyrics = trimmedText.replace('<VERSURI>', '').trim();
+  return lyrics;
+}
+
 // Atm we only do lyrics generation and keep the style constant across manele types
-export async function generateLyricsAndStyle(
+export async function generateLyrics(
   style: string,
   title: string,
   lyricsDetails?: string,
@@ -96,75 +94,49 @@ export async function generateLyricsAndStyle(
   donation?: {
     amount: number;
   }
-): Promise<{ lyrics: string; styleDescription: string }> {
+): Promise<{ lyrics: string }> {
   try {
-    // Load the appropriate prompt template based on style
-    const promptTemplate: { lyrics: string; style: string } = getPromptJsonTemplateFromStyle(style)
+    const userRequests = fillInUserRequests({ title });
+    const userPrompt = buildUserPrompt(userRequests, { style });
+    const systemPrompt = buildSystemPrompt(userRequests, { style });
     
-    // Build the user message for lyrics
-    let lyricsInstruction = promptTemplate.lyrics;
-    if (title) {
-      lyricsInstruction += `\nThe song title is: "${title}".`;
-    }
-    if (dedication) {
-      lyricsInstruction += `\nThis song must include a dedication from ${dedication.from || 'someone'} to ${dedication.to || 'someone special'}`;
-      if (dedication.message) {
-        lyricsInstruction += ` with the message: "${dedication.message}"`;
-      }
-    }
-    if (donation && donation.amount) {
-      lyricsInstruction += `\nInclude references to throwing/donating money, specifically the amount of ${donation.amount} RON.`;
-    }
-
-    const userPrompt = BASE_PROMPT_TEMPLATE
-      .replace("[MANEA_STYLE]", style)
-      .replace("[LYRICS_INSTRUCTION]", lyricsInstruction)
-      .replace("[STYLE_DESCRIPTION]", promptTemplate.style);
+    // let lyricsInstruction = lyricsPrompt;
+    // if (dedication) {
+    //   lyricsInstruction += `\nThis song must include a dedication from ${dedication.from || 'someone'} to ${dedication.to || 'someone special'}`;
+    //   if (dedication.message) {
+    //     lyricsInstruction += ` with the message: "${dedication.message}"`;
+    //   }
+    // }
+    // if (donation && donation.amount) {
+    //   lyricsInstruction += `\nInclude references to throwing/donating money, specifically the amount of ${donation.amount} RON.`;
+    // }
 
     const chatgptResponse = await apiClient.post<ChatCompletionResponse>("/chat/completions", {
       model: "gpt-4o",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      temperature: 0.8,
+      temperature: 1.0, // >1 e mai creative, <1 e mai consistent
     });
 
-    logger.info("OpenAI response:", JSON.stringify(chatgptResponse.data, null, 2));
+    logger.info("[OPENAI][FULL RESPONSE] ", JSON.stringify(chatgptResponse.data, null, 2));
 
     // Extract the response text safely
-    // TODO: should we store chatgpt responses in firestore?
     const responseText = findTextContentInResponse(chatgptResponse.data);
+    logger.info("[OPENAI][LYRICS RESPONSE] ", responseText);
     
-    // Parse the JSON response
-    try {
-      logger.info("Attempting to parse response", { responseText });
-      // Parse the content which is a JSON string containing lyrics and style
-      const result = JSON.parse(responseText);
-      
-      if (!result.lyrics) {
-        throw new Error('Response missing required fields: lyrics');
-      }
-      return {
-        lyrics: result.lyrics,
-        styleDescription: promptTemplate.style,
-      };
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to parse ChatGPT response as JSON: ${error.message}`);
-      }
-      throw new Error('Failed to parse ChatGPT response as JSON');
-    }
+    // Parse and validate the response format
+    const lyrics = parseResponseText(responseText);
+    return {
+      lyrics,
+    };
 
   } catch (error) {
     logger.error("Error calling OpenAI API:", error);
     if (axios.isAxiosError(error)) {
-      throw new HttpsError(
-        "internal",
-        `OpenAI API error: ${error.message}`,
-        error.response?.data
-      );
+      throw new Error(`OpenAI API error: ${error.message}`);
     }
-    throw new HttpsError("internal", "Failed to generate lyrics and style with OpenAI API.");
+    throw new Error("Failed to generate lyrics with OpenAI API.");
   }
 } 
