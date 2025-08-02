@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from './index';
 
@@ -46,10 +47,20 @@ export const syncGenerationStatusForUser = async () => {
 /**
  * Creates a user if they don't exist.
  * @param {object} data
- * @returns {Promise<{success: boolean, exists: boolean}>}
  */
 export const createUserIfNotExists = async (data) => {
   const fn = httpsCallable(functions, 'createUserIfNotExists');
   const result = await fn(data);
-  return /** @type {{success: boolean, exists: boolean}} */ (result.data);
+  return /** @type {{existed: boolean, user: {uid: string, displayName: string, photoURL: string, createdAt: Timestamp, updatedAt: Timestamp, stats: {numSongsGenerated: number, numDedicationsGiven: number, sumDonationsTotal: number}}}} */ (result.data);
+};
+
+/**
+ * Updates a user's profile.
+ * @param {object} data
+ * @returns {Promise<{displayName: string, photoURL: string}>}
+ */
+export const updateUserProfile = async (data) => {
+  const fn = httpsCallable(functions, 'updateUserProfile');
+  const result = await fn(data);
+  return /** @type {{displayName: string, photoURL: string}} */ (result.data);
 };

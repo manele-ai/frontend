@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { logger } from "firebase-functions/v2";
 import { HttpsError, onRequest } from "firebase-functions/v2/https";
 import Stripe from 'stripe';
 import { REGION, stripe, STRIPE_WEBHOOK_SECRET } from "../config";
@@ -13,7 +14,7 @@ export const stripeWebhook = onRequest({ region: REGION }, async (req: Request, 
 
   const sig = req.headers['stripe-signature'] as string | undefined;
   if (typeof sig !== 'string') {
-    console.error('[STRIPE HOOK] Missing stripe-signature header');
+    logger.error('[STRIPE HOOK] Missing stripe-signature header');
     res.status(400).send();
     return;
   }
@@ -21,7 +22,7 @@ export const stripeWebhook = onRequest({ region: REGION }, async (req: Request, 
   const webhookSecret = STRIPE_WEBHOOK_SECRET.value();
 
   if (!webhookSecret) {
-    console.error('[STRIPE HOOK] Missing STRIPE_WEBHOOK_SECRET env variable');
+    logger.error('[STRIPE HOOK] Missing STRIPE_WEBHOOK_SECRET env variable');
     res.status(500).send();
     return;
   }
@@ -30,14 +31,14 @@ export const stripeWebhook = onRequest({ region: REGION }, async (req: Request, 
   try {
     event = stripe.webhooks.constructEvent((req as any).rawBody, sig!, webhookSecret);
   } catch (err) {
-    console.error('[STRIPE HOOK] Webhook signature verification failed.', err);
+    logger.error('[STRIPE HOOK] Webhook signature verification failed.', err);
     res.status(400).send();
     return;
   }
   try {
     await processEvent(event);
   } catch (err) {
-    console.error('[STRIPE HOOK] Error processing event.', err);
+    logger.error('[STRIPE HOOK] Error processing event.', err);
   }
 
   res.status(200).json({ received: true });

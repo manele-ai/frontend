@@ -61,7 +61,7 @@ export namespace Database {
   
   export interface User {
     uid: string;
-    displayName?: string;
+    displayName: string;
     photoURL?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;

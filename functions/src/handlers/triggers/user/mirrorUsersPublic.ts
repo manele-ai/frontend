@@ -1,5 +1,6 @@
-import * as functions from "firebase-functions/v2";
+import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { HttpsError } from "firebase-functions/v2/https";
 import { COLLECTIONS } from "../../../constants/collections";
 import { Database } from "../../../types";
 
@@ -21,7 +22,7 @@ export const mirrorUsersPublic = onDocumentWritten(
           .doc(userId)
           .delete();
         
-        console.info(`Successfully deleted public user data for user ${userId}`);
+        logger.info(`Successfully deleted public user data for user ${userId}`);
         return;
       }
 
@@ -43,11 +44,11 @@ export const mirrorUsersPublic = onDocumentWritten(
         .doc(userId)
         .set(publicUserData);
 
-      console.info(`Successfully synced public user data for user ${userId}`);
+      logger.info(`Successfully synced public user data for user ${userId}`);
       
     } catch (error) {
-      console.error(`Error in mirrorUsersPublic for user ${userId}:`, error);
-      throw new functions.https.HttpsError(
+      logger.error(`Error in mirrorUsersPublic for user ${userId}:`, error);
+      throw new HttpsError(
         'internal',
         'Failed to sync public user data'
       );

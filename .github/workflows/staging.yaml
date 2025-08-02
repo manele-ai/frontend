@@ -73,4 +73,5 @@ jobs:
                 firebase deploy \
                   --only functions,firestore,storage \
                   --project "$FIREBASE_PROJECT_ID" \
-                  --token "${{ secrets.FIREBASE_SECRET_TOKEN }}"
+                  --token "${{ secrets.FIREBASE_SECRET_TOKEN }}" \
+                  --force"

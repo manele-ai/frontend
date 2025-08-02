@@ -1,3 +1,4 @@
+import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { db, REGION } from "../config";
 import { COLLECTIONS } from "../constants/collections";
@@ -37,7 +38,7 @@ export const syncGenerationStatusForUser = onCall(
         const { status } = await getGenerationStatus(taskDoc.id);
         return { songId: task?.songId, taskId: taskDoc.id, status };
       } catch (error) {
-        console.error(`Error syncing task ${taskDoc.id}:`, error);
+        logger.error(`Error syncing task ${taskDoc.id}:`, error);
         return {};
       }
     }));

@@ -1,6 +1,7 @@
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { db } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
 
@@ -19,7 +20,6 @@ export const createUserIfNotExists = onCall(async (request) => {
 
   const { uid } = request.auth;
   const { displayName = "", photoURL = "" } = request.data || {};
-  const db = getFirestore();
 
   try {
     // Check if user document already exists
@@ -28,8 +28,7 @@ export const createUserIfNotExists = onCall(async (request) => {
 
     // If user document already exists, return early
     if (userDoc.exists) {
-      logger.info(`User document already exists for uid ${uid}`);
-      return { success: true, exists: true };
+      return { existed: true };
     }
 
     // Create new user document
@@ -46,10 +45,25 @@ export const createUserIfNotExists = onCall(async (request) => {
       },
     };
 
-    await userRef.set(userData);
+    const userPublicData: Database.UserPublic = {
+      uid,
+      displayName,
+      photoURL,
+      createdAt: FieldValue.serverTimestamp() as any,
+      stats: {
+        numSongsGenerated: 0,
+        numDedicationsGiven: 0,
+        sumDonationsTotal: 0,
+      },
+    };
+
+    const batch = db.batch();
+    batch.set(userRef, userData);
+    batch.set(db.collection(COLLECTIONS.PUBLIC_USERS).doc(uid), userPublicData);
+    await batch.commit();
     logger.info(`Created Firestore document for user ${uid}`);
 
-    return { success: true, exists: false };
+    return { existed: false, user: userPublicData };
   } catch (error) {
     logger.error(`Error handling user document creation for ${uid}:`, error);
     throw new HttpsError(

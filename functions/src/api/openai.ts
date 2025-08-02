@@ -1,5 +1,6 @@
 import axios from "axios";
-import * as functions from "firebase-functions";
+import { logger } from "firebase-functions/v2";
+import { HttpsError } from "firebase-functions/v2/https";
 import { openaiApiKey } from "../config";
 import comercialePrompt from "../data/prompts/styles/comerciale.json";
 import deOpulentaPrompt from "../data/prompts/styles/de-opulenta.json";
@@ -49,7 +50,7 @@ MUST:
 `;
 
 function getPromptJsonTemplateFromStyle(style: string) {
-  console.log(`Getting prompt for style: "'${style}'"`);
+  logger.log(`Getting prompt for style: "'${style}'"`);
   switch (style) {
     case "comerciale":
       return comercialePrompt;
@@ -129,7 +130,7 @@ export async function generateLyricsAndStyle(
       temperature: 0.8,
     });
 
-    functions.logger.info("OpenAI response:", JSON.stringify(chatgptResponse.data, null, 2));
+    logger.info("OpenAI response:", JSON.stringify(chatgptResponse.data, null, 2));
 
     // Extract the response text safely
     // TODO: should we store chatgpt responses in firestore?
@@ -137,7 +138,7 @@ export async function generateLyricsAndStyle(
     
     // Parse the JSON response
     try {
-      functions.logger.info("Attempting to parse response", { responseText });
+      logger.info("Attempting to parse response", { responseText });
       // Parse the content which is a JSON string containing lyrics and style
       const result = JSON.parse(responseText);
       
@@ -156,14 +157,14 @@ export async function generateLyricsAndStyle(
     }
 
   } catch (error) {
-    functions.logger.error("Error calling OpenAI API:", error);
+    logger.error("Error calling OpenAI API:", error);
     if (axios.isAxiosError(error)) {
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "internal",
         `OpenAI API error: ${error.message}`,
         error.response?.data
       );
     }
-    throw new functions.https.HttpsError("internal", "Failed to generate lyrics and style with OpenAI API.");
+    throw new HttpsError("internal", "Failed to generate lyrics and style with OpenAI API.");
   }
 } 
