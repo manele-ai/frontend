@@ -1,0 +1,1 @@
+Write the lyrics of a Romanian manea about sorrow and heartbreak. Focus on deep emotional pain, lost love, betrayal, and crying for someone who left. Use melancholic phrases, personal storytelling, and poetic sadness. Keep the rhymes heartfelt and expressive. The chorus should be tragic, easy to remember, and full of longing.
