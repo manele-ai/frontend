@@ -4,13 +4,20 @@ import { getFunctions, TaskOptions } from "firebase-admin/functions";
 import { onTaskDispatched } from "firebase-functions/tasks";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
+import { readFileSync } from "fs";
 import { initiateMusicGeneration } from "../../api/music";
-import { generateLyricsAndStyle } from "../../api/openai";
+import { generateLyrics } from "../../api/openai";
 import { db, REGION } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
 import { handleGenerationFailed } from "../../service/generation/failure";
 import { Database, Requests } from "../../types";
 import { enqueuePollGenerationStatusTask } from "./pollGenerationStatus";
+
+function loadStylePrompt(style: string) {
+  const stylePromptFilePath = `../data/prompts/${style}/STYLE_PROMPT.md`;
+  const stylePrompt = readFileSync(stylePromptFilePath, 'utf8');
+  return stylePrompt;
+}
 
 export const generateSongTask = onTaskDispatched({
   retryConfig: {
@@ -35,7 +42,7 @@ export const generateSongTask = onTaskDispatched({
       throw new HttpsError('not-found', 'User not found');
     }
     // First, generate lyrics and style description using OpenAI
-    const { lyrics, styleDescription } = await generateLyricsAndStyle(
+    const { lyrics } = await generateLyrics(
       generationData.style,
       generationData.title,
       generationData.lyricsDetails,
@@ -49,11 +56,13 @@ export const generateSongTask = onTaskDispatched({
       } : undefined
     );
 
+    const stylePrompt = loadStylePrompt(generationData.style);
+
     // Then, use the generated content to initiate music generation
     const musicApiResponse = await initiateMusicGeneration(
       lyrics,
       generationData.title,
-      styleDescription
+      stylePrompt,
     );
     if (!musicApiResponse.data.taskId) {
       throw new HttpsError('internal', 'Received invalid response from music API');
