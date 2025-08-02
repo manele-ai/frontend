@@ -2,6 +2,7 @@
 export { createGenerationRequest } from './handlers/createGenerationRequest';
 export { createUserIfNotExists } from './handlers/createUserIfNotExists';
 export { syncGenerationStatusForUser } from './handlers/syncGenerationStatus';
+export { updateUserProfile } from './handlers/updateUserProfile';
 
 // Triggers
 export { onGenerationRequestPaymentSuccess } from "./handlers/triggers/onGenerationRequestPaymentSuccess";

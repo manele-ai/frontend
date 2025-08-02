@@ -129,16 +129,13 @@ export default function ProfilePage() {
           </div>
           
           <h2 className="profile-name">
-            {userProfile?.displayName || user?.displayName || 'Utilizator'}
+            {userProfile?.displayName || 'Utilizator'}
           </h2>
           
           <p className="profile-email">{user?.email}</p>
           
           <p className="profile-joined">
-            Membru din {userProfile?.createdAt ? 
-              new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 
-              'recent'
-            }
+            {userProfile?.createdAt ? 'Membru din ' + new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 'Membru recent'}
           </p>
 
           <div className="profile-stats">

@@ -227,6 +227,18 @@
   border: 1px solid #ff6b6b;
 }
 
+.auth-input-error {
+  border-color: #ff4d4f !important;
+  background-color: #fff1f0;
+}
+
+.field-error {
+  color: #ff4d4f;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  margin-bottom: -8px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .auth-container {

@@ -8,10 +8,10 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../../services/firebase';
-import { createUserIfNotExists } from '../../services/firebase/functions';
+import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
 
 // User context structure
 const AuthContext = createContext({
@@ -38,19 +38,10 @@ export function AuthProvider({ children }) {
   const fetchUserProfile = async (uid) => {
     try {
       const userDoc = await getDoc(doc(db, 'usersPublic', uid));
-      if (userDoc.exists()) {
-        return { id: userDoc.id, ...userDoc.data() };
+      if (!userDoc.exists()) {
+        return null;
       }
-      
-      // If user document doesn't exist, create it
-      await createUserIfNotExists({
-        displayName: auth.currentUser?.displayName || '',
-        photoURL: auth.currentUser?.photoURL || ''
-      });
-      
-      // Fetch the newly created document
-      const newUserDoc = await getDoc(doc(db, 'usersPublic', uid));
-      return { id: newUserDoc.id, ...newUserDoc.data() };
+      return { id: userDoc.id, ...userDoc.data() };
     } catch (error) {
       console.error('Error fetching/creating user profile:', error);
       return null;
@@ -58,20 +49,18 @@ export function AuthProvider({ children }) {
   };
 
   // Update user profile
-  // TODO: fix this
   const updateUserProfile = async (updates) => {
     if (!user) throw new Error('No user authenticated');
 
     try {
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        ...updates,
-        updatedAt: new Date()
+      const { displayName, photoURL } = await updateUserProfileCloudFn({
+        displayName: updates.displayName,
+        photoURL: updates.photoURL
       });
 
       // Update local state
-      setUserProfile(prev => ({ ...prev, ...updates }));
-      
+      setUserProfile(prev => ({ ...prev, displayName, photoURL }));
+
       // Update Firebase Auth profile if displayName or photoURL changed
       if (updates.displayName || updates.photoURL) {
         await updateProfile(auth.currentUser, {
@@ -91,14 +80,13 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      await user.getIdToken()
 
       // Update display name in Firebase Auth
-      await updateProfile(user, { displayName });
-
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
+      await updateProfile(auth.currentUser, {
+        displayName,
+      });
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -119,8 +107,6 @@ export function AuthProvider({ children }) {
       // Fetch user profile
       const profile = await fetchUserProfile(user.uid);
       setUserProfile(profile);
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -143,9 +129,6 @@ export function AuthProvider({ children }) {
       // Check if user profile exists, if not create it
       const profile = await fetchUserProfile(user.uid);
       setUserProfile(profile);
-
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -190,18 +173,25 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let unsub = null;
     setLoading(true);
+
     unsub = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        // Fetch user profile
-        const profile = await fetchUserProfile(user.uid);
-        setUserProfile(profile);
-        setLoading(false);
-      } else {
+      if (!user) {
         setUser(null);
         setUserProfile(null);
         setLoading(false);
+        return;
       }
+      
+      setUser(user);
+      let profile = await fetchUserProfile(user.uid);
+      if (!profile) {
+        const { user: newUserProfile } = await createUserIfNotExists({
+          displayName: user.displayName,
+        });
+        profile = { id: newUserProfile.uid, ...newUserProfile };
+      }
+      setUserProfile(profile);
+      setLoading(false);
     });
     return () => unsub && unsub();
   }, []);
