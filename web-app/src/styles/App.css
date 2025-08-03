@@ -24,6 +24,12 @@ code {
 .App {
   min-height: 100vh;
   background-color: #181A20;
+  display: flex;
+  flex-direction: column;
+}
+
+.App > *:not(.footer) {
+  flex: 1;
 }
 
 /* Eliminat padding global pe .container pentru a nu suprascrie paddingul local din pagini */

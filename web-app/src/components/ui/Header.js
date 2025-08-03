@@ -24,7 +24,7 @@ export default function Header() {
         <div className="header-left" onClick={() => navigate('/')}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
           <img
-            src="/Asset 3.svg"
+            src="/_LOGO_MANELEIO.svg"
             alt="Manele IO Logo"
             className="header-logo"
           />
