@@ -32,7 +32,11 @@ export const generateSongTask = onTaskDispatched({
   },
   memory: "128MiB",
 }, async (request) => {
-  const { userId, generationData, requestId } = request.data;
+  const { userId, generationData, requestId } = request.data as {
+    userId: string;
+    generationData: Requests.GenerateSong;
+    requestId: string;
+  };
 
   let error: Error | null = null;
   let errorMessage: string | null = null;
@@ -44,27 +48,17 @@ export const generateSongTask = onTaskDispatched({
       throw new HttpsError('not-found', 'User not found');
     }
     // First, generate lyrics and style description using OpenAI
-    const { lyrics } = await generateLyrics(
-      generationData.style,
-      generationData.title,
-      generationData.lyricsDetails,
-      generationData.wantsDedication ? {
-        from: generationData.from,
-        to: generationData.to,
-        message: generationData.dedication
-      } : undefined,
-      generationData.wantsDonation ? {
-        amount: generationData.donationAmount || 0
-      } : undefined
-    );
+    const { lyrics } = await generateLyrics(generationData);
 
     const stylePrompt = loadStylePrompt(generationData.style);
 
     // Then, use the generated content to initiate music generation
     const musicApiResponse = await initiateMusicGeneration(
-      lyrics,
-      generationData.title,
-      stylePrompt,
+      {
+        lyrics,
+        title: generationData.title,
+        stylePrompt,
+      }
     );
     if (!musicApiResponse.data.taskId) {
       throw new HttpsError('internal', 'Received invalid response from music API');
