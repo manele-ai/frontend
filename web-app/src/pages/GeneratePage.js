@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { db } from 'services/firebase';
+import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
@@ -11,7 +11,7 @@ import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
 
 export default function GeneratePage() {
-  const { user, isAuthenticated, waitForAuthReady } = useAuth();
+  const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
   const { startGeneration } = useGeneration();
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
@@ -156,13 +156,18 @@ export default function GeneratePage() {
   };
 
   const handleAuthSuccess = async () => {
-    // After successful auth, send the generation request if we have pending params
     if (pendingGenerationParams) {
       try {
-        await waitForAuthReady();
-        
-        // Now we can safely proceed with the generation request
-        if (isAuthenticated && user) {
+        console.log('waitForUserDocCreation');
+        const userDocCreated = await waitForUserDocCreation(10000);
+        console.log('userDocCreated', userDocCreated);
+        if (!userDocCreated) {
+          setError('A apărut o eroare la autentificare. Te rugăm să încerci din nou.');
+          return;
+        }
+
+        const currentUser = auth.currentUser;
+        if (currentUser) {
           await sendGenerationRequest();
           setPendingGenerationParams(null);
         } else {

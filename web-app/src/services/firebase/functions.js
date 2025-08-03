@@ -51,7 +51,7 @@ export const syncGenerationStatusForUser = async () => {
 export const createUserIfNotExists = async (data) => {
   const fn = httpsCallable(functions, 'createUserIfNotExists');
   const result = await fn(data);
-  return /** @type {{existed: boolean, user: {uid: string, displayName: string, photoURL: string, createdAt: Timestamp, updatedAt: Timestamp, stats: {numSongsGenerated: number, numDedicationsGiven: number, sumDonationsTotal: number}}}} */ (result.data);
+  return /** @type {{existed: boolean, profile: {uid: string, displayName: string, photoURL: string, createdAt: Timestamp, updatedAt: Timestamp, stats: {numSongsGenerated: number, numDedicationsGiven: number, sumDonationsTotal: number}}}} */ (result.data);
 };
 
 /**
