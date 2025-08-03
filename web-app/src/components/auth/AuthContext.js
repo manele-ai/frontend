@@ -2,8 +2,10 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
+  RecaptchaVerifier,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPhoneNumber,
   signInWithPopup,
   signOut,
   updateProfile
@@ -21,6 +23,8 @@ const AuthContext = createContext({
   signUp: async (email, password, displayName) => Promise.resolve(),
   signIn: async (email, password) => Promise.resolve(),
   signInWithGoogle: async () => Promise.resolve(),
+  signInWithPhone: async (phoneNumber) => Promise.resolve(null),
+  verifyPhoneCode: async (verificationId, code, displayName) => Promise.resolve(),
   signOut: async () => Promise.resolve(),
   resetPassword: async (email) => Promise.resolve(),
   updateUserProfile: async (updates) => Promise.resolve(),
@@ -37,6 +41,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [isUserDocCreated, setIsUserDocCreated] = useState(null);
   const [error, setError] = useState(null);
+  const recaptchaVerifier = useRef(null);
+  const recaptchaContainerRef = useRef(null);
   // Resolver ref
   const readyResolvers = useRef([]);
 
@@ -226,6 +232,102 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Initialize recaptcha verifier
+  useEffect(() => {
+    // Clear any existing verifier
+    if (recaptchaVerifier.current) {
+      recaptchaVerifier.current.clear();
+      recaptchaVerifier.current = null;
+    }
+
+    // Create container if it doesn't exist
+    if (!recaptchaContainerRef.current) {
+      recaptchaContainerRef.current = document.createElement('div');
+      recaptchaContainerRef.current.id = 'recaptcha-container';
+      document.body.appendChild(recaptchaContainerRef.current);
+    }
+
+    // Initialize verifier
+    try {
+      recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {}
+      });
+    } catch (error) {
+      console.error('Error initializing RecaptchaVerifier:', error);
+    }
+
+    return () => {
+      if (recaptchaVerifier.current) {
+        recaptchaVerifier.current.clear();
+        recaptchaVerifier.current = null;
+      }
+      if (recaptchaContainerRef.current) {
+        document.body.removeChild(recaptchaContainerRef.current);
+        recaptchaContainerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Sign in with phone number
+  const signInWithPhone = async (phoneNumber) => {
+    setError(null);
+    setLoading(true);
+    
+    try {
+      // Always recreate RecaptchaVerifier for a fresh session
+      if (recaptchaVerifier.current) {
+        recaptchaVerifier.current.clear();
+      }
+      recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {}
+      });
+
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        recaptchaVerifier.current
+      );
+      return confirmationResult;
+    } catch (error) {
+      console.error('Phone sign in error:', error);
+      const errorMessage = getAuthErrorMessage(error.code);
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Verify phone code
+  const verifyPhoneCode = async (confirmationResult, code, displayName = '') => {
+    setError(null);
+    setLoading(true);
+    
+    try {
+      const { user } = await confirmationResult.confirm(code);
+      
+      // Update display name if provided (for new users)
+      if (displayName) {
+        await updateProfile(auth.currentUser, {
+          displayName,
+        });
+      }
+      
+      await fetchOrCreateUserProfile(user);
+    } catch (error) {
+      console.error('Phone verification error:', error);
+      const errorMessage = getAuthErrorMessage(error.code);
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Auth state listener
   useEffect(() => {
     let unsub = null;
@@ -261,6 +363,8 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     signInWithGoogle,
+    signInWithPhone,
+    verifyPhoneCode,
     signOut: signOutUser,
     resetPassword,
     updateUserProfile,
@@ -283,7 +387,7 @@ export function useAuth() {
   return context;
 }
 
-// Helper function to get user-friendly error messages
+// Update error messages
 function getAuthErrorMessage(errorCode) {
   switch (errorCode) {
     case 'auth/user-not-found':
@@ -304,6 +408,16 @@ function getAuthErrorMessage(errorCode) {
       return 'Fereastra de autentificare a fost închisă.';
     case 'auth/cancelled-popup-request':
       return 'Autentificarea a fost anulată.';
+    case 'auth/invalid-phone-number':
+      return 'Numărul de telefon nu este valid.';
+    case 'auth/invalid-verification-code':
+      return 'Codul de verificare nu este valid.';
+    case 'auth/code-expired':
+      return 'Codul de verificare a expirat.';
+    case 'auth/missing-verification-code':
+      return 'Te rugăm să introduci codul de verificare.';
+    case 'auth/quota-exceeded':
+      return 'Am întâmpinat o eroare. Te rugăm să încerci din nou mai târziu.';
     default:
       return 'A apărut o eroare. Încearcă din nou.';
   }
