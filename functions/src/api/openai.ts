@@ -1,7 +1,10 @@
 import axios from "axios";
 import { logger } from "firebase-functions/v2";
 import { readFileSync } from 'fs';
+import path from 'path';
 import { openaiApiKey } from "../config";
+
+const OPENAI_MODEL = "gpt-4o";
 
 const apiClient = axios.create({
   baseURL: "https://api.openai.com/v1",
@@ -49,14 +52,14 @@ function fillInUserRequests({ title } : {title: string}) {
 }
 
 function buildUserPrompt(userRequests: string, { style } : {style: string}) {
-  const filePath = `../data/prompts/${style}/LYRICS_PROMPT.md`;
+  const filePath = path.resolve(__dirname, '..', '..', 'src', 'data', 'prompts', style, 'LYRICS_PROMPT.md');
   const lyricsPrompt = readFileSync(filePath, 'utf8');
 
   return [lyricsPrompt, OUTPUT_FORMAT_PROMPT, userRequests].join("\n\n");
 }
 
 function buildSystemPrompt(userRequests: string, { style } : {style: string}) {
-  const filePath = `../data/prompts/${style}/SYSTEM_PROMPT.md`;
+  const filePath = path.resolve(__dirname, '..', '..', 'src', 'data', 'prompts', style, 'SYSTEM_PROMPT.md');
   const systemPromptStartSpecificToStyle = readFileSync(filePath, 'utf8');
   return [systemPromptStartSpecificToStyle, OUTPUT_FORMAT_PROMPT].join("\n\n");
 }
@@ -112,7 +115,7 @@ export async function generateLyrics(
     // }
 
     const chatgptResponse = await apiClient.post<ChatCompletionResponse>("/chat/completions", {
-      model: "gpt-4o",
+      model: OPENAI_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
