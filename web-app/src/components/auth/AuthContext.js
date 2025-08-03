@@ -310,11 +310,13 @@ export function AuthProvider({ children }) {
     try {
       const { user } = await confirmationResult.confirm(code);
       
-      // Update display name if provided (for new users)
+      // Update display name first if provided (for new users)
       if (displayName) {
-        await updateProfile(auth.currentUser, {
+        await updateProfile(user, {
           displayName,
         });
+        // Get fresh user object after update
+        await user.reload();
       }
       
       await fetchOrCreateUserProfile(user);
