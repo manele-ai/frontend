@@ -5,6 +5,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import BottomMenu from './components/ui/BottomMenu';
 import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
+import Marquee from './components/ui/Marquee';
 import { GenerationProvider } from './context/GenerationContext';
 import AuthPage from './pages/AuthPage';
 import GeneratePage from './pages/GeneratePage';
@@ -39,6 +40,7 @@ function App() {
         <GenerationProvider>
           <div className="App">
             <Header />
+            <Marquee />
             {/* <GenerationNotification /> */}
             <Routes>
               {/* Public routes */}

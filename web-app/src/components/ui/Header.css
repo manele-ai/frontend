@@ -1,39 +1,4 @@
-.header-marquee {
-  width: 100vw;
-  overflow: hidden;
-  background: var(--gold-gradient);
-  height: 36px;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  box-shadow: 0 2px 8px rgba(201,169,104,0.12);
-}
-
-.marquee-inner {
-  display: flex;
-  width: max-content;
-  white-space: nowrap;
-  animation: marquee-scroll 18s linear infinite;
-}
-
-.marquee-inner span {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111;
-  letter-spacing: 1px;
-  /* Elimin padding-left pentru scroll continuu */
-}
-
-@keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 .header {
-  margin-top: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
