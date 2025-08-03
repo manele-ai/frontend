@@ -5,6 +5,7 @@ import { onTaskDispatched } from "firebase-functions/tasks";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
 import { readFileSync } from "fs";
+import path from 'path';
 import { initiateMusicGeneration } from "../../api/music";
 import { generateLyrics } from "../../api/openai";
 import { db, REGION } from "../../config";
@@ -13,8 +14,9 @@ import { handleGenerationFailed } from "../../service/generation/failure";
 import { Database, Requests } from "../../types";
 import { enqueuePollGenerationStatusTask } from "./pollGenerationStatus";
 
+
 function loadStylePrompt(style: string) {
-  const stylePromptFilePath = `../data/prompts/${style}/STYLE_PROMPT.md`;
+  const stylePromptFilePath = path.join(__dirname, `../../data/prompts/${style}/STYLE_PROMPT.md`);
   const stylePrompt = readFileSync(stylePromptFilePath, 'utf8');
   return stylePrompt;
 }

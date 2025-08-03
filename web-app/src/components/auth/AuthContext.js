@@ -8,9 +8,8 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { auth, db } from '../../services/firebase';
+import { auth } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
 
 // User context structure
@@ -26,42 +25,93 @@ const AuthContext = createContext({
   resetPassword: async (email) => Promise.resolve(),
   updateUserProfile: async (updates) => Promise.resolve(),
   isAuthenticated: false,
-  // EDIT 2: rename to waitForAuthReady
-  waitForAuthReady: async () => Promise.resolve(),
+  waitForUserDocCreation: async (_timeoutMs = 10000) => {
+    // Placeholder, fuck js
+    return Promise.resolve(false);
+  },
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUserDocCreated, setIsUserDocCreated] = useState(null);
   const [error, setError] = useState(null);
-  // EDIT 3: add resolver ref
+  // Resolver ref
   const readyResolvers = useRef([]);
 
-  // EDIT 4: implement waitForAuthReady
-  const waitForAuthReady = () => {
+  /**
+   * Wait until auth + user doc creation finishes, or timeout expires.
+   * @param timeoutMs – how many milliseconds to wait before auto‐failing (resolves to false).
+   * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
+   */
+  const waitForUserDocCreation = (timeoutMs = 10000) => {
+    console.log('Oh yeah this is the real one')
     return new Promise((resolve) => {
-      if (!loading) {
-        resolve();
-      } else {
-        readyResolvers.current.push(resolve);
+      // Check if already settled
+      if (isUserDocCreated !== null) {
+        return resolve(isUserDocCreated);
       }
+      // Otherwise, add resolver to queue
+      const resolver = (docCreationStatus) => {
+        clearTimeout(timer);
+        resolve(docCreationStatus);
+      };
+      readyResolvers.current.push(resolver);
+
+      // Start the timeout
+      const timer = setTimeout(() => {
+        // Remove this resolver so it doesn’t fire later
+        readyResolvers.current = readyResolvers.current.filter(r => r !== resolver);
+        // Timeout is treated as “failed to get ready”
+        resolve(false);
+      }, timeoutMs);
     });
   };
 
-  // Fetch user profile from Firestore
-  const fetchUserProfile = async (uid) => {
+  function flushUserDocCreationResolvers(status) {
+    readyResolvers.current.forEach((res) => res(status));
+    readyResolvers.current = [];
+  }
+
+  const fetchOrCreateUserProfile = async (firebaseUser) => {
+    setIsUserDocCreated(null);
+
     try {
-      const userDoc = await getDoc(doc(db, 'usersPublic', uid));
-      if (!userDoc.exists()) {
-        return null;
-      }
-      return { id: userDoc.id, ...userDoc.data() };
+      // Force refresh token
+      await firebaseUser.getIdToken(true);
+      // Fetch profile if exists, otherwise creates and returns it
+      const { profile } = await createUserIfNotExists({
+          displayName: firebaseUser.displayName,
+      });
+      const userProfile = { id: profile.uid, ...profile };
+      setUserProfile(userProfile);
+
+      setIsUserDocCreated(true);
+      flushUserDocCreationResolvers(true);
+      return userProfile;
+
     } catch (error) {
       console.error('Error fetching/creating user profile:', error);
-      return null;
+      setIsUserDocCreated(false);
+      flushUserDocCreationResolvers(false);
+      throw error;
     }
   };
+
+  // Fetch user profile from Firestore
+  // const fetchUserProfile = async (uid) => {
+  //   try {
+  //     const userDoc = await getDoc(doc(db, 'usersPublic', uid));
+  //     if (!userDoc.exists()) {
+  //       return null;
+  //     }
+  //     return { id: userDoc.id, ...userDoc.data() };
+  //   } catch (error) {
+  //     console.error('Error fetching/creating user profile:', error);
+  //     return null;
+  //   }
+  // };
 
   // Update user profile
   const updateUserProfile = async (updates) => {
@@ -96,12 +146,11 @@ export function AuthProvider({ children }) {
     
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      await user.getIdToken()
-
       // Update display name in Firebase Auth
       await updateProfile(auth.currentUser, {
         displayName,
       });
+      await fetchOrCreateUserProfile(user);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -117,11 +166,8 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      // Fetch user profile
-      const profile = await fetchUserProfile(user.uid);
-      setUserProfile(profile);
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      await fetchOrCreateUserProfile(user);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -138,12 +184,8 @@ export function AuthProvider({ children }) {
     
     try {
       const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(auth, provider);
-      const user = userCredential.user;
-
-      // Check if user profile exists, if not create it
-      const profile = await fetchUserProfile(user.uid);
-      setUserProfile(profile);
+      const { user } = await signInWithPopup(auth, provider);
+      await fetchOrCreateUserProfile(user);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -190,6 +232,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
 
     unsub = onAuthStateChanged(auth, async (user) => {
+      // Logged out
       if (!user) {
         setUser(null);
         setUserProfile(null);
@@ -197,27 +240,18 @@ export function AuthProvider({ children }) {
         return;
       }
       
+      // Logged in
       setUser(user);
-      let profile = await fetchUserProfile(user.uid);
-      if (!profile) {
-        const { user: newUserProfile } = await createUserIfNotExists({
-          displayName: user.displayName,
-        });
-        profile = { id: newUserProfile.uid, ...newUserProfile };
+      try {
+        await fetchOrCreateUserProfile(user);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setLoading(false);
       }
-      setUserProfile(profile);
-      setLoading(false);
     });
     return () => unsub && unsub();
   }, []);
-
-  // EDIT 5: flush resolvers when loading changes to false
-  useEffect(() => {
-    if (!loading && readyResolvers.current.length > 0) {
-      readyResolvers.current.forEach((res) => res());
-      readyResolvers.current = [];
-    }
-  }, [loading]);
 
   const value = {
     user,
@@ -231,8 +265,7 @@ export function AuthProvider({ children }) {
     resetPassword,
     updateUserProfile,
     isAuthenticated: !!user,
-    // EDIT 6: expose waitForAuthReady in context value
-    waitForAuthReady,
+    waitForUserDocCreation,
   };
 
   return (

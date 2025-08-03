@@ -10,7 +10,6 @@ import { Database } from "../types";
  * This is called by the client when they detect no user document exists for their uid.
  */
 export const createUserIfNotExists = onCall(async (request) => {
-  // Ensure user is authenticated
   if (!request.auth) {
     throw new HttpsError(
       'unauthenticated',
@@ -22,50 +21,71 @@ export const createUserIfNotExists = onCall(async (request) => {
   const { displayName = "", photoURL = "" } = request.data || {};
 
   try {
-    // Check if user document already exists
-    const userRef = db.collection(COLLECTIONS.USERS).doc(uid);
-    const userDoc = await userRef.get();
+    return await db.runTransaction(async (tx) => {
+      const userRef = db.collection(COLLECTIONS.USERS).doc(uid);
+      const publicRef = db.collection(COLLECTIONS.PUBLIC_USERS).doc(uid);
 
-    // If user document already exists, return early
-    if (userDoc.exists) {
-      return { existed: true };
-    }
+      // Read both documents in transaction
+      const [userDoc, publicDoc] = await Promise.all([
+        tx.get(userRef),
+        tx.get(publicRef)
+      ]);
 
-    // Create new user document
-    const userData: Database.User = {
-      uid,
-      displayName,
-      photoURL,
-      createdAt: FieldValue.serverTimestamp() as any,
-      updatedAt: FieldValue.serverTimestamp() as any,
-      stats: {
-        numSongsGenerated: 0,
-        numDedicationsGiven: 0,
-        sumDonationsTotal: 0,
-      },
-    };
+      // Check for data inconsistency
+      if (userDoc.exists !== publicDoc.exists) {
+        logger.error(`Data inconsistency for user ${uid}: users=${userDoc.exists}, public=${publicDoc.exists}`);
+        throw new HttpsError(
+          'failed-precondition',
+          'Inconsistent user data state detected'
+        );
+      }
 
-    const userPublicData: Database.UserPublic = {
-      uid,
-      displayName,
-      photoURL,
-      createdAt: FieldValue.serverTimestamp() as any,
-      stats: {
-        numSongsGenerated: 0,
-        numDedicationsGiven: 0,
-        sumDonationsTotal: 0,
-      },
-    };
+      // If both docs exist, return early
+      if (userDoc.exists) {
+        return { existed: true, profile: publicDoc.data() };
+      }
 
-    const batch = db.batch();
-    batch.set(userRef, userData);
-    batch.set(db.collection(COLLECTIONS.PUBLIC_USERS).doc(uid), userPublicData);
-    await batch.commit();
-    logger.info(`Created Firestore document for user ${uid}`);
+      // Create new user documents
+      const now = FieldValue.serverTimestamp() as any;
+      const userData: Database.User = {
+        uid,
+        displayName,
+        photoURL,
+        createdAt: now,
+        updatedAt: now,
+        stats: {
+          numSongsGenerated: 0,
+          numDedicationsGiven: 0,
+          sumDonationsTotal: 0,
+        },
+      };
 
-    return { existed: false, user: userPublicData };
+      const userPublicData: Database.UserPublic = {
+        uid,
+        displayName,
+        photoURL,
+        createdAt: now,
+        stats: {
+          numSongsGenerated: 0,
+          numDedicationsGiven: 0,
+          sumDonationsTotal: 0,
+        },
+      };
+
+      // Write both docs atomically within transaction
+      tx.set(userRef, userData);
+      tx.set(publicRef, userPublicData);
+
+      logger.info(`Created Firestore documents for user ${uid}`);
+      return { existed: false, profile: userPublicData };
+    });
+
   } catch (error) {
     logger.error(`Error handling user document creation for ${uid}:`, error);
+    // Preserve the original error code if it's an HttpsError
+    if (error instanceof HttpsError) {
+      throw error;
+    }
     throw new HttpsError(
       'internal',
       'Failed to handle user document creation'
