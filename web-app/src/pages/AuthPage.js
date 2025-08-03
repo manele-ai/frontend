@@ -12,18 +12,25 @@ export default function AuthPage() {
 
   const {
     isLogin,
+    isPhoneAuth,
     showResetPassword,
+    showVerificationCode,
     formData,
     formError,
     loading,
     error,
+    resendTimer,
+    lastPhoneNumber,
+    fieldErrors,
     setShowResetPassword,
     handleInputChange,
     handleAuthSubmit,
     handleGoogleSignIn,
     handleResetPassword,
+    handleResendCode,
+    handleBackToPhone,
     toggleMode,
-    fieldErrors
+    toggleAuthMethod
   } = useAuthForm({
     onSuccess: () => navigate('/')
   });
@@ -79,6 +86,14 @@ export default function AuthPage() {
             toggleMode={toggleMode}
             setShowResetPassword={setShowResetPassword}
             formError={formError || error}
+            fieldErrors={fieldErrors}
+            isPhoneAuth={isPhoneAuth}
+            showVerificationCode={showVerificationCode}
+            toggleAuthMethod={toggleAuthMethod}
+            resendTimer={resendTimer}
+            lastPhoneNumber={lastPhoneNumber}
+            handleResendCode={handleResendCode}
+            handleBackToPhone={handleBackToPhone}
           />
         ) : (
           <SignupForm
@@ -90,6 +105,13 @@ export default function AuthPage() {
             toggleMode={toggleMode}
             formError={formError || error}
             fieldErrors={fieldErrors}
+            isPhoneAuth={isPhoneAuth}
+            showVerificationCode={showVerificationCode}
+            toggleAuthMethod={toggleAuthMethod}
+            resendTimer={resendTimer}
+            lastPhoneNumber={lastPhoneNumber}
+            handleResendCode={handleResendCode}
+            handleBackToPhone={handleBackToPhone}
           />
         )}
       </div>

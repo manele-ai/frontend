@@ -7,18 +7,25 @@ import { useAuthForm } from './useAuthForm';
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const {
     isLogin,
+    isPhoneAuth,
     showResetPassword,
+    showVerificationCode,
     formData,
     formError,
     loading,
+    resendTimer,
+    lastPhoneNumber,
+    fieldErrors,
     setShowResetPassword,
     handleInputChange,
     handleAuthSubmit,
     handleGoogleSignIn,
     handleResetPassword,
+    handleResendCode,
+    handleBackToPhone,
     toggleMode,
-    resetForm,
-    fieldErrors
+    toggleAuthMethod,
+    resetForm
   } = useAuthForm({
     onSuccess,
     onClose
@@ -70,6 +77,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 toggleMode={toggleMode}
                 setShowResetPassword={setShowResetPassword}
                 formError={formError}
+                fieldErrors={fieldErrors}
+                isPhoneAuth={isPhoneAuth}
+                showVerificationCode={showVerificationCode}
+                toggleAuthMethod={toggleAuthMethod}
+                resendTimer={resendTimer}
+                lastPhoneNumber={lastPhoneNumber}
+                handleResendCode={handleResendCode}
+                handleBackToPhone={handleBackToPhone}
               />
             ) : (
               <SignupForm
@@ -81,6 +96,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 toggleMode={toggleMode}
                 formError={formError}
                 fieldErrors={fieldErrors}
+                isPhoneAuth={isPhoneAuth}
+                showVerificationCode={showVerificationCode}
+                toggleAuthMethod={toggleAuthMethod}
+                resendTimer={resendTimer}
+                lastPhoneNumber={lastPhoneNumber}
+                handleResendCode={handleResendCode}
+                handleBackToPhone={handleBackToPhone}
               />
             )}
           </div>

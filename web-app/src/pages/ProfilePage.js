@@ -135,7 +135,13 @@ export default function ProfilePage() {
           <p className="profile-email">{user?.email}</p>
           
           <p className="profile-joined">
-            {userProfile?.createdAt ? 'Membru din ' + new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('ro-RO') : 'Membru recent'}
+            {userProfile?.createdAt?._seconds
+              ? 'Membru din ' + new Date(userProfile.createdAt._seconds * 1000).toLocaleDateString('ro-RO', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })
+              : 'Membru recent'}
           </p>
 
           <div className="profile-stats">

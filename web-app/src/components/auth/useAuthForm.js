@@ -11,26 +11,74 @@ import { useAuth } from './AuthContext';
  * @param {AuthFormProps} [props]
  */
 export function useAuthForm({ onSuccess, onClose } = {}) {
-  const { signUp, signIn, signInWithGoogle, resetPassword } = useAuth();
+  const { signUp, signIn, signInWithGoogle, signInWithPhone, verifyPhoneCode, resetPassword } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [isPhoneAuth, setIsPhoneAuth] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [showVerificationCode, setShowVerificationCode] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [lastPhoneNumber, setLastPhoneNumber] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    displayName: ''
+    displayName: '',
+    phoneNumber: '',
+    verificationCode: ''
   });
   const [formError, setFormError] = useState('');
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phoneNumber: ''
   });
+
+  // Timer for resend code
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(current => current - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  // Phone number validation with debounce
+  useEffect(() => {
+    if (!formData.phoneNumber || !isPhoneAuth) {
+      setFieldErrors(prev => ({
+        ...prev,
+        phoneNumber: ''
+      }));
+      return;
+    }
+    
+    const timer = setTimeout(() => {
+      // Allow + and numbers, require at least 10 digits
+      const phoneRegex = /^\+?[0-9]{10,}$/;
+      if (!phoneRegex.test(formData.phoneNumber.replace(/\s+/g, ''))) {
+        setFieldErrors(prev => ({
+          ...prev,
+          phoneNumber: 'Numărul de telefon trebuie să conțină minim 10 cifre și poate începe cu +'
+        }));
+      } else {
+        setFieldErrors(prev => ({
+          ...prev,
+          phoneNumber: ''
+        }));
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.phoneNumber, isPhoneAuth]);
 
   // Email validation with debounce
   useEffect(() => {
-    if (!formData.email || isLogin) return;
+    if (!formData.email || isLogin || isPhoneAuth) return;
     
     const timer = setTimeout(() => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,11 +96,11 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [formData.email, isLogin]);
+  }, [formData.email, isLogin, isPhoneAuth]);
 
   // Password validation with debounce
   useEffect(() => {
-    if (!formData.password || isLogin) return;
+    if (!formData.password || isLogin || isPhoneAuth) return;
     
     const timer = setTimeout(() => {
       if (formData.password.length < 8) {
@@ -69,11 +117,11 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [formData.password, isLogin]);
+  }, [formData.password, isLogin, isPhoneAuth]);
 
   // Confirm password validation with debounce
   useEffect(() => {
-    if (!formData.confirmPassword || isLogin) return;
+    if (!formData.confirmPassword || isLogin || isPhoneAuth) return;
     
     const timer = setTimeout(() => {
       if (formData.confirmPassword !== formData.password) {
@@ -90,7 +138,7 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [formData.confirmPassword, formData.password, isLogin]);
+  }, [formData.confirmPassword, formData.password, isLogin, isPhoneAuth]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -99,15 +147,87 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
       [name]: value
     }));
     setFormError('');
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendTimer > 0) return;
+    
+    setLoading(true);
+    setFormError('');
+    try {
+      let phoneNumber = lastPhoneNumber.replace(/\s+/g, '');
+      if (!phoneNumber.startsWith('+')) {
+        phoneNumber = '+' + phoneNumber;
+      }
+      const result = await signInWithPhone(phoneNumber);
+      setConfirmationResult(result);
+      setResendTimer(60);
+      setFormData(prev => ({
+        ...prev,
+        verificationCode: ''
+      }));
+    } catch (error) {
+      console.error('Resend code error:', error);
+      setFormError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToPhone = () => {
+    if (resendTimer > 0) return;
+    setShowVerificationCode(false);
+    setConfirmationResult(null);
+    setFormData(prev => ({
+      ...prev,
+      verificationCode: ''
+    }));
+    setFormError('');
   };
 
   const validateForm = () => {
+    if (isPhoneAuth) {
+      if (showVerificationCode) {
+        if (!formData.verificationCode) {
+          setFormError('Te rugăm să introduci codul de verificare.');
+          return false;
+        }
+        return true;
+      }
+
+      if (!formData.phoneNumber) {
+        setFormError('Te rugăm să introduci numărul de telefon.');
+        return false;
+      }
+
+      // Format phone number before validation
+      const cleanPhoneNumber = formData.phoneNumber.replace(/\s+/g, '');
+      if (!/^\+?[0-9]{10,}$/.test(cleanPhoneNumber)) {
+        setFormError('Numărul de telefon trebuie să conțină minim 10 cifre și poate începe cu +');
+        return false;
+      }
+
+      if (!isLogin && !formData.displayName.trim()) {
+        setFormError('Numele este obligatoriu.');
+        return false;
+      }
+
+      return true;
+    }
+
     if (!formData.email || !formData.password) {
       setFormError('Toate câmpurile sunt obligatorii.');
       return false;
     }
+
     if (!isLogin) {
-      // Check for field errors
       if (fieldErrors.email || fieldErrors.password || fieldErrors.confirmPassword) {
         setFormError('Te rugăm să corectezi erorile din formular.');
         return false;
@@ -142,18 +262,59 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     }
 
     try {
-      if (isLogin) {
-        await signIn(formData.email, formData.password);
+      if (isPhoneAuth) {
+        if (showVerificationCode) {
+          await verifyPhoneCode(
+            confirmationResult, 
+            formData.verificationCode,
+            !isLogin ? formData.displayName : undefined
+          );
+          if (onClose) onClose();
+          resetForm();
+          if (onSuccess) onSuccess();
+        } else {
+          // Format phone number before sending
+          let phoneNumber = formData.phoneNumber.replace(/\s+/g, '');
+          if (!phoneNumber.startsWith('+')) {
+            phoneNumber = '+' + phoneNumber;
+          }
+          try {
+            const result = await signInWithPhone(phoneNumber);
+            setConfirmationResult(result);
+            setShowVerificationCode(true);
+            setLastPhoneNumber(phoneNumber);
+            setResendTimer(60);
+            setLoading(false);
+            return;
+          } catch (error) {
+            if (error.code === 'auth/user-not-found' && isLogin) {
+              setFieldErrors(prev => ({
+                ...prev,
+                phoneNumber: 'Nu există niciun cont cu acest număr de telefon.'
+              }));
+              throw new Error('Nu există niciun cont cu acest număr de telefon.');
+            }
+            throw error;
+          }
+        }
       } else {
-        await signUp(formData.email, formData.password, formData.displayName);
+        if (isLogin) {
+          await signIn(formData.email, formData.password);
+        } else {
+          await signUp(formData.email, formData.password, formData.displayName);
+        }
+        
+        if (onClose) onClose();
+        resetForm();
+        if (onSuccess) onSuccess();
       }
-      
-      if (onClose) onClose();
-      resetForm();
-      if (onSuccess) onSuccess();
-      
     } catch (error) {
+      console.error('Auth error:', error);
       setFormError(error.message);
+      if (isPhoneAuth && showVerificationCode) {
+        setShowVerificationCode(false);
+        setConfirmationResult(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -195,29 +356,57 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     resetForm();
   };
 
+  const toggleAuthMethod = (newMode) => {
+    // Only toggle if the new mode is different from current mode
+    if ((newMode === 'phone') === isPhoneAuth) {
+      return; // Don't toggle if clicking the current mode
+    }
+    setIsPhoneAuth(!isPhoneAuth);
+    resetForm();
+  };
+
   const resetForm = () => {
     setFormError('');
     setFormData({
       email: '',
       password: '',
       confirmPassword: '',
-      displayName: ''
+      displayName: '',
+      phoneNumber: '',
+      verificationCode: ''
     });
+    setFieldErrors({
+      email: '',
+      password: '',
+      confirmPassword: '',
+      phoneNumber: ''
+    });
+    setShowVerificationCode(false);
+    setConfirmationResult(null);
+    setResendTimer(0);
+    setLastPhoneNumber('');
   };
 
   return {
     isLogin,
+    isPhoneAuth,
     showResetPassword,
+    showVerificationCode,
     formData,
     formError,
     fieldErrors,
     loading,
+    resendTimer,
+    lastPhoneNumber,
     setShowResetPassword,
     handleInputChange,
     handleAuthSubmit,
     handleGoogleSignIn,
     handleResetPassword,
+    handleResendCode,
+    handleBackToPhone,
     toggleMode,
+    toggleAuthMethod,
     resetForm
   };
 } 
