@@ -200,7 +200,15 @@ export default function LoadingPage() {
   }
 
   return (
-    <div className="loading-page">
+    <div 
+      className="loading-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       <div className="loading-container">
         {/* Bara de loading */}
         <div className="loading-bar-container">

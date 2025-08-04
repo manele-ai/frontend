@@ -11,20 +11,32 @@ const apiClient = axios.create({
   },
 });
 
-export async function initiateMusicGeneration(
-  lyrics: string,
-  title: string,
-  style: string,
+export interface InitiateMusicGenerationParams {
+  lyrics: string;
+  title: string;
+  stylePrompt: string;
+  negativeTags?: string[];
+}
+
+export async function initiateMusicGeneration({
+  lyrics,
+  title,
+  stylePrompt,
+  negativeTags,
+}: InitiateMusicGenerationParams
 ): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
+    if (!lyrics || !title || !stylePrompt) {
+      throw new Error("Missing required arguments for music generation");
+    }
     const requestBody: MusicApi.GenerateRequest = {
       prompt: lyrics,
-      style: style || "Romanian manea in a party mood. Song must be in Romanian language.",
-      title: title || "Maneaua verii",
+      style: stylePrompt,
+      title: title,
       customMode: true,
       instrumental: false,
-      model: "V4_5",
-      negativeTags: ["pop", "trap"],
+      model: "V4_5PLUS",
+      negativeTags: negativeTags || ["pop", "trap"],
       callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
     functions.logger.info("Request body for music API /generate", requestBody);

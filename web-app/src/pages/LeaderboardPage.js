@@ -82,7 +82,15 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="leaderboard-page">
+    <div 
+      className="leaderboard-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section copiată din HomePage, ca un card separat */}
       <div className="hero-section leaderboard-hero-section">
         <HeroCardLeaderboard />

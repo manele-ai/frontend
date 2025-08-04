@@ -39,10 +39,15 @@ export async function handleGenerationFailed(
         updatedAt: FieldValue.serverTimestamp(),
       });
 
-      // 2) Restore one credit
+      // 2) Restore songs as credit and dedication/donation if needed
       const userRef = db.collection(COLLECTIONS.USERS).doc(userId);
+      const { shouldFulfillDedication, shouldFulfillAruncaCuBani, aruncaCuBaniAmount } = reqData;
+      const dedicationBalanceToAdd = shouldFulfillDedication ? 1 : 0;
+      const aruncaCuBaniBalanceToAdd = shouldFulfillAruncaCuBani ? aruncaCuBaniAmount || 0 : 0;
       tx.update(userRef, {
         creditsBalance: FieldValue.increment(1),
+        dedicationBalance: FieldValue.increment(dedicationBalanceToAdd),
+        aruncaCuBaniBalance: FieldValue.increment(aruncaCuBaniBalanceToAdd),
         updatedAt: FieldValue.serverTimestamp(),
       });
     });

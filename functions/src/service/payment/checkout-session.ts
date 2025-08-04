@@ -1,31 +1,61 @@
-import { frontendBaseUrl, stripe, STRIPE_COUPON_ID_SUBSCRIBED_SONG, STRIPE_PRICE_ID_SUBSCRIPTION } from "../../config";
+import Stripe from 'stripe';
+import {
+  frontendBaseUrl,
+  stripe,
+  STRIPE_COUPON_ID_SUBSCRIBED_SONG,
+  STRIPE_PRICE_ID_DEDICATION,
+  STRIPE_PRICE_ID_SONG,
+  STRIPE_PRICE_ID_SUBSCRIPTION,
+} from "../../config";
 
 export const createSongCheckoutSession = async ({
     userId,
     customerId,
     requestId,
-    priceId,
+    shouldPayDedication,
+    aruncaCuBaniAmountToPay,
     applySubscriptionDiscount,
 }: {
     userId: string;
     customerId: string;
     requestId: string;
-    priceId: string;
+    shouldPayDedication: boolean;
+    aruncaCuBaniAmountToPay: number;
     applySubscriptionDiscount: boolean;
 }) => {
     if (!stripe) {
-        throw new Error('Stripe not initialized');
+      throw new Error('Stripe not initialized');
     }
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      {
+          price: STRIPE_PRICE_ID_SONG.value(),
+          quantity: 1,
+      },
+    ];
+
+    if (shouldPayDedication) {
+      line_items.push({
+          price: STRIPE_PRICE_ID_DEDICATION.value(),
+          quantity: 1,
+      });
+    }
+
+    if (aruncaCuBaniAmountToPay > 0) {
+      line_items.push({
+        price_data: {
+          currency: 'RON',
+          product_data: { name: `Arunca cu bani - ${aruncaCuBaniAmountToPay} RON` },
+          unit_amount: aruncaCuBaniAmountToPay * 100,
+        },
+        quantity: 1,
+      });
+    }
+    
     return await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ['card'],
         mode: 'payment',
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
+        line_items,
         allow_promotion_codes: true,
         discounts: applySubscriptionDiscount ? [{
             coupon: STRIPE_COUPON_ID_SUBSCRIBED_SONG.value(),

@@ -1,0 +1,1 @@
+Write the lyrics of a live Romanian manea. The theme can involve partying, dedications, love, or personal pride. Make sure to include lines that can be easily customized with names or cities for live performances. Use a call-and-response chorus, interactive lines, and celebratory phrases. Repeat catchy phrases that can hype up a crowd.

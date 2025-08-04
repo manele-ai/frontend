@@ -1,7 +1,8 @@
 import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
-import * as functions from "firebase-functions/v2";
+import { logger } from "firebase-functions/v2";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { HttpsError } from "firebase-functions/v2/https";
 import { COLLECTIONS } from "../../../constants/collections";
 import { Database } from "../../../types";
 
@@ -30,7 +31,7 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
     const songData = event.data?.data() as Database.SongData;
     
     if (!songData) {
-      console.error(`No song data found for song ${songId}`);
+      logger.error(`No song data found for song ${songId}`);
       return;
     }
     
@@ -40,7 +41,7 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
       const taskDoc = await taskRef.get();
       
       if (!taskDoc.exists) {
-        console.error(`Task ${songData.taskId} not found for song ${songId}`);
+        logger.error(`Task ${songData.taskId} not found for song ${songId}`);
         return;
       }
       
@@ -51,7 +52,7 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
       const userDoc = await userRef.get();
       
       if (!userDoc.exists) {
-        console.error(`User ${taskData.userId} not found for task ${songData.taskId}`);
+        logger.error(`User ${taskData.userId} not found for task ${songData.taskId}`);
         return;
       }
       
@@ -124,8 +125,8 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
 
       await batch.commit();
     } catch (error) {
-      console.error(`Error in onSongCreated for song ${songId}:`, error);
-      throw new functions.https.HttpsError(
+      logger.error(`Error in onSongCreated for song ${songId}:`, error);
+      throw new HttpsError(
         'internal',
         'Failed'
       );

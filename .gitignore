@@ -3,6 +3,10 @@
 .env.*
 .env
 
+.vercel/
+
+output/
+
 # dependencies
 node_modules/
 jspm_packages/
@@ -11,6 +15,15 @@ jspm_packages/
 lib/**/*.js
 lib/**/*.js.map
 lib/**/*.d.ts
+lib/**/*.md
+lib/**/*.json
+
+functions/lib/**/*.js
+functions/lib/**/*.js.map
+functions/lib/**/*.d.ts
+functions/lib/**/*.md
+functions/lib/**/*.json
+
 
 # Expo
 .expo/

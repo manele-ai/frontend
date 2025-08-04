@@ -1,39 +1,4 @@
-.header-marquee {
-  width: 100vw;
-  overflow: hidden;
-  background: var(--gold-gradient);
-  height: 36px;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  box-shadow: 0 2px 8px rgba(201,169,104,0.12);
-}
-
-.marquee-inner {
-  display: flex;
-  width: max-content;
-  white-space: nowrap;
-  animation: marquee-scroll 18s linear infinite;
-}
-
-.marquee-inner span {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111;
-  letter-spacing: 1px;
-  /* Elimin padding-left pentru scroll continuu */
-}
-
-@keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 .header {
-  margin-top: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,6 +38,53 @@
 .header-right {
   justify-content: flex-end;
   flex: 1 1 0;
+  padding-right: 40px; /* Add padding to prevent button from sticking to edge */
+}
+
+.header-tarife-btn {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.header-tarife-btn:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.header-tarife-btn:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+.header-tarife-text {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .logo-button {
@@ -87,8 +99,6 @@
   display: flex;
   align-items: center;
 }
-
-
 
 .logo-text {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -107,6 +117,18 @@
     font-size: 20px;
   }
   
+  .header-tarife-btn {
+    width: 160px;
+    height: 45px;
+  }
+  
+  .header-right {
+    padding-right: 20px;
+  }
+  
+  .header-tarife-text {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -117,10 +139,29 @@
   .logo-button {
     font-size: 18px;
   }
+  
+  .header-tarife-btn {
+    width: 140px;
+    height: 40px;
+  }
+  
+  .header-right {
+    padding-right: 15px;
+  }
+  
+  .header-tarife-text {
+    font-size: 12px;
+  }
 }
 
 /* Focus styles for accessibility */
 .logo-button:focus-visible {
+  outline: 2px solid var(--gold-gradient-end);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.header-tarife-btn:focus-visible {
   outline: 2px solid var(--gold-gradient-end);
   outline-offset: 2px;
   border-radius: 4px;

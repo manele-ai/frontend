@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 export default function ProtectedRoute({ children }) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
   const location = useLocation();
 
   // Show loading spinner while checking authentication

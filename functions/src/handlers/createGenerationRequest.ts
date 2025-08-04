@@ -1,7 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { db, REGION, stripe, STRIPE_PRICE_ID_SONG } from "../config";
+import { db, REGION, stripe } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { createGenerationRequestTransaction } from "../service/generation/generation-request";
 import { createSongCheckoutSession } from "../service/payment/checkout-session";
@@ -41,15 +41,20 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
     
 
     try {
-      const { requestId, paymentType, paymentStatus }  = await createGenerationRequestTransaction(auth.uid, data);
+      const {
+        requestId,
+        songPaymentType,
+        dedicationPaymentType,
+        aruncaCuBaniAmountToPay,
+        paymentStatus
+      } = await createGenerationRequestTransaction(auth.uid, data);
    
       // If payment not needed, return immediately
       if (paymentStatus === 'success') {
         return { requestId, paymentStatus };
       }
 
-      const priceId = STRIPE_PRICE_ID_SONG.value();
-      const applySubscriptionDiscount = paymentType === 'subscription_discount' ;
+      const applySubscriptionDiscount = songPaymentType === 'subscription_discount' ;
 
       // Create a Stripe session
       try {
@@ -57,7 +62,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
             userId: auth.uid,
             customerId,
             requestId,
-            priceId,
+            shouldPayDedication: dedicationPaymentType === 'onetime',
+            aruncaCuBaniAmountToPay: aruncaCuBaniAmountToPay || 0,
             applySubscriptionDiscount,
           });
           // Attach Stripe session id to generation request

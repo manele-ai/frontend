@@ -9,6 +9,25 @@
   padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
+/* Overlay pentru fundal */
+.result-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(19, 20, 20, 1);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+/* Asigură-te că conținutul este deasupra overlay-ului */
+.result-page > * {
+  position: relative;
+  z-index: 2;
+}
+
 /* Titlu cu stil din poza */
 .result-title {
   color: #000;
@@ -98,6 +117,58 @@
   padding-bottom: 24px;
   border-radius: 20px;
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+}
+
+.loading-gif-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.loading-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loading-gif-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.loading-gif-overlay .title {
+  color: #fff;
+  font-size: 28px;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loading-gif-overlay .subtitle {
+  color: #eab111;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loading-gif-overlay .status-message {
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .title {
@@ -287,8 +358,9 @@
 
 .loading-bar {
   height: 100%;
-  background-color: #1e1e1e;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   transition: width 0.1s ease-in-out;
+  box-shadow: 0 0 10px rgba(234, 177, 17, 0.3);
 }
 
 /* Status message */
@@ -327,6 +399,18 @@
   
   .result-page .container {
     padding-top: 10px;
+  }
+  
+  .loading-gif-container {
+    height: 250px;
+  }
+  
+  .loading-gif-overlay .title {
+    font-size: 24px;
+  }
+  
+  .loading-gif-overlay .subtitle {
+    font-size: 14px;
   }
   
   .title {
@@ -374,6 +458,18 @@
 } 
 
 @media (max-width: 480px) {
+  .loading-gif-container {
+    height: 200px;
+  }
+  
+  .loading-gif-overlay .title {
+    font-size: 20px;
+  }
+  
+  .loading-gif-overlay .subtitle {
+    font-size: 12px;
+  }
+  
   .result-page .container {
     padding-bottom: 40px;
   }

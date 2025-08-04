@@ -1,39 +1,39 @@
 export const styles = [
   {
     title: 'JALE',
-    subtitle: 'Guta/Salam vechi',
+    subtitle: '',
     image: '/photos/Jale.jpeg',
     value: 'jale',
-  },
-  {
-    title: 'COMERCIALE',
-    subtitle: 'BDLP',
-    image: '/photos/Comerciale.jpeg',
-    value: 'comerciale',
-  },
-  {
-    title: 'DE PETRECERE',
-    subtitle: 'Bem 7 zile',
-    image: '/photos/Petrecere.jpeg',
-    value: 'petrecere',
-  },
-  {
-    title: 'MUZICA POPULARA',
-    subtitle: '',
-    image: '/photos/Populare.jpeg',
-    value: 'populare',
-  },
-  {
-    title: 'MANELE LIVE',
-    subtitle: '',
-    image: '/photos/Live.jpeg',
-    value: 'live',
   },
   {
     title: 'DE OPULENTA',
     subtitle: '',
     image: '/photos/Opulenta.jpeg',
     value: 'opulenta',
+  },
+  {
+    title: 'MANELE LIVE',
+    subtitle: '',
+    image: '/photos/Live.jpeg',
+    value: 'manele-live',
+  },
+  {
+    title: 'TRAPENELE',
+    subtitle: '',
+    image: '/photos/Live.jpeg',
+    value: 'trapanele',
+  },
+  {
+    title: 'DE PAHAR',
+    subtitle: '',
+    image: '/photos/Live.jpeg',
+    value: 'de-pahar',
+  },
+  {
+    title: 'MUZICA POPULARA',
+    subtitle: '',
+    image: '/photos/Populare.jpeg',
+    value: 'populara',
   },
   {
     title: 'ORIENTALE',

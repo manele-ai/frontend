@@ -78,7 +78,15 @@ export default function HomePage() {
   };
 
   return (
-    <div className="home-page">
+    <div 
+      className="home-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-card">
@@ -90,7 +98,7 @@ export default function HomePage() {
               gap: '20px',
               alignItems: 'center' 
             }}>
-              <Button className="hero-btn hero-section-button" onClick={() => navigate('/select-style')}>
+              <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
                 <span className="hero-btn-text">Genereaza acum</span>
               </Button>
               {!isSubscribed && (

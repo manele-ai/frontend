@@ -23,7 +23,7 @@ import { Database } from "../../types";
  * @param data - The user's generation input data (style, title, dedication, etc.)
  * @returns Object containing:
  *   - requestId: ID of the created generation request
- *   - paymentType: Type of payment used ('credits', 'subscription_free', 'subscription_discount', 'onetime_unsubscribed')
+ *   - paymentType: Type of payment used ('balance', 'subscription_free', 'subscription_discount', 'onetime_unsubscribed')
  *   - paymentStatus: Status of payment ('success' for free credits, 'pending' for paid requests)
  * @throws {Error} If user is not found
  */
@@ -31,6 +31,11 @@ export async function createGenerationRequestTransaction(
     userId: string,
     data: Database.UserGenerationInput,
 ) {
+  // Default to what user wants for now, but flexibility to change later
+  const shouldFulfillDedication = data.wantsDedication || false;
+  const shouldFulfillAruncaCuBani = data.wantsDonation || false;
+  const aruncaCuBaniAmountToFulfill = data.wantsDonation ? data.donationAmount || 0 : 0;
+  
   return db.runTransaction(async (transaction) => {
     const userRef = db.collection(COLLECTIONS.USERS).doc(userId);
     const userDoc = await transaction.get(userRef);
@@ -40,24 +45,45 @@ export async function createGenerationRequestTransaction(
     }
 
     const userData = userDoc.data() as Database.User;
-    const { paymentType, initialPaymentStatus } = determinePaymentPath(userData);
+    const {
+      songPaymentType,
+      dedicationPaymentType,
+      aruncaCuBaniAmountToPay,
+      paymentStatus,
+    } = determinePaymentTypes(
+      userData, 
+      {
+        shouldFulfillDedication,
+        shouldFulfillAruncaCuBani,
+        aruncaCuBaniAmountToFulfill,
+      }
+    );
 
-    if ((paymentType === 'credits' || paymentType === 'subscription_free') 
-        && initialPaymentStatus === 'success'
-    ) {
-      // Decrement now to avoid double-spending (concurrent generation requests from same user)
-      await decrementUserCredits(transaction, userRef);
-    }
+    // Decrement now to avoid double-spending (concurrent generation requests from same user)
+    await decrementUserBalanceIfNeeded(
+      transaction, 
+      userRef, 
+      {
+        songPaymentType,
+        dedicationPaymentType,
+        aruncaCuBaniAmountToPay,
+      }
+    );
 
     // Create the generation request
     const now = FieldValue.serverTimestamp();
     const generationRequestRef = db.collection(COLLECTIONS.GENERATION_REQUESTS).doc();
     const generationRequest: Database.GenerationRequest = {
       userId,
-      paymentType: paymentType,
-      paymentStatus: initialPaymentStatus,
+      paymentStatus,
+      songPaymentType,
+      dedicationPaymentType,
+      aruncaCuBaniAmountToPay,
       createdAt: now as any,
       updatedAt: now as any,
+      shouldFulfillDedication,
+      shouldFulfillAruncaCuBani,
+      aruncaCuBaniAmountToFulfill,
       userGenerationInput: {
         style: data.style,
         title: data.title,
@@ -73,8 +99,10 @@ export async function createGenerationRequestTransaction(
 
     return {
       requestId: generationRequestRef.id,
-      paymentType: paymentType,
-      paymentStatus: initialPaymentStatus,
+      songPaymentType,
+      dedicationPaymentType,
+      aruncaCuBaniAmountToPay,
+      paymentStatus,
     };
   });
 }
@@ -92,29 +120,76 @@ export async function createGenerationRequestTransaction(
  * @param userData - The user's data containing subscription and credits information
  * @returns Object containing payment type and initial payment status
  */
-function determinePaymentPath(userData: Database.User): {
-    paymentType: Database.GenerationRequest['paymentType'];
-    initialPaymentStatus: Database.GenerationRequest['paymentStatus'];
+function determinePaymentTypes(
+  userData: Database.User, 
+  data: {
+    shouldFulfillDedication: boolean;
+    shouldFulfillAruncaCuBani: boolean;
+    aruncaCuBaniAmountToFulfill: number;
+  }
+): {
+    songPaymentType: Database.GenerationRequest['songPaymentType'];
+    dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'];
+    aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
+    paymentStatus: Database.GenerationRequest['paymentStatus'];
   } {
+    const { shouldFulfillDedication, shouldFulfillAruncaCuBani, aruncaCuBaniAmountToFulfill } = data;
+
+    // Check if song needs payment
+    let songPaymentType: Database.GenerationRequest['songPaymentType'] = 'onetime_unsubscribed';
     const isSubscribed = userData.subscription?.status === 'active';
-    const hasFree = (userData.creditsBalance || 0) > 0;
-  
-    if (hasFree) {
-      return {
-        paymentType: isSubscribed ? 'subscription_free' : 'credits',
-        initialPaymentStatus: 'success'
-      };
+    const hasSongCredits = (userData.creditsBalance || 0) > 0;
+
+    if (hasSongCredits) {
+      songPaymentType = isSubscribed ? 'subscription_free' : 'balance';
     } else if (isSubscribed) {
-      return {
-        paymentType: 'subscription_discount',
-        initialPaymentStatus: 'pending'
-      };
+      songPaymentType = 'subscription_discount';
     } else {
+      songPaymentType = 'onetime_unsubscribed';
+    }
+
+    // Check if dedication needs payment
+    let dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'] = 'onetime';
+    if (shouldFulfillDedication) {
+      if (userData.dedicationBalance && userData.dedicationBalance > 0) {
+        dedicationPaymentType = 'balance';
+      } else {
+        dedicationPaymentType = 'onetime';
+      }
+    }
+    
+    // Check if arunca cu bani needs payment
+    let aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'] = aruncaCuBaniAmountToFulfill;
+    if (shouldFulfillAruncaCuBani && aruncaCuBaniAmountToFulfill > 0) {
+      if (userData.aruncaCuBaniBalance 
+        && (userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill) >= 0) {
+        aruncaCuBaniAmountToPay = userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill;
+      } else {
+        aruncaCuBaniAmountToPay = aruncaCuBaniAmountToFulfill;
+      }
+    }
+
+    // If we have a free generation, return success
+    if (
+      ['balance', 'subscription_free'].includes(songPaymentType)
+      && dedicationPaymentType === 'balance'
+      && aruncaCuBaniAmountToPay === 0
+    ) {
       return {
-        paymentType: 'onetime_unsubscribed',
-        initialPaymentStatus: 'pending'
+        songPaymentType,
+        dedicationPaymentType,
+        aruncaCuBaniAmountToPay,
+        paymentStatus: 'success', // Free generation
       };
     }
+
+    // Otherwise, return pending
+    return {
+      songPaymentType,
+      dedicationPaymentType,
+      aruncaCuBaniAmountToPay,
+      paymentStatus: 'pending',
+    };
 }
 
 /**
@@ -124,12 +199,35 @@ function determinePaymentPath(userData: Database.User): {
  * @param transaction - The Firestore transaction to use
  * @param userRef - Reference to the user's document
  */
-async function decrementUserCredits(
+async function decrementUserBalanceIfNeeded(
     transaction: FirebaseFirestore.Transaction,
-    userRef: FirebaseFirestore.DocumentReference
+    userRef: FirebaseFirestore.DocumentReference,
+    paymentTypes: {
+      songPaymentType: Database.GenerationRequest['songPaymentType'];
+      dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'];
+      aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
+    }
   ) {
-    transaction.update(userRef, {
-      creditsBalance: FieldValue.increment(-1),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
+    const { songPaymentType, dedicationPaymentType, aruncaCuBaniAmountToPay } = paymentTypes;
+    
+    if (['balance', 'subscription_free'].includes(songPaymentType)) {
+      transaction.update(userRef, {
+        creditsBalance: FieldValue.increment(-1),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
+
+    if (dedicationPaymentType === 'balance') {
+      transaction.update(userRef, {
+        dedicationBalance: FieldValue.increment(-1),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
+
+    if (aruncaCuBaniAmountToPay && aruncaCuBaniAmountToPay > 0) {
+      transaction.update(userRef, {
+        aruncaCuBaniBalance: FieldValue.increment(-aruncaCuBaniAmountToPay),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
   }
