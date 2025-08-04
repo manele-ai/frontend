@@ -28,12 +28,7 @@ code {
   flex-direction: column;
 }
 
-.App > *:not(.footer) {
-  flex: 1;
-}
-
-/* Eliminat padding global pe .container pentru a nu suprascrie paddingul local din pagini */
-
+/* Removed problematic flex rule that was affecting header */
 
 .subtitle {
   /* */
@@ -162,9 +157,7 @@ a {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
-  body {
-    padding-top: 50px; /* Adjusted for smaller header on mobile */
-  }
+  /* Removed padding-top that was affecting header */
   
   /* Eliminat padding global pe .container pentru mobile */
   

@@ -19,6 +19,7 @@ import ExemplePage from './pages/ExemplePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import SelectStylePage from './pages/SelectStylePage';
+import TarifePage from './pages/TarifePage';
 import './styles/App.css';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
               <Route path="/select-style" element={<SelectStylePage />} />
               <Route path="/generate" element={<GeneratePage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/tarife" element={<TarifePage />} />
               
               {/* Protected routes */}
               <Route path="/loading" element={

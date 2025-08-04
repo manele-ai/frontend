@@ -16,6 +16,14 @@ export default function Header() {
         />
       </div>
       
+      <div className="header-right">
+        <button 
+          className="header-tarife-btn"
+          onClick={() => navigate('/tarife')}
+        >
+          <span className="header-tarife-text">Tarife</span>
+        </button>
+      </div>
     </header>
   );
 } 
