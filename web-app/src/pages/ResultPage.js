@@ -296,7 +296,15 @@ export default function ResultPage() {
   // Show error state
   if (error) {
     return (
-      <div className="result-page">
+      <div 
+        className="result-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="container">
           <h1 className="title">Error</h1>
           <p className="error-message">{error}</p>
@@ -314,28 +322,37 @@ export default function ResultPage() {
   // Show loading state while waiting for song or status
   if (!songData) {
     return (
-      <div className="result-page">
+      <div 
+        className="result-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="container">
-          <div className="loading-bar-container">
-            <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
-          </div>
-          
-          <h1 className="title">Se generează maneaua...</h1>
-          <p className="subtitle">
-            Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
-          </p>
-          
-          <ExampleSongsList />
-          
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '32px 0', width: '100%' }}>
+          <div className="loading-gif-container">
             <img
               src={GIF}
               alt="gif loading manea"
-              style={{ width: '100%', height: 320, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 16px #0008', marginBottom: 12 }}
+              className="loading-gif"
             />
+            <div className="loading-gif-overlay">
+              <div className="loading-bar-container">
+                <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
+              </div>
+              
+              <h1 className="title">Se generează maneaua...</h1>
+              <p className="subtitle">
+                Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
+              </p>
+              
+              <p className="status-message">{statusMsg}</p>
+            </div>
           </div>
           
-          <p className="status-message">{statusMsg}</p>
+          <ExampleSongsList />
         </div>
       </div>
     );
@@ -345,7 +362,15 @@ export default function ResultPage() {
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
 
   return (
-    <div className="result-page">
+    <div 
+      className="result-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       <div className="container">
         <h1 className="result-title" style={{ marginBottom: 12 }}>{songData.apiData.title || 'Piesa ta e gata!'}</h1>
        

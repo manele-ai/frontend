@@ -37,10 +37,7 @@ export default function UserMenu() {
     navigate('/profile');
   };
 
-  const handleMySongsClick = () => {
-    setIsOpen(false);
-    navigate('/my-songs');
-  };
+
 
   const handleLeaderboardClick = () => {
     setIsOpen(false);
@@ -108,14 +105,7 @@ export default function UserMenu() {
               Profilul meu
             </button>
             
-            <button 
-              className="user-menu-item"
-              onClick={handleMySongsClick}
-              aria-label="Manelele mele"
-            >
-              <span>🎵</span>
-              Manelele mele
-            </button>
+
 
             <button 
               className="user-menu-item"

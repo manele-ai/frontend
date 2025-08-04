@@ -142,33 +142,35 @@ export function SignupForm({
               <div className="field-error">{fieldErrors.email}</div>
             )}
           </div>
-          <div className="input-group">
-            <input
-              type="password"
-              name="password"
-              placeholder="Parola"
-              value={formData.password}
-              onChange={handleInputChange}
-              className={`auth-input ${fieldErrors.password ? 'auth-input-error' : ''}`}
-              required
-            />
-            {fieldErrors.password && (
-              <div className="field-error">{fieldErrors.password}</div>
-            )}
-          </div>
-          <div className="input-group">
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirmă parola"
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              className={`auth-input ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
-              required
-            />
-            {fieldErrors.confirmPassword && (
-              <div className="field-error">{fieldErrors.confirmPassword}</div>
-            )}
+          <div className="auth-form-row">
+            <div className="input-group">
+              <input
+                type="password"
+                name="password"
+                placeholder="Parola"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={`auth-input ${fieldErrors.password ? 'auth-input-error' : ''}`}
+                required
+              />
+              {fieldErrors.password && (
+                <div className="field-error">{fieldErrors.password}</div>
+              )}
+            </div>
+            <div className="input-group">
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirmă parola"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className={`auth-input ${fieldErrors.confirmPassword ? 'auth-input-error' : ''}`}
+                required
+              />
+              {fieldErrors.confirmPassword && (
+                <div className="field-error">{fieldErrors.confirmPassword}</div>
+              )}
+            </div>
           </div>
         </>
       )}

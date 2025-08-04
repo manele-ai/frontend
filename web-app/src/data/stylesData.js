@@ -1,7 +1,7 @@
 export const styles = [
   {
     title: 'JALE',
-    subtitle: 'Guta/Salam vechi',
+    subtitle: '',
     image: '/photos/Jale.jpeg',
     value: 'jale',
   },

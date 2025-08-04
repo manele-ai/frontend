@@ -1,11 +1,12 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import { useGeneration } from '../context/GenerationContext';
+import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
@@ -28,18 +29,20 @@ export default function GeneratePage() {
   const [userCredits, setUserCredits] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    style: '',
+    songName: '',
+    fromName: '',
+    toName: '',
+    dedication: '',
+    donorName: '',
+    donationAmount: ''
+  });
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   // Store generation params to use after auth
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Set selected style from navigation state
-  useEffect(() => {
-    if (location.state?.selectedStyle) {
-      setSelectedStyle(location.state.selectedStyle);
-    }
-  }, [location.state]);
 
   // Reset donation and dedication when switching to easy mode
   useEffect(() => {
@@ -65,6 +68,37 @@ export default function GeneratePage() {
     }
   }, [user, isAuthenticated]);
 
+  // Actualizează erorile câmpurilor doar după prima încercare de generare
+  useEffect(() => {
+    if (!hasAttemptedSubmit) {
+      return;
+    }
+
+    const newErrors = {
+      style: !selectedStyle ? 'Te rugăm să selectezi un stil.' : '',
+      songName: !songName.trim() ? 'Te rugăm să introduci numele piesei.' : '',
+      fromName: wantsDedication && !fromName.trim() ? 'Te rugăm să introduci numele celui care dedică.' : '',
+      toName: wantsDedication && !toName.trim() ? 'Te rugăm să introduci numele celui căruia i se dedică.' : '',
+      dedication: wantsDedication && !dedication.trim() ? 'Te rugăm să introduci textul dedicației.' : '',
+      donorName: wantsDonation && !donorName.trim() ? 'Te rugăm să introduci numele celui care aruncă cu bani.' : '',
+      donationAmount: ''
+    };
+
+    // Validare specială pentru suma donației
+    if (wantsDonation && donationAmount.trim()) {
+      const amount = parseInt(donationAmount);
+      if (amount < 10) {
+        newErrors.donationAmount = 'Suma trebuie să fie cel puțin 10 RON.';
+      } else if (amount % 10 !== 0) {
+        newErrors.donationAmount = 'Suma trebuie să fie multiplu de 10 (ex: 10, 20, 30, etc.).';
+      }
+    } else if (wantsDonation && !donationAmount.trim()) {
+      newErrors.donationAmount = 'Te rugăm să introduci suma donației.';
+    }
+
+    setFieldErrors(newErrors);
+  }, [hasAttemptedSubmit, selectedStyle, songName, wantsDedication, wantsDonation, fromName, toName, dedication, donorName, donationAmount]);
+
   // Calculate price based on mode and options
   const calculatePrice = () => {
     let basePrice = 29.99;
@@ -83,6 +117,34 @@ export default function GeneratePage() {
   };
 
   const finalPrice = calculatePrice();
+
+  // Funcție pentru a valida și formata suma donației
+  const handleDonationAmountChange = (e) => {
+    const value = e.target.value;
+    
+    // Permite doar numere întregi și câmpul gol
+    if (value === '' || /^\d+$/.test(value)) {
+      setDonationAmount(value);
+    }
+  };
+
+  // Funcție pentru a reseta erorile când utilizatorul începe să completeze
+  const resetErrors = () => {
+    if (hasAttemptedSubmit) {
+      setHasAttemptedSubmit(false);
+      setFieldErrors({
+        style: '',
+        songName: '',
+        fromName: '',
+        toName: '',
+        dedication: '',
+        donorName: '',
+        donationAmount: ''
+      });
+    }
+  };
+
+
 
   const sendGenerationRequest = async () => {
     setIsProcessing(true);
@@ -131,6 +193,25 @@ export default function GeneratePage() {
   };
 
   const handleGenerateOrGoToPay = async () => {
+    // Marchează că s-a încercat generarea pentru a afișa erorile
+    setHasAttemptedSubmit(true);
+
+    // Verifică validările
+    const basicValidation = !selectedStyle || !songName.trim();
+    const dedicationValidation = wantsDedication && (!fromName.trim() || !toName.trim() || !dedication.trim());
+    const donationValidation = wantsDonation && (
+      !donorName.trim() || 
+      !donationAmount.trim() || 
+      (donationAmount.trim() && (parseInt(donationAmount) % 10 !== 0 || parseInt(donationAmount) < 10))
+    );
+
+    const hasValidationErrors = basicValidation || dedicationValidation || donationValidation;
+
+    // Dacă sunt erori de validare, nu continua cu plata
+    if (hasValidationErrors) {
+      return;
+    }
+
     const params = {
       style: selectedStyle,
       title: songName,
@@ -180,7 +261,15 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="generate-page">
+    <div 
+      className="generate-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-card">
@@ -197,6 +286,26 @@ export default function GeneratePage() {
 
       {/* Main Content Container */}
       <div className="main-content-container">
+        {/* Style Selection */}
+        <div className="style-selection-container">
+          <label className="input-label">Alege stilul</label>
+          <div className="style-cards-grid">
+            {styles.map((style) => (
+                              <div
+                  key={style.value}
+                  className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
+                  onClick={() => {
+                    setSelectedStyle(style.value);
+                    resetErrors();
+                  }}
+                >
+                <div className="style-mini-card-title">{style.title}</div>
+              </div>
+            ))}
+          </div>
+          {fieldErrors.style && <div className="field-error">{fieldErrors.style}</div>}
+        </div>
+
         {/* Modern Round Slider */}
         <div className="mode-slider-container">
           <div className="mode-slider">
@@ -219,12 +328,16 @@ export default function GeneratePage() {
         <div className="input-group">
           <label className="input-label">Titlu piesă</label>
           <input
-            className="input"
+            className={`input ${fieldErrors.songName ? 'error' : ''}`}
             type="text"
             placeholder="Nume piesă"
             value={songName}
-            onChange={(e) => setSongName(e.target.value)}
+            onChange={(e) => {
+              setSongName(e.target.value);
+              resetErrors();
+            }}
           />
+          {fieldErrors.songName && <div className="field-error">{fieldErrors.songName}</div>}
         </div>
 
         {/* Complex mode fields */}
@@ -242,19 +355,35 @@ export default function GeneratePage() {
             </div>
 
             <div className="checkbox-group">
-              <input
-                type="checkbox"
-                checked={wantsDedication}
-                onChange={(e) => setWantsDedication(e.target.checked)}
-                id="dedication-checkbox"
-              />
               <div className="checkbox-content">
-                <label htmlFor="dedication-checkbox" className="checkbox-label">
+                <label className="checkbox-label">
                   Vrei dedicație?
                 </label>
                 <p className="checkbox-explanation">
                   Vrei sa dedici aceasta melodie unei persoane?
                 </p>
+              </div>
+              <div className="checkbox-slider-container">
+                <div className="checkbox-slider">
+                  <button
+                    className={`checkbox-slider-option ${!wantsDedication ? 'active' : ''}`}
+                    onClick={() => {
+                      setWantsDedication(false);
+                      resetErrors();
+                    }}
+                  >
+                    <span className="checkbox-slider-text">Nu</span>
+                  </button>
+                  <button
+                    className={`checkbox-slider-option ${wantsDedication ? 'active' : ''}`}
+                    onClick={() => {
+                      setWantsDedication(true);
+                      resetErrors();
+                    }}
+                  >
+                    <span className="checkbox-slider-text">Da</span>
+                  </button>
+                </div>
               </div>
             </div>
             {wantsDedication && (
@@ -262,61 +391,93 @@ export default function GeneratePage() {
                 <div className="input-group">
                   <label className="input-label">De la cine?</label>
                   <input
-                    className="input"
+                    className={`input ${fieldErrors.fromName ? 'error' : ''}`}
                     type="text"
                     placeholder="De la cine?"
                     value={fromName}
-                    onChange={(e) => setFromName(e.target.value)}
+                    onChange={(e) => {
+                      setFromName(e.target.value);
+                      resetErrors();
+                    }}
                   />
+                  {fieldErrors.fromName && <div className="field-error">{fieldErrors.fromName}</div>}
                 </div>
                 <div className="input-group">
                   <label className="input-label">Pentru cine?</label>
                   <input
-                    className="input"
+                    className={`input ${fieldErrors.toName ? 'error' : ''}`}
                     type="text"
                     placeholder="Pentru cine?"
                     value={toName}
-                    onChange={(e) => setToName(e.target.value)}
+                    onChange={(e) => {
+                      setToName(e.target.value);
+                      resetErrors();
+                    }}
                   />
+                  {fieldErrors.toName && <div className="field-error">{fieldErrors.toName}</div>}
                 </div>
                 <div className="input-group">
                   <label className="input-label">Dedicatie</label>
                   <input
-                    className="input"
+                    className={`input ${fieldErrors.dedication ? 'error' : ''}`}
                     type="text"
                     placeholder="Dedicatie (opțional)"
                     value={dedication}
-                    onChange={(e) => setDedication(e.target.value)}
+                    onChange={(e) => {
+                      setDedication(e.target.value);
+                      resetErrors();
+                    }}
                   />
+                  {fieldErrors.dedication && <div className="field-error">{fieldErrors.dedication}</div>}
                 </div>
               </>
             )}
             <div className="checkbox-group">
-              <input
-                type="checkbox"
-                checked={wantsDonation}
-                onChange={(e) => setWantsDonation(e.target.checked)}
-                id="donation-checkbox"
-              />
               <div className="checkbox-content">
-                <label htmlFor="donation-checkbox" className="checkbox-label">
+                <label className="checkbox-label">
                   Vrei să arunci cu bani?
                 </label>
-                <p className="checkbox-explanation">
+                <p className="checkbox-slider-explanation">
                   Vrei sa mentionam cati bani ai aruncat?
                 </p>
+              </div>
+              <div className="checkbox-slider-container">
+                <div className="checkbox-slider">
+                  <button
+                    className={`checkbox-slider-option ${!wantsDonation ? 'active' : ''}`}
+                    onClick={() => {
+                      setWantsDonation(false);
+                      resetErrors();
+                    }}
+                  >
+                    <span className="checkbox-slider-text">Nu</span>
+                  </button>
+                  <button
+                    className={`checkbox-slider-option ${wantsDonation ? 'active' : ''}`}
+                    onClick={() => {
+                      setWantsDonation(true);
+                      resetErrors();
+                    }}
+                  >
+                    <span className="checkbox-slider-text">Da</span>
+                  </button>
+                </div>
               </div>
             </div>
             {wantsDonation && (
               <div className="input-group">
                 <label className="input-label">Numele celui care aruncă cu bani</label>
                 <input
-                  className="input"
+                  className={`input ${fieldErrors.donorName ? 'error' : ''}`}
                   type="text"
                   placeholder="Ex: Gheorghiță Varicelă"
                   value={donorName}
-                  onChange={(e) => setDonorName(e.target.value)}
+                  onChange={(e) => {
+                    setDonorName(e.target.value);
+                    resetErrors();
+                  }}
                 />
+                {fieldErrors.donorName && <div className="field-error">{fieldErrors.donorName}</div>}
               </div>
             )}
             {wantsDonation && (
@@ -325,12 +486,18 @@ export default function GeneratePage() {
                   Alege suma pe care vrei sa o arunci la manele si se va specifica in piesa (RON)
                 </label>
                 <input
-                  className="input"
+                  className={`input ${fieldErrors.donationAmount ? 'error' : ''}`}
                   type="number"
-                  placeholder="Ex: 100 RON"
+                  placeholder="Ex: 100 RON (doar multipli de 10)"
                   value={donationAmount}
-                  onChange={(e) => setDonationAmount(e.target.value)}
+                  onChange={(e) => {
+                    handleDonationAmountChange(e);
+                    resetErrors();
+                  }}
+                  min="10"
+                  step="1"
                 />
+                {fieldErrors.donationAmount && <div className="field-error">{fieldErrors.donationAmount}</div>}
               </div>
             )}
           </>
@@ -369,18 +536,32 @@ export default function GeneratePage() {
 
         {/* Buttons at the bottom */}
         <div className="buttons-container">
-          <button className="hero-btn button generate-back-button" onClick={() => navigate('/select-style')}>
+          <button className="hero-btn button generate-back-button" onClick={() => navigate('/')}>
             <span className="hero-btn-text">Înapoi</span>
           </button>
           {(() => {
-            const isDisabled = !songName.trim() || isProcessing;
+            // Validare de bază
+            const basicValidation = !selectedStyle || !songName.trim() || isProcessing;
+            
+            // Validare pentru dedicație
+            const dedicationValidation = wantsDedication && (!fromName.trim() || !toName.trim() || !dedication.trim());
+            
+            // Validare pentru donație
+            const donationValidation = wantsDonation && (
+              !donorName.trim() || 
+              !donationAmount.trim() || 
+              (donationAmount.trim() && (parseInt(donationAmount) % 10 !== 0 || parseInt(donationAmount) < 10))
+            );
+            
+            const hasValidationErrors = basicValidation || dedicationValidation || donationValidation;
+            
             return (
               <button 
-                className={`hero-btn button generate-button ${isDisabled ? 'disabled' : ''}`} 
+                className="hero-btn button generate-button" 
                 onClick={() => {
                   handleGenerateOrGoToPay();
                 }}
-                disabled={isDisabled}
+                disabled={isProcessing}
               >
                 <span className="hero-btn-text">
                   {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
