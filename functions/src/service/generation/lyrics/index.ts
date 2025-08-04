@@ -73,10 +73,13 @@ function fillInUserRequests(data: Requests.GenerateSong) {
         'utf8'
       );
     const suma = formatMoneyRON(Math.floor(data.donationAmount));
-    const arunca_cu_bani_instruction = arunca_cu_bani_template
+    let arunca_cu_bani_instruction = arunca_cu_bani_template
       .replace(/\[NUME\]/g, data.from)
       .replace(/\[SUMA\]/g, suma);
-
+    if (data.to) {
+      arunca_cu_bani_instruction = arunca_cu_bani_instruction.replace(/\[TO\]/g, data.to);
+    }
+    
     s = s.replace("[ARUNCA_CU_BANI]", arunca_cu_bani_instruction);
   }
   return s;
