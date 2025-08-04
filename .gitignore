@@ -5,6 +5,8 @@
 
 .vercel/
 
+output/
+
 # dependencies
 node_modules/
 jspm_packages/
