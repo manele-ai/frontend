@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 80px; /* Leave space for bottom menu */
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
@@ -18,10 +18,12 @@
 /* Modal Container */
 .auth-modal {
   background-color: #23242b;
-  border-radius: 20px;
-  padding: 40px;
+  border-radius: 18px;
+  padding: 25px;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
+  max-height: calc(100vh - 120px); /* Account for bottom menu and padding */
+  overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   border: 1px solid #333;
   position: relative;
@@ -30,7 +32,7 @@
 /* Modal Header */
 .auth-modal-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .auth-modal-header h2 {
@@ -39,21 +41,21 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   letter-spacing: 1px;
 }
 
 .auth-modal-header p {
   color: #a2a5bd;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 /* Modal Content */
 .auth-modal-content {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .auth-modal-content h3 {
@@ -62,25 +64,25 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
 .auth-modal-content p {
   color: #a2a5bd;
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  margin-bottom: 15px;
+  line-height: 1.4;
 }
 
 /* Form Styles */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .auth-form-row {
@@ -100,9 +102,9 @@
   width: 100%;
   background-color: #1a1a1a;
   border: 2px solid #333;
-  border-radius: 12px;
-  padding: 16px 20px;
-  font-size: 16px;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
   color: #fff;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -127,10 +129,10 @@
 .auth-modal-button {
   box-sizing: border-box;
   width: auto;
-  min-width: 200px;
-  height: 51.675px;
+  min-width: 180px;
+  height: 45px;
   flex-shrink: 0;
-  padding: 0 24px;
+  padding: 0 20px;
   border-radius: 4150.876px;
   border: 0.5px solid #F4F1E4;
   background: #1F1F1F;
@@ -167,7 +169,7 @@
 
 .auth-modal-button .hero-btn-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -184,16 +186,17 @@
   background-color: #1a1a1a;
   color: #fff;
   border: 2px solid #333;
-  border-radius: 12px;
-  padding: 16px 24px;
-  font-size: 16px;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 5px;
 }
 
 .google-auth-button:hover:not(:disabled) {
@@ -227,6 +230,69 @@
   text-decoration-color: rgba(0,0,0,0.5);
 }
 
+/* Toggle Method Buttons */
+.auth-toggle-method {
+  display: flex;
+  background: rgba(26, 27, 34, 0.8);
+  border-radius: 18px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 224, 161, 0.2);
+  margin-bottom: 12px;
+  backdrop-filter: blur(5px);
+}
+
+.auth-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 15px;
+  border: none;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.auth-toggle-button:hover {
+  color: #FFE0A1;
+  transform: translateY(-1px);
+}
+
+.auth-toggle-button.active {
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(255, 224, 161, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Divider between buttons */
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 224, 161, 0.3);
+}
+
 /* Error Styles */
 .auth-error {
   background-color: #ff3b30;
@@ -241,10 +307,15 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .auth-modal-overlay {
+    bottom: 70px;
+  }
+  
   .auth-modal {
     padding: 30px 20px;
     margin: 10px;
     max-width: 450px;
+    max-height: calc(100vh - 100px);
   }
   
   .auth-form-row {
@@ -281,12 +352,31 @@
     padding: 14px 20px;
     font-size: 15px;
   }
+  
+  .auth-toggle-method {
+    margin-bottom: 12px;
+  }
+  
+  .auth-toggle-button {
+    padding: 8px 16px;
+    font-size: 12px;
+    min-width: 70px;
+  }
+  
+  .auth-divider {
+    margin: 6px 0;
+  }
 }
 
 @media (max-width: 480px) {
+  .auth-modal-overlay {
+    bottom: 60px;
+  }
+  
   .auth-modal {
     padding: 25px 15px;
     max-width: 400px;
+    max-height: calc(100vh - 90px);
   }
   
   .auth-form-row {
@@ -326,5 +416,19 @@
   
   .auth-link-button {
     font-size: 13px;
+  }
+  
+  .auth-toggle-button {
+    padding: 6px 12px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+  
+  .google-auth-button {
+    margin-top: 4px;
+  }
+  
+  .auth-divider {
+    margin: 4px 0;
   }
 } 
