@@ -156,8 +156,6 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     }
   };
 
-
-
   const handleResendCode = async () => {
     if (resendTimer > 0) return;
     

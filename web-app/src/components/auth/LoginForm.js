@@ -106,10 +106,13 @@ export function LoginForm({
             placeholder="Număr de telefon (ex: +40712345678)"
             value={formData.phoneNumber}
             onChange={handleInputChange}
-            className="auth-input"
+            className={`auth-input ${fieldErrors.phoneNumber ? 'auth-input-error' : ''}`}
             required
             ref={inputRef}
           />
+          {fieldErrors.phoneNumber && (
+            <div className="field-error">{fieldErrors.phoneNumber}</div>
+          )}
         </div>
       ) : (
         <>
@@ -120,10 +123,10 @@ export function LoginForm({
               placeholder="Adresa de email"
               value={formData.email}
               onChange={handleInputChange}
-                          className="auth-input"
-            required
-            ref={inputRef}
-          />
+              className="auth-input"
+              required
+              ref={inputRef}
+            />
           </div>
           <div className="input-group">
             <input
@@ -132,9 +135,9 @@ export function LoginForm({
               placeholder="Parola"
               value={formData.password}
               onChange={handleInputChange}
-                          className="auth-input"
-            required
-          />
+              className="auth-input"
+              required
+            />
           </div>
         </>
       )}
