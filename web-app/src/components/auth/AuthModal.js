@@ -60,7 +60,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </div>
         ) : (
           <div className="auth-modal-content">
-            <h3>{isLogin ? 'Autentificare' : 'Înregistrare'}</h3>
+             <h3>{isLogin ? 'Autentificare' : 'Înregistrare'}</h3>
             <p>
               {isLogin 
                 ? 'Bine ai revenit! Autentifică-te pentru a genera maneaua.' 

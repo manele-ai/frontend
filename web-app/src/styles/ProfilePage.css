@@ -476,7 +476,26 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+.profile-song-card {
+  display: flex;
+  padding: 10px;
+  align-items: center;
   gap: 15px;
+  align-self: stretch;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profile-song-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(234, 177, 17, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .song-styles-filter {
@@ -534,6 +553,11 @@
     flex-direction: column;
   }
   
+  .profile-song-card {
+    padding: 8px;
+    gap: 12px;
+  }
+  
   .quick-actions {
     flex-direction: column;
     align-items: center;
@@ -567,6 +591,11 @@
   .song-styles-filter::-webkit-scrollbar {
     display: none;
   }
+  .profile-song-card {
+    padding: 6px;
+    gap: 10px;
+  }
+  
   .style-filter-btn {
     flex: 0 0 auto;
     padding: 7px 12px;

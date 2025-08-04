@@ -21,7 +21,7 @@
   border-radius: 20px;
   padding: 40px;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   border: 1px solid #333;
   position: relative;
@@ -83,6 +83,15 @@
   gap: 20px;
 }
 
+.auth-form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.auth-form-row .input-group {
+  flex: 1;
+}
+
 .input-group {
   position: relative;
 }
@@ -117,9 +126,11 @@
 /* Button Styles - renamed to avoid conflicts with AuthPage */
 .auth-modal-button {
   box-sizing: border-box;
-  width: 190.8px;
+  width: auto;
+  min-width: 200px;
   height: 51.675px;
   flex-shrink: 0;
+  padding: 0 24px;
   border-radius: 4150.876px;
   border: 0.5px solid #F4F1E4;
   background: #1F1F1F;
@@ -208,11 +219,11 @@
   transition: all 0.3s ease;
   text-decoration: underline;
   text-decoration-color: transparent;
-  color: #000000;
+  color: #F4F1E4;
 }
 
 .auth-link-button:hover {
-  color: #333333;
+  color: #f3e9bf;
   text-decoration-color: rgba(0,0,0,0.5);
 }
 
@@ -233,6 +244,12 @@
   .auth-modal {
     padding: 30px 20px;
     margin: 10px;
+    max-width: 450px;
+  }
+  
+  .auth-form-row {
+    flex-direction: column;
+    gap: 15px;
   }
   
   .auth-modal-header h2 {
@@ -250,8 +267,10 @@
   
   /* Stiluri responsive pentru butonul din modal */
   .auth-modal-button {
-    width: 160px;
+    width: auto;
+    min-width: 160px;
     height: 45px;
+    padding: 10px 20px;
   }
   
   .auth-modal-button .hero-btn-text {
@@ -267,6 +286,12 @@
 @media (max-width: 480px) {
   .auth-modal {
     padding: 25px 15px;
+    max-width: 400px;
+  }
+  
+  .auth-form-row {
+    flex-direction: column;
+    gap: 12px;
   }
   
   .auth-modal-header h2 {
@@ -284,8 +309,10 @@
   
   /* Stiluri responsive pentru butonul din modal pe ecrane foarte mici */
   .auth-modal-button {
-    width: 140px;
+    width: auto;
+    min-width: 140px;
     height: 40px;
+    padding: 0 16px;
   }
   
   .auth-modal-button .hero-btn-text {

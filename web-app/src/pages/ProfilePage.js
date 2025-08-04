@@ -278,14 +278,15 @@ export default function ProfilePage() {
           <div className="profile-song-list">
             {filteredSongs.length > 0 ? (
               filteredSongs.map((song) => (
-                <SongItem
-                  key={song.id}
-                  song={song}
-                  isActive={activeSong?.id === song.id}
-                  onPlayPause={handlePlayPause}
-                  onDownload={handleDownload}
-                  styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
-                />
+                <div className="profile-song-card" key={song.id}>
+                  <SongItem
+                    song={song}
+                    isActive={activeSong?.id === song.id}
+                    onPlayPause={handlePlayPause}
+                    onDownload={handleDownload}
+                    styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
+                  />
+                </div>
               ))
             ) : (
               <div className="no-songs">

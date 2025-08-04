@@ -12,7 +12,7 @@ import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import LoadingPage from './pages/LoadingPage';
-import MySongsPage from './pages/MySongsPage';
+
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 // import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
 import ExemplePage from './pages/ExemplePage';
@@ -63,11 +63,7 @@ function App() {
                   <ResultPage />
                 </ProtectedRoute>
               } />
-              <Route path="/my-songs" element={
-                <ProtectedRoute>
-                  <MySongsPage />
-                </ProtectedRoute>
-              } />
+
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <ProfilePage />

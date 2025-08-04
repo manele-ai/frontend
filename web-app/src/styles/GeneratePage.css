@@ -241,6 +241,13 @@
   color: #aaa;
 }
 
+.generate-page .input:focus {
+  outline: none;
+  border-color: #FFE0A1;
+  box-shadow: 0 0 0 2px rgba(255, 224, 161, 0.3);
+  background-color: rgba(255, 224, 161, 0.05);
+}
+
 /* Checkbox styles - specific pentru GeneratePage */
 .generate-page .checkbox-group {
   display: flex;
@@ -742,6 +749,10 @@
     font-size: 14px;
   }
   
+  .generate-page .input:focus {
+    box-shadow: 0 0 0 1px rgba(255, 224, 161, 0.3);
+  }
+  
   .generate-page .checkbox-label {
     font-size: 14px;
   }
@@ -814,6 +825,10 @@
   .generate-page .generate-button {
     width: 160px;
     height: 45px;
+  }
+  
+  .generate-page .input:focus {
+    box-shadow: 0 0 0 1px rgba(255, 224, 161, 0.3);
   }
 } 
 
@@ -896,3 +911,50 @@
     font-size: 11px;
   }
 } 
+
+/* Field Error Styles */
+.generate-page .input.error {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+.generate-page .field-error {
+  color: #ff6b35;
+  font-size: 12px;
+  margin-top: 5px;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+  padding-left: 2px;
+}
+
+.generate-page .style-selection-container .field-error {
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Validation and Error Messages */
+.generate-page .validation-error {
+  background-color: #ff6b35;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 15px;
+  border: 1px solid #ff8c5a;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+}
+
+.generate-page .error-message {
+  background-color: #ff3b30;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 15px;
+  border: 1px solid #ff6b6b;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+}
