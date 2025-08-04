@@ -67,6 +67,12 @@ export const STRIPE_PRICE_ID_SONG = defineString(
   },
 );
 
+export const STRIPE_PRICE_ID_DEDICATION = defineString(
+  "STRIPE_PRICE_ID_DEDICATION",
+  {
+    description: "Stripe Price ID for dedication",
+  },
+);
 
 export const STRIPE_PRICE_ID_SUBSCRIPTION = defineString(
   "STRIPE_PRICE_ID_SUBSCRIPTION",

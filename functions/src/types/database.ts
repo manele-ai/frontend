@@ -49,8 +49,20 @@ export namespace Database {
   export interface GenerationRequest {
     userId: string;
     taskId?: string;
-    paymentStatus: 'pending' | 'success' | 'failed';
-    paymentType: 'credits' | 'subscription_free' | 'subscription_discount' | 'onetime_unsubscribed';
+    paymentStatus: // Overall payment status (can only pay at once)
+      'pending'
+      | 'success'
+      | 'failed'; 
+    songPaymentType:
+      'balance'
+      | 'subscription_free'
+      | 'subscription_discount'
+      | 'onetime_unsubscribed';
+    dedicationPaymentType: 'balance' | 'onetime';
+    aruncaCuBaniAmountToPay?: number;
+    shouldFulfillDedication?: boolean;
+    shouldFulfillAruncaCuBani?: boolean;
+    aruncaCuBaniAmountToFulfill?: number;
     error?: string;
     refundedAsCredit?: boolean;
     paymentSessionId?: string;
@@ -67,6 +79,8 @@ export namespace Database {
     updatedAt: admin.firestore.Timestamp;
     stripeCustomerId?: string;
     creditsBalance?: number;
+    dedicationBalance?: number;
+    aruncaCuBaniBalance?: number;
     lastSubPeriodCreditGrant?: admin.firestore.Timestamp;
     subscription?: {
       stripeSubscriptionId: string;
