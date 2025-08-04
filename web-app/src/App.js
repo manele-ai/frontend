@@ -18,7 +18,6 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import ExemplePage from './pages/ExemplePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
-import SelectStylePage from './pages/SelectStylePage';
 import TarifePage from './pages/TarifePage';
 import './styles/App.css';
 
@@ -48,7 +47,7 @@ function App() {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/exemple" element={<ExemplePage />} />
-              <Route path="/select-style" element={<SelectStylePage />} />
+              <Route path="/select-style" element={<GeneratePage />} />
               <Route path="/generate" element={<GeneratePage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/tarife" element={<TarifePage />} />

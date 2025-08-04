@@ -296,7 +296,15 @@ export default function ResultPage() {
   // Show error state
   if (error) {
     return (
-      <div className="result-page">
+      <div 
+        className="result-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="container">
           <h1 className="title">Error</h1>
           <p className="error-message">{error}</p>
@@ -314,7 +322,15 @@ export default function ResultPage() {
   // Show loading state while waiting for song or status
   if (!songData) {
     return (
-      <div className="result-page">
+      <div 
+        className="result-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="container">
           <div className="loading-bar-container">
             <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
@@ -345,7 +361,15 @@ export default function ResultPage() {
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
 
   return (
-    <div className="result-page">
+    <div 
+      className="result-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       <div className="container">
         <h1 className="result-title" style={{ marginBottom: 12 }}>{songData.apiData.title || 'Piesa ta e gata!'}</h1>
        

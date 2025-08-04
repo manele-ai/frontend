@@ -1,5 +1,6 @@
 .footer {
-  background: #2B2B2B;
+  /* background: #2B2B2B; */
+  background-color: #1a1a1a;
   padding: 50px 100px;
   display: flex;
   flex-direction: column;

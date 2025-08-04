@@ -11,6 +11,25 @@
   padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
+/* Overlay pentru fundal */
+.loading-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(19, 20, 20, 1);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+/* Asigură-te că conținutul este deasupra overlay-ului */
+.loading-page > * {
+  position: relative;
+  z-index: 2;
+}
+
 .loading-container {
   display: inline-flex;
   padding: 2.5%;

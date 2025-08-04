@@ -9,6 +9,25 @@
   padding-bottom: 150px; /* Extra space for bottom menu */
 }
 
+/* Overlay pentru fundal */
+.result-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(19, 20, 20, 1);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+/* Asigură-te că conținutul este deasupra overlay-ului */
+.result-page > * {
+  position: relative;
+  z-index: 2;
+}
+
 /* Titlu cu stil din poza */
 .result-title {
   color: #000;

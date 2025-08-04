@@ -40,7 +40,7 @@ export default function TarifePage() {
   }, [user]);
 
   const handleGenerateNow = () => {
-    navigate('/select-style');
+    navigate('/generate');
   };
 
   const onClickSubscription = async () => {
@@ -57,7 +57,15 @@ export default function TarifePage() {
   };
 
   return (
-    <div className="tarife-page">
+    <div 
+      className="tarife-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       <div className="tarife-container">
         <h1 className="tarife-title">Tarife</h1>
         

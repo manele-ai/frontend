@@ -40,7 +40,15 @@ export default function MySongsPage() {
 
   if (authLoading || songsLoading) {
     return (
-      <div className="my-songs-page">
+      <div 
+        className="my-songs-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="loading-container">
           <div className="spinner"></div>
           <p>Se încarcă melodiile...</p>
@@ -50,7 +58,15 @@ export default function MySongsPage() {
   }
 
   return (
-    <div className="my-songs-page">
+    <div 
+      className="my-songs-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <h1 className="title">Manelele Mele</h1>

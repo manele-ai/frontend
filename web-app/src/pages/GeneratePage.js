@@ -1,11 +1,12 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import { useGeneration } from '../context/GenerationContext';
+import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
@@ -32,14 +33,6 @@ export default function GeneratePage() {
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Set selected style from navigation state
-  useEffect(() => {
-    if (location.state?.selectedStyle) {
-      setSelectedStyle(location.state.selectedStyle);
-    }
-  }, [location.state]);
 
   // Reset donation and dedication when switching to easy mode
   useEffect(() => {
@@ -180,7 +173,15 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="generate-page">
+    <div 
+      className="generate-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-card">
@@ -197,6 +198,22 @@ export default function GeneratePage() {
 
       {/* Main Content Container */}
       <div className="main-content-container">
+        {/* Style Selection */}
+        <div className="style-selection-container">
+          <label className="input-label">Alege stilul</label>
+          <div className="style-cards-grid">
+            {styles.map((style) => (
+              <div
+                key={style.value}
+                className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
+                onClick={() => setSelectedStyle(style.value)}
+              >
+                <div className="style-mini-card-title">{style.title}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Modern Round Slider */}
         <div className="mode-slider-container">
           <div className="mode-slider">
@@ -242,19 +259,29 @@ export default function GeneratePage() {
             </div>
 
             <div className="checkbox-group">
-              <input
-                type="checkbox"
-                checked={wantsDedication}
-                onChange={(e) => setWantsDedication(e.target.checked)}
-                id="dedication-checkbox"
-              />
               <div className="checkbox-content">
-                <label htmlFor="dedication-checkbox" className="checkbox-label">
+                <label className="checkbox-label">
                   Vrei dedicație?
                 </label>
                 <p className="checkbox-explanation">
                   Vrei sa dedici aceasta melodie unei persoane?
                 </p>
+              </div>
+              <div className="checkbox-slider-container">
+                <div className="checkbox-slider">
+                  <button
+                    className={`checkbox-slider-option ${wantsDedication ? 'active' : ''}`}
+                    onClick={() => setWantsDedication(true)}
+                  >
+                    <span className="checkbox-slider-text">Da</span>
+                  </button>
+                  <button
+                    className={`checkbox-slider-option ${!wantsDedication ? 'active' : ''}`}
+                    onClick={() => setWantsDedication(false)}
+                  >
+                    <span className="checkbox-slider-text">Nu</span>
+                  </button>
+                </div>
               </div>
             </div>
             {wantsDedication && (
@@ -292,19 +319,29 @@ export default function GeneratePage() {
               </>
             )}
             <div className="checkbox-group">
-              <input
-                type="checkbox"
-                checked={wantsDonation}
-                onChange={(e) => setWantsDonation(e.target.checked)}
-                id="donation-checkbox"
-              />
               <div className="checkbox-content">
-                <label htmlFor="donation-checkbox" className="checkbox-label">
+                <label className="checkbox-label">
                   Vrei să arunci cu bani?
                 </label>
-                <p className="checkbox-explanation">
+                <p className="checkbox-slider-explanation">
                   Vrei sa mentionam cati bani ai aruncat?
                 </p>
+              </div>
+              <div className="checkbox-slider-container">
+                <div className="checkbox-slider">
+                  <button
+                    className={`checkbox-slider-option ${wantsDonation ? 'active' : ''}`}
+                    onClick={() => setWantsDonation(true)}
+                  >
+                    <span className="checkbox-slider-text">Da</span>
+                  </button>
+                  <button
+                    className={`checkbox-slider-option ${!wantsDonation ? 'active' : ''}`}
+                    onClick={() => setWantsDonation(false)}
+                  >
+                    <span className="checkbox-slider-text">Nu</span>
+                  </button>
+                </div>
               </div>
             </div>
             {wantsDonation && (
@@ -369,11 +406,11 @@ export default function GeneratePage() {
 
         {/* Buttons at the bottom */}
         <div className="buttons-container">
-          <button className="hero-btn button generate-back-button" onClick={() => navigate('/select-style')}>
+          <button className="hero-btn button generate-back-button" onClick={() => navigate('/')}>
             <span className="hero-btn-text">Înapoi</span>
           </button>
           {(() => {
-            const isDisabled = !songName.trim() || isProcessing;
+            const isDisabled = !selectedStyle || !songName.trim() || isProcessing;
             return (
               <button 
                 className={`hero-btn button generate-button ${isDisabled ? 'disabled' : ''}`} 

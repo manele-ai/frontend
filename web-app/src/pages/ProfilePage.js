@@ -100,7 +100,15 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="profile-page">
+      <div 
+        className="profile-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="loading-container">
           <div className="spinner"></div>
           <p>Se încarcă profilul...</p>
@@ -110,7 +118,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="profile-page">
+    <div 
+      className="profile-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Butonul de Înapoi eliminat */}
       <div className="container">
         <div className="profile-content">

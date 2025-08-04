@@ -37,7 +37,15 @@ export default function AuthPage() {
 
   if (showResetPassword) {
     return (
-      <div className="auth-page">
+      <div 
+        className="auth-page"
+        style={{
+          backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+        }}
+      >
         <div className="auth-container">
           <h1 className="auth-title">Resetare Parolă</h1>
           <p className="auth-subtitle">
@@ -59,7 +67,15 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="auth-page">
+    <div 
+      className="auth-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       <div className="auth-container">
         <h1 className="auth-title">
           {isLogin ? 'Autentificare' : 'Înregistrare'}
