@@ -5,6 +5,7 @@ import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
+import { useNotification } from '../context/NotificationContext';
 
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
@@ -13,6 +14,7 @@ import '../styles/HomePage.css';
 
 export default function GeneratePage() {
   const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
+  const { showNotification } = useNotification();
 
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
@@ -167,6 +169,21 @@ export default function GeneratePage() {
       const response = await createGenerationRequest(params);
       
       if (response.paymentStatus === 'success') {
+        console.log('[NOTIF-DEBUG] GenPage: Creare notificare loading cu requestId:', response.requestId);
+        // Show loading notification with requestId
+        const notificationId = showNotification({
+          type: 'loading',
+          title: 'Se generează maneaua...',
+          message: 'AI-ul compune melodia ta personalizată.',
+          duration: 'manual',
+          requestId: response.requestId // Store requestId for global monitoring
+        });
+        console.log('[NOTIF-DEBUG] GenPage: Notificare loading creată cu id:', notificationId);
+        
+        // Save requestId separately for persistence across redirects
+        localStorage.setItem('activeGenerationRequestId', response.requestId);
+        console.log('[NOTIF-DEBUG] GenPage: requestId salvat în localStorage:', response.requestId);
+        
         // Generation started, go to loading page
         navigate('/result', { 
           state: { requestId: response.requestId, songId: null }
@@ -177,14 +194,32 @@ export default function GeneratePage() {
           const stripe = await getStripe();
           const { error } = await stripe.redirectToCheckout({ sessionId: response.sessionId });
           if (error) {
+            showNotification({
+              type: 'error',
+              title: 'Eroare la plată',
+              message: 'A apărut o eroare la plata. Încearcă din nou.',
+              duration: 30000
+            });
             setError('A apărut o eroare la plata. Încearcă din nou.');
           }
         } else {
+          showNotification({
+            type: 'error',
+            title: 'Eroare la generare',
+            message: 'A apărut o eroare. Încearcă din nou.',
+            duration: 30000
+          });
           setError('A apărut o eroare. Încearcă din nou.');
         }
       }
     } catch (err) {
       console.error(err);
+      showNotification({
+        type: 'error',
+        title: 'Eroare la generare',
+        message: 'A apărut o eroare. Încearcă din nou.',
+        duration: 30000
+      });
       setError('A apărut o eroare. Încearcă din nou.');
     } finally {
       setIsProcessing(false);

@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
 import Button from '../components/ui/Button';
+import { useNotification } from '../context/NotificationContext';
+import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
@@ -14,6 +16,8 @@ const GIF = '/NeTf.gif';
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { setupGenerationListener } = useGlobalSongStatus();
 
   const mounted = useRef(true);
   
@@ -32,20 +36,32 @@ export default function ResultPage() {
   const [taskId, setTaskId] = useState(null);
   const [songId, setSongId] = useState(songIdState || null);
 
-
-
   // Reset loading progress when starting a new generation
   useEffect(() => {
     if (requestId) {
       const savedRequestId = localStorage.getItem('resultPageRequestId');
       if (savedRequestId !== requestId) {
-        // Reset loading progress for new generation
         setLoadingProgress(0);
         localStorage.setItem('resultPageLoadingProgress', '0');
         localStorage.setItem('resultPageRequestId', requestId);
+        
+        // Save requestId for global monitoring
+        localStorage.setItem('activeGenerationRequestId', requestId);
+        
+        // Show loading notification for this generation
+        showNotification({
+          type: 'loading',
+          title: 'Se generează maneaua...',
+          message: 'AI-ul compune melodia ta personalizată.',
+          duration: 'manual',
+          requestId: requestId
+        });
+        
+        // Set up global listener for this generation
+        setupGenerationListener(requestId);
       }
     }
-  }, [requestId]);
+  }, [requestId, showNotification, setupGenerationListener]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
@@ -138,10 +154,11 @@ export default function ResultPage() {
               case 'completed':
                 if (data.songId) {
                   setSongId(data.songId);
-
+                } else {
                 }
                 break;
               case 'failed':
+                // Set error state for UI
                 setError(data.error || 'Generarea a eșuat.');
                 break;
               default:
@@ -187,16 +204,16 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
+              
               setSongData(songData);
               
-              // Clear generation state when song is fully loaded
+              // Clear localStorage items when song is complete
               if (songData && songData.apiData && songData.apiData.title) {
-
-                // Clear localStorage items when song is complete
                 localStorage.removeItem('resultPageLoadingProgress');
                 localStorage.removeItem('resultPageRequestId');
-
+              } else {
               }
+            } else {
             }
           },
           (err) => {
@@ -305,7 +322,7 @@ export default function ResultPage() {
             className="back-button"
             onClick={() => navigate('/')}
           >
-            ← Înapoi
+            <span className="hero-btn-text">← Înapoi</span>
           </button>
         </div>
       </div>
