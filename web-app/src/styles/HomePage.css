@@ -518,35 +518,36 @@
   text-align: center;
 }
 
-.style-example-audio-player .progress-bar {
+.home-page .style-example-audio-player .progress-bar {
   flex: 1;
   height: 4px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 0.3) 0%, rgba(207, 175, 110, 0.3) 100%);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
   -webkit-appearance: none;
+  box-shadow: 0 0 12px rgba(255, 238, 204, 0.4);
 }
 
-.style-example-audio-player .progress-bar::-webkit-slider-thumb {
+.home-page .style-example-audio-player .progress-bar::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: linear-gradient(90deg, #FFEEA6 0%, #CFAF6E 100%);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 238, 204, 0.6);
 }
 
-.style-example-audio-player .progress-bar::-moz-range-thumb {
+.home-page .style-example-audio-player .progress-bar::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: linear-gradient(90deg, #FFEEA6 0%, #CFAF6E 100%);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 238, 204, 0.6);
 }
 
 .style-example-audio-player .play-pause-button {
