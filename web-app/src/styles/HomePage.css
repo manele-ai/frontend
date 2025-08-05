@@ -481,18 +481,171 @@
   }
   
   .style-example-card-button .hero-btn-text {
-    font-size: 10px; /* Redus și mai mult */
+  font-size: 10px; /* Redus și mai mult */
+}
+
+/* Stiluri pentru player-ul audio în carduri */
+.style-example-audio-player {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.style-example-audio-player .song-playback {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.style-example-audio-player .song-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.style-example-audio-player .time-display {
+  color: #FFEEA6;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  text-align: center;
+}
+
+.style-example-audio-player .progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.style-example-audio-player .progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #FFEEA6 0%, #CFAF6E 100%);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.style-example-audio-player .progress-bar::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #FFEEA6 0%, #CFAF6E 100%);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.style-example-audio-player .play-pause-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+}
+
+.style-example-audio-player .play-pause-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.style-example-audio-player .play-pause-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.style-example-audio-player .play-icon {
+  filter: brightness(0) saturate(100%) invert(89%) sepia(12%) saturate(1234%) hue-rotate(359deg) brightness(103%) contrast(101%);
+}
+
+/* Stiluri responsive pentru player-ul audio */
+@media (max-width: 768px) {
+  .style-example-audio-player {
+    max-width: 250px;
+    margin-top: 12px;
   }
   
-  /* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
-  .home-page .hero-btn.button {
-    width: 140px;
-    height: 40px;
+  .style-example-audio-player .song-playback {
+    padding: 8px;
   }
   
-  .home-page .hero-btn.button .hero-btn-text {
-    font-size: 12px;
+  .style-example-audio-player .time-display {
+    font-size: 10px;
+    min-width: 25px;
   }
+  
+  .style-example-audio-player .progress-bar {
+    height: 3px;
+  }
+  
+  .style-example-audio-player .progress-bar::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .style-example-audio-player .play-pause-button {
+    min-width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .style-example-audio-player {
+    max-width: 200px;
+    margin-top: 10px;
+  }
+  
+  .style-example-audio-player .song-playback {
+    padding: 6px;
+  }
+  
+  .style-example-audio-player .time-display {
+    font-size: 9px;
+    min-width: 20px;
+  }
+  
+  .style-example-audio-player .progress-bar {
+    height: 2px;
+  }
+  
+  .style-example-audio-player .progress-bar::-webkit-slider-thumb {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .style-example-audio-player .play-pause-button {
+    min-width: 24px;
+    height: 24px;
+  }
+}
+
+/* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
+.home-page .hero-btn.button {
+  width: 140px;
+  height: 40px;
+}
+
+.home-page .hero-btn.button .hero-btn-text {
+  font-size: 12px;
+}
 }
 
 
