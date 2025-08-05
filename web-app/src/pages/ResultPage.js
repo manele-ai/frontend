@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
 import Button from '../components/ui/Button';
+import { useNotification } from '../context/NotificationContext';
+import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
@@ -14,6 +16,8 @@ const GIF = '/NeTf.gif';
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const { setupGenerationListener } = useGlobalSongStatus();
 
   const mounted = useRef(true);
   
@@ -32,8 +36,6 @@ export default function ResultPage() {
   const [taskId, setTaskId] = useState(null);
   const [songId, setSongId] = useState(songIdState || null);
 
-
-
   // Reset loading progress when starting a new generation
   useEffect(() => {
     if (requestId) {
@@ -43,9 +45,29 @@ export default function ResultPage() {
         setLoadingProgress(0);
         localStorage.setItem('resultPageLoadingProgress', '0');
         localStorage.setItem('resultPageRequestId', requestId);
+        
+        // Save requestId for global monitoring
+        localStorage.setItem('activeGenerationRequestId', requestId);
+        console.log('[NOTIF-DEBUG] ResultPage: requestId salvat în localStorage pentru monitorizare globală:', requestId);
+        
+        // Show loading notification for this generation
+        console.log('[NOTIF-DEBUG] ResultPage: Creez notificare loading pentru requestId:', requestId);
+        showNotification({
+          type: 'loading',
+          title: 'Se generează maneaua...',
+          message: 'AI-ul compune melodia ta personalizată.',
+          duration: 'manual',
+          requestId: requestId
+        });
+        
+        // Set up global listener for this generation
+        console.log('[NOTIF-DEBUG] ResultPage: Setez listener global pentru requestId:', requestId);
+        setupGenerationListener(requestId);
+      } else {
+        console.log('[NOTIF-DEBUG] ResultPage: requestId deja salvat:', requestId);
       }
     }
-  }, [requestId]);
+  }, [requestId, showNotification, setupGenerationListener]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
@@ -88,6 +110,7 @@ export default function ResultPage() {
             if (data.taskId && !taskId) {
               setTaskId(data.taskId);
               setStatusMsg('Generarea piesei este în curs...');
+              console.log('[NOTIF-DEBUG] ResultPage: TaskId primit:', data.taskId);
             }
           },
           (err) => {
@@ -133,18 +156,25 @@ export default function ResultPage() {
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
+                console.log('[NOTIF-DEBUG] ResultPage: Task processing');
                 break;
               case 'partial':
               case 'completed':
                 if (data.songId) {
+                  console.log('[NOTIF-DEBUG] ResultPage: Task completed, setez songId:', data.songId, 'pentru taskId:', taskId);
                   setSongId(data.songId);
-
+                  console.log('[NOTIF-DEBUG] ResultPage: Task completed, songId setat:', data.songId);
+                } else {
+                  console.log('[NOTIF-DEBUG] ResultPage: Task completed dar fără songId');
                 }
                 break;
               case 'failed':
+                // Set error state for UI
                 setError(data.error || 'Generarea a eșuat.');
+                console.log('[NOTIF-DEBUG] ResultPage: Task failed:', data.error);
                 break;
               default:
+                console.log('[NOTIF-DEBUG] ResultPage: Task status necunoscut:', data.status);
                 break;
             }
           },
@@ -187,16 +217,20 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
+              console.log('[NOTIF-DEBUG] ResultPage: Date primite pentru songId:', songId, 'songData:', songData);
+              
               setSongData(songData);
               
-              // Clear generation state when song is fully loaded
+              // Clear localStorage items when song is complete
               if (songData && songData.apiData && songData.apiData.title) {
-
-                // Clear localStorage items when song is complete
                 localStorage.removeItem('resultPageLoadingProgress');
                 localStorage.removeItem('resultPageRequestId');
-
+                console.log('[NOTIF-DEBUG] ResultPage: Song complet pentru songId:', songId, 'title:', songData.apiData.title);
+              } else {
+                console.log('[NOTIF-DEBUG] ResultPage: Song nu e gata încă pentru songId:', songId, 'apiData:', songData?.apiData, 'title:', songData?.apiData?.title);
               }
+            } else {
+              console.log('[NOTIF-DEBUG] ResultPage: Song nu există pentru songId:', songId);
             }
           },
           (err) => {
@@ -305,7 +339,7 @@ export default function ResultPage() {
             className="back-button"
             onClick={() => navigate('/')}
           >
-            ← Înapoi
+            <span className="hero-btn-text">← Înapoi</span>
           </button>
         </div>
       </div>
