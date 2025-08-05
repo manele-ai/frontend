@@ -1,11 +1,21 @@
 import { initializeApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { firebaseConfig, useEmulators } from './config';
+import { firebaseConfig, reCaptchaSiteKey, useEmulators } from './config';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+if (!useEmulators) {
+  // Initialize App Check with reCAPTCHA v3
+  const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(reCaptchaSiteKey),
+    isTokenAutoRefreshEnabled: true
+  });
+}
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app, 'europe-central2');

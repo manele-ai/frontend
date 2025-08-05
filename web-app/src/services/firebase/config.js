@@ -12,6 +12,7 @@ const dummyFirebaseConfig = {
   storageBucket: "manele-io-test.firebasestorage.app",
   messagingSenderId: "473723194717",
   appId: "1:473723194717:web:b1e1e9d2cdb7c7964d2cb4",
+  reCaptchaSiteKey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test key from reCAPTCHA docs
 };
 
 export const firebaseConfig = {
@@ -22,6 +23,8 @@ export const firebaseConfig = {
   messagingSenderId: !useEmulators ? process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID : dummyFirebaseConfig.messagingSenderId,
   appId: !useEmulators ? process.env.REACT_APP_FIREBASE_APP_ID : dummyFirebaseConfig.appId,
 };
+
+export const reCaptchaSiteKey = !useEmulators ? process.env.REACT_APP_RECAPTCHA_SITE_KEY : dummyFirebaseConfig.reCaptchaSiteKey;
 
 // App configuration
 export const appConfig = {
