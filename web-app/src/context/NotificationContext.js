@@ -44,63 +44,44 @@ export const NotificationProvider = ({ children }) => {
   }, []);
 
   const showNotification = useCallback((notification) => {
-    console.log('showNotification called with:', notification);
-    const id = Date.now() + Math.random();
-    const newNotification = {
-      id,
-      type: notification.type || 'info',
-      title: notification.title || '',
-      message: notification.message || '',
-      duration: notification.duration || 30000, // Default 30 seconds
-      position: notification.position || 'top-right',
-      action: notification.action || null,
-      requestId: notification.requestId || null,
-      createdAt: Date.now(),
-      ...notification
-    };
-
-    console.log('Created new notification:', newNotification);
-
     setNotifications(prev => {
-      const updated = [...prev, newNotification];
-      // Save to localStorage
-      if (typeof window !== 'undefined' && window.localStorage) {
-        try {
-          localStorage.setItem('globalNotifications', JSON.stringify(updated));
-          console.log('Saved notification to localStorage:', newNotification);
-          console.log('All notifications in localStorage:', updated);
-          console.log('Current notifications state:', updated);
-        } catch (error) {
-          console.error('Error saving to localStorage:', error);
-        }
-      } else {
-        console.log('localStorage not available for saving');
+      const newNotifications = [...prev, { ...notification, id: Date.now() }];
+      
+      // Save to localStorage for persistence
+      try {
+        localStorage.setItem('globalNotifications', JSON.stringify(newNotifications));
+      } catch (error) {
+        console.error('Eroare la salvarea notificărilor în localStorage:', error);
       }
-      return updated;
+      
+      return newNotifications;
     });
-
-    // Auto-dismiss if duration is not 'manual'
-    if (newNotification.duration !== 'manual' && typeof newNotification.duration === 'number') {
-      setTimeout(() => {
-        removeNotification(id);
-      }, newNotification.duration);
-    }
-
-    return id;
   }, []);
 
   const removeNotification = useCallback((id) => {
     setNotifications(prev => {
-      const updated = prev.filter(notification => notification.id !== id);
+      const newNotifications = prev.filter(n => n.id !== id);
+      
       // Update localStorage
-      localStorage.setItem('globalNotifications', JSON.stringify(updated));
-      return updated;
+      try {
+        localStorage.setItem('globalNotifications', JSON.stringify(newNotifications));
+      } catch (error) {
+        console.error('Eroare la actualizarea notificărilor în localStorage:', error);
+      }
+      
+      return newNotifications;
     });
   }, []);
 
   const clearAll = useCallback(() => {
     setNotifications([]);
-    localStorage.removeItem('globalNotifications');
+    
+    // Clear localStorage
+    try {
+      localStorage.removeItem('globalNotifications');
+    } catch (error) {
+      console.error('Eroare la ștergerea notificărilor din localStorage:', error);
+    }
   }, []);
 
   const value = {

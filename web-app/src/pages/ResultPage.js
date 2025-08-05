@@ -41,17 +41,14 @@ export default function ResultPage() {
     if (requestId) {
       const savedRequestId = localStorage.getItem('resultPageRequestId');
       if (savedRequestId !== requestId) {
-        // Reset loading progress for new generation
         setLoadingProgress(0);
         localStorage.setItem('resultPageLoadingProgress', '0');
         localStorage.setItem('resultPageRequestId', requestId);
         
         // Save requestId for global monitoring
         localStorage.setItem('activeGenerationRequestId', requestId);
-        console.log('[NOTIF-DEBUG] ResultPage: requestId salvat în localStorage pentru monitorizare globală:', requestId);
         
         // Show loading notification for this generation
-        console.log('[NOTIF-DEBUG] ResultPage: Creez notificare loading pentru requestId:', requestId);
         showNotification({
           type: 'loading',
           title: 'Se generează maneaua...',
@@ -61,10 +58,7 @@ export default function ResultPage() {
         });
         
         // Set up global listener for this generation
-        console.log('[NOTIF-DEBUG] ResultPage: Setez listener global pentru requestId:', requestId);
         setupGenerationListener(requestId);
-      } else {
-        console.log('[NOTIF-DEBUG] ResultPage: requestId deja salvat:', requestId);
       }
     }
   }, [requestId, showNotification, setupGenerationListener]);
@@ -110,7 +104,6 @@ export default function ResultPage() {
             if (data.taskId && !taskId) {
               setTaskId(data.taskId);
               setStatusMsg('Generarea piesei este în curs...');
-              console.log('[NOTIF-DEBUG] ResultPage: TaskId primit:', data.taskId);
             }
           },
           (err) => {
@@ -156,25 +149,19 @@ export default function ResultPage() {
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
-                console.log('[NOTIF-DEBUG] ResultPage: Task processing');
                 break;
               case 'partial':
               case 'completed':
                 if (data.songId) {
-                  console.log('[NOTIF-DEBUG] ResultPage: Task completed, setez songId:', data.songId, 'pentru taskId:', taskId);
                   setSongId(data.songId);
-                  console.log('[NOTIF-DEBUG] ResultPage: Task completed, songId setat:', data.songId);
                 } else {
-                  console.log('[NOTIF-DEBUG] ResultPage: Task completed dar fără songId');
                 }
                 break;
               case 'failed':
                 // Set error state for UI
                 setError(data.error || 'Generarea a eșuat.');
-                console.log('[NOTIF-DEBUG] ResultPage: Task failed:', data.error);
                 break;
               default:
-                console.log('[NOTIF-DEBUG] ResultPage: Task status necunoscut:', data.status);
                 break;
             }
           },
@@ -217,7 +204,6 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
-              console.log('[NOTIF-DEBUG] ResultPage: Date primite pentru songId:', songId, 'songData:', songData);
               
               setSongData(songData);
               
@@ -225,12 +211,9 @@ export default function ResultPage() {
               if (songData && songData.apiData && songData.apiData.title) {
                 localStorage.removeItem('resultPageLoadingProgress');
                 localStorage.removeItem('resultPageRequestId');
-                console.log('[NOTIF-DEBUG] ResultPage: Song complet pentru songId:', songId, 'title:', songData.apiData.title);
               } else {
-                console.log('[NOTIF-DEBUG] ResultPage: Song nu e gata încă pentru songId:', songId, 'apiData:', songData?.apiData, 'title:', songData?.apiData?.title);
               }
             } else {
-              console.log('[NOTIF-DEBUG] ResultPage: Song nu există pentru songId:', songId);
             }
           },
           (err) => {

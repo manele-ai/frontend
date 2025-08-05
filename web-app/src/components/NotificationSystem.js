@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import '../styles/NotificationSystem.css';
 
@@ -83,15 +84,20 @@ const NotificationItem = ({ notification, onRemove }) => {
 export default function NotificationSystem() {
   const { notifications, removeNotification } = useNotification();
 
-  console.log('[NOTIF-DEBUG] NotificationSystem: Render cu notificări:', notifications);
-  console.log('[NOTIF-DEBUG] NotificationSystem: Numărul de notificări:', notifications.length);
+  useEffect(() => {
+    // Auto-dismiss notifications with duration
+    notifications.forEach(notification => {
+      if (notification.duration && notification.duration !== 'manual' && typeof notification.duration === 'number') {
+        setTimeout(() => {
+          removeNotification(notification.id);
+        }, notification.duration);
+      }
+    });
+  }, [notifications, removeNotification]);
 
   if (notifications.length === 0) {
-    console.log('[NOTIF-DEBUG] NotificationSystem: Nu există notificări, returnez null');
     return null;
   }
-
-  console.log('[NOTIF-DEBUG] NotificationSystem: Afișez notificările:', notifications.map(n => ({ id: n.id, type: n.type, title: n.title })));
 
   return (
     <div className="notification-system">
