@@ -5,7 +5,7 @@ import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
-import { useGeneration } from '../context/GenerationContext';
+
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
@@ -13,7 +13,7 @@ import '../styles/HomePage.css';
 
 export default function GeneratePage() {
   const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
-  const { startGeneration } = useGeneration();
+
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [fromName, setFromName] = useState('');
   const [toName, setToName] = useState('');
@@ -168,7 +168,6 @@ export default function GeneratePage() {
       
       if (response.paymentStatus === 'success') {
         // Generation started, go to loading page
-        startGeneration(response.requestId);
         navigate('/result', { 
           state: { requestId: response.requestId, songId: null }
         });
