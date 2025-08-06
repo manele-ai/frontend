@@ -13,7 +13,6 @@ import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
-const GENERATION_TIMEOUT = 6 * 60 * 1000; // 5 minutes in milliseconds
 
 export default function ResultPage() {
   const location = useLocation();
@@ -22,7 +21,6 @@ export default function ResultPage() {
   const { setupGenerationListener } = useGlobalSongStatus();
 
   const mounted = useRef(true);
-  const timeoutRef = useRef(null);
   
   // Initialize loading progress from localStorage or 0
   const [loadingProgress, setLoadingProgress] = useState(() => {
@@ -83,25 +81,6 @@ export default function ResultPage() {
       mounted.current = false;
     };
   }, []);
-
-  // Set generation timeout
-  useEffect(() => {
-    if (requestId && !songData) {
-      // Set timeout for 5 minutes
-      timeoutRef.current = setTimeout(() => {
-        if (mounted.current && !songData) {
-          setError('Generarea a eșuat. Te rugăm să încerci din nou.');
-          clearGeneration();
-        }
-      }, GENERATION_TIMEOUT);
-
-      return () => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-      };
-    }
-  }, [requestId, songData, clearGeneration]);
 
   // ---- Listen to Generation Request if we only have requestId ----
   useEffect(() => {
