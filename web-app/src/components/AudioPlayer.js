@@ -90,17 +90,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       }
     } else {
       audio.pause();
-      // Only switch to storage URL when user has stopped playing
-      const currentSrc = audio.src || '';
-      const newSrc = audioUrl || '';
-      if (currentSrc !== newSrc && newSrc) {
-        const currentTime = audio.currentTime;
-        audio.src = audioUrl;
-        audio.load();
-        if (currentTime > 0) {
-          audio.currentTime = currentTime;
-        }
-      }
+      // Don't change URL at all - keep the original URL
       if (!audioUrl) {
         audio.removeAttribute('src'); // More reliable than setting empty string
         setCurrentTime(0);

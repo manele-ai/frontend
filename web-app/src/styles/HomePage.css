@@ -448,8 +448,51 @@
   }
   
   .home-page .hero-btn.button .hero-btn-text {
-    font-size: 14px;
+  font-size: 14px;
+}
+
+/* Mobile Play Buttons - only on HomePage cards */
+.mobile-play-buttons {
+  display: none; /* Hidden by default */
+}
+
+.mobile-play-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  margin-top: 12px;
+}
+
+.mobile-play-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.mobile-play-btn:active {
+  transform: scale(0.95);
+}
+
+/* Show mobile buttons only on mobile devices */
+@media (max-width: 768px) {
+  .mobile-play-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
+  
+  /* Hide the regular audio player on mobile */
+  .style-example-audio-player {
+    display: none;
+  }
+}
 }
 
 @media (max-width: 480px) {
