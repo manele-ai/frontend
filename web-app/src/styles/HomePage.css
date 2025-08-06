@@ -537,7 +537,7 @@
   border-radius: 50%;
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(255, 238, 204, 0.6);
+  border: none;
 }
 
 .home-page .style-example-audio-player .progress-bar::-moz-range-thumb {
@@ -547,7 +547,6 @@
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 12px rgba(255, 238, 204, 0.6);
 }
 
 .style-example-audio-player .play-pause-button {
