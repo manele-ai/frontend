@@ -352,6 +352,19 @@
   gap: 0;
 }
 
+.song-metadata {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.song-date {
+  font-size: 0.85em;
+  color: #666;
+  font-style: italic;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .song-item {
