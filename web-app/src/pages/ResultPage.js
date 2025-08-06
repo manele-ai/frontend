@@ -10,7 +10,7 @@ import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
-const GENERATION_TIMEOUT = 6 * 60 * 1000; // 5 minutes in milliseconds
+const GENERATION_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 export default function ResultPage() {
   const location = useLocation();
