@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 28">
+  <g isolation="isolate">
+    <g id="Layer_2" data-name="Layer 2">
+      <g id="Layer_1-2" data-name="Layer 1">
+        <g id="_COUNTER_MANELE">
+          <image width="60" height="28" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD0AAAAdCAYAAAAZzmTfAAAACXBIWXMAAAsSAAALEgHS3X78AAABtklEQVRYhe2YQU7CQBiFP6mVRpCEGJfGhYksOICJ3MKDegOXmHgAF5i4MOwwhsSoAZuqi/knTls7RTqzEOZtpjC893hDh/+fQkBAwCZhx3zRHowiIAZaxTkDX8AnkC4n48wj34sHJknE+sCJjFGFYAa8AFPgeTkZf3jg94A31x4au8Z1LGKXwBBIKgRTEbsGbtqD0UxW0yX/DHjy4FEKrVdxCFwA+xWCGTCT6ykwl/dc8s+BVw8epdCIaCJiHflgitofLX72EsAx6jaMPPAPRMOHRym0iQy1Qo+o/dEjv5fiophjvjcPW+hUxK6AB+AUtZe6Fo5LvjePlmVOr+IdcCtjbm/UoCnfm4cttBZdAO8y/vULN+V78agLvZEIobcFdaHNmphgLx8++F48bCXL7H4SVDnQ9W+VP6Sm/FWwlocttNnnmoU/tgk65K+CtTyKoXVLl6Fu/T6q0JstXl2H5IpvO0E18ciFNo9julmPCvN69X6ria75XQ8eQD60eRwD1azHRYJgQbn7cc0/Au4dewDlJyd7wCEVpxMDZqM/12dVx/wO6ld16lEKLaJb8cgoICAg4F/jGzrdQuaQfMHfAAAAAElFTkSuQmCC" mix-blend-mode="multiply" opacity=".85"/>
+          <g>
+            <text transform="translate(3.24 21.08)" fill="#2b333b" font-family="SquareFont, SquareFont" font-size="20.97" letter-spacing=".18em"><tspan x="0" y="0">0010</tspan></text>
+            <text transform="translate(2.43 20.28)" fill="#fff" font-family="SquareFont, SquareFont" font-size="20.97" letter-spacing=".18em"><tspan x="0" y="0">0010</tspan></text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

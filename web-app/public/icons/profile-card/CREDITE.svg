@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 36.79 9.74">
+  <defs>
+    <linearGradient id="linear-gradient" x1=".06" y1="1.52" x2="9.68" y2="1.52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f5f5f5"/>
+      <stop offset=".58" stop-color="#d1d1d1"/>
+      <stop offset="1" stop-color="#f5f5f5"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1=".06" y1="9.18" y2="9.18" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-3" x1=".6" y1="5.9" x2="9.14" y2="5.9" xlink:href="#linear-gradient"/>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="CREDITE">
+      <image width="42" height="15" transform="translate(-1.56 -1.49)" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAQCAYAAACP4IauAAAACXBIWXMAAAsSAAALEgHS3X78AAACSUlEQVRIie3VzW+MURQG8N87M7XRmpJoorQiIUgTRENQG6mF2FlYWvqr8AfYSKzFhpCIIEoTO21H24VQ/RBfnRmLe97M7Zg2VkTiJJPz3nufc+9zz3nOnULY2PhEgQIVDGAklhpYQWv62aO2v2hFkKxgB0ZRx35cDMw9TGPGXyZdHRoereMwzuMaruACTsf8URyULlTgy9Dw6Pf3i40/TrYYG584hus4hwOSBEpi0JIy+haPcQOv0Q5MEd/tLKbM/O+M87kNe3RXsBZ+QCp9vccmVQzG+isdXW+XZLMdn7GEXXFgmfaRrvFo+HzcH3uuZHu0MDc2PrGaE65F4H0cD2KfImCg69bvAteIA05gPC4yjwWcxTc8wA9cwkfcjUtdxToe4jsuY0/wmMIbnMEH3MGaThVUsIo5LGNWaqi5HBTfJW4N+3ASi4F/EuT2YDcORdb2BpFmXHAQfTgl9UI9zm3GhZsZ+WYXB5WYaGWEGuG7Oz7HbWZ92BZZW8dOHAlf9MCX5y2GX9sqpqajwULnfR3oBma4UoPPJRkclbIyj5dB4Cu+SJVqxW9Nktg6nkpyqcRcuVaNmLLZNlgtiOXva13SbE62yHBTUuleSNrKG2xakkM1SM1E/Gz42+EbOn2wHjyWYu1WFvPLazCCSUmH/XF4EdkorS3pbzKytyx177Rfn67cL2TxAp+PV7vwpGeRLZ6ulQBVbW7NwKVT00a9dN3Ld69vhu+F2UB2Fjelv9teTZBvsqJHef6U1XSyuhXR0tp6lOe//ev2E2WU01lhmCKuAAAAAElFTkSuQmCC" opacity=".5"/>
+      <g>
+        <g>
+          <g>
+            <path d="M.5,2.99c-.21-.03-.37-.16-.42-.35-.06-.2.01-.4.17-.53L4.59.14c.13-.05.21-.07.28-.07.08,0,.16.03.28.08.77.31,1.51.66,2.23,1,.68.32,1.35.64,2.04.92.15.08.21.21.26.34v.19c-.1.26-.24.38-.43.4H.5Z" fill="url(#linear-gradient)"/>
+            <path d="M4.88.13c.08,0,.15.03.29.09,1.42.57,2.81,1.33,4.23,1.91.13.06.18.18.22.3v.17c-.07.17-.18.32-.38.33H.5c-.38-.05-.51-.53-.21-.77L4.62.19c.12-.05.19-.07.26-.07M4.88,0h0c-.09,0-.17.03-.3.08L.24,2.04c-.21.16-.28.39-.22.61.06.22.24.37.47.4h8.75c.23-.02.39-.16.5-.41v-.02s0-.02,0-.02v-.21c-.06-.13-.12-.29-.29-.37-.69-.28-1.38-.61-2.04-.92-.72-.34-1.46-.69-2.2-.99h-.03c-.13-.06-.21-.09-.3-.09h0Z" fill="#ccc"/>
+          </g>
+          <g>
+            <path d="M.48,9.68c-.33-.1-.44-.35-.41-.56.03-.21.2-.43.53-.44h8.55c.14.01.33.05.45.23l.09.21v.1c-.04.23-.19.39-.42.45h0s-8.78,0-8.78,0Z" fill="url(#linear-gradient-2)"/>
+            <path d="M.6,8.75h8.55c.16.01.3.06.4.2l.08.19v.09c-.04.2-.17.34-.37.39H.48c-.53-.16-.43-.86.12-.87M.6,8.62h0c-.36.01-.56.25-.59.49-.03.24.09.52.43.63h.02s.02,0,.02,0h8.81c.25-.07.41-.24.46-.49v-.12s0-.02,0-.02v-.02s-.09-.19-.09-.19c-.15-.22-.36-.26-.5-.28H.6Z" fill="#ccc"/>
+          </g>
+          <g>
+            <path d="M.98,8.54c-.33-.12-.4-.37-.37-.56.04-.2.21-.42.51-.42l.02-3.83s-.08.03-.11.03c-.11,0-.18-.08-.2-.18-.02-.1.01-.23.17-.31,1.02-.02,2.02-.03,3.02-.03h3.41s1.2,0,1.2,0c.22.03.3.17.29.3,0,.13-.12.26-.3.26v3.83s.07-.01.1-.01c.25,0,.38.19.41.38.03.21-.07.46-.38.55h0s-7.77,0-7.77,0ZM6.42,3.81l.02,3.82,1.24-.06-.06-3.83-1.18.06h-.01ZM4.29,7.63l1.24-.06-.06-3.81-1.17.03v3.83ZM2.13,7.63l1.22-.06-.06-3.83-1.16.06v3.84Z" fill="url(#linear-gradient-3)"/>
+            <path d="M4.04,3.31c1.13,0,2.26,0,3.39,0,.4,0,.8,0,1.2,0,.33.05.29.43,0,.43-.02,0-.05,0-.07,0v3.9s.05,0,.08,0c.5,0,.64.7.11.86H.98c-.5-.19-.35-.86.14-.86.03,0,.05,0,.08,0v-3.9s-.05,0-.08,0c-.25,0-.35-.29-.1-.42,1-.02,2.01-.02,3.01-.02M6.37,7.63h1.3v-3.9h-1.27l-.03.03v3.87M4.22,7.63h1.3v-3.87l-.03-.03h-1.27v3.9M2.07,7.63h1.28v-3.9h-1.28v3.9M4.04,3.18c-1.21,0-2.14,0-3.01.02h-.03s-.02.01-.02.01c-.16.08-.24.23-.21.38.03.14.16.25.31.27v3.64c-.27.02-.48.21-.53.47-.04.23.06.51.39.63h.02s.02,0,.02,0h7.76s.02,0,.02,0h.02c.34-.1.45-.39.42-.62-.04-.27-.25-.46-.52-.48v-3.64c.19-.02.3-.17.31-.31.01-.15-.09-.33-.34-.37-.42,0-.82,0-1.22,0-.56,0-1.13,0-1.69,0-.57,0-1.13,0-1.7,0h0ZM6.5,3.86h1.05v3.65h-1.05v-3.65h0ZM4.35,3.86h1.05v3.65h-1.05v-3.65h0ZM2.2,3.86h1.03v3.65h-1.03v-3.65h0Z" fill="#ccc"/>
+          </g>
+        </g>
+        <text transform="translate(12.14 7.63)" fill="#fff" font-family="Altone-Regular, Altone" font-size="5.97" letter-spacing="-.03em"><tspan x="0" y="0">CREDITE</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

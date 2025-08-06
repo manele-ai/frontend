@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 61 24">
+  <g isolation="isolate">
+    <g id="Layer_2" data-name="Layer 2">
+      <g id="Layer_1-2" data-name="Layer 1">
+        <g id="_COUNTER_DATA_MEMBRU">
+          <image width="61" height="24" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAAZCAYAAABpaJ3KAAAACXBIWXMAAAsSAAALEgHS3X78AAADM0lEQVRYhe2YQU8TQRTHf+0WTRAqeEWlJwgUbyZqjJEPgvrZSDh4NIYPoAeNiUchBC9SBG6GFogJodv18N50X2dnt9siF+1LmtmdefPm/2be/N/bwkQm8l9Ixb7cXn5eASK/35MEiC/3PyWj6hesNbbNcTH0ldXAXaChbchQApwBLW1nSuh3gAOg4xb21poFLka0eW0MNaMQqYE3wCN996WnC74HPgMLwOsC/Rj4BmwCO0A3sNYqcAS8A74A94fY/CsYrOPuFNaAZ8BUwEgCNPX5BDmtIv0rneOfRhWYV7BP1FYL+K66q8BT4NZNYah5ShXtm9I21kn2Hs0Di0Dd6NdI7ypGHzMG9MO8rjbu6fgF8AM4Be4Ax9o3b+aOiqFQfMed2Htxjuxqg3TXqgaQ0z1G7hwKqAFMB2xHwAPgpbYVnX+kbYyEMepcVX/OZhkMPbNejIR4B7MpeY7H6vQmsAesIPdxLUe3BbwFdrWvCbwClgL6VWBOnZpFNrYFtNVWB7m7J6QnGhmbzazJDIbYjPXUdsv2DzvxHeCrAVQqjPLEC/M57f4JfNQ2QTZjAWHrohR1LclzHAXRRcihS77TEeLIBoOhvkiWZWtIuK4jYQ7paZwhjjbIsrQLdWfTZYc8DH6oO1Y/J8Dq44o7xTppKEUIQcYBvab+6qT5uK1g/cwSItjQYcQInyyTJVinV8jq44grKIaRmyO1dR2rMBjmMSkzO5b+jXBNHmG19X2HwUxiyXAaL7NAseN+asu7b2XJzZJaHdmwfphr+Rmyu0WWsGIk9R2o3S21XdVxS4Yhgs113IZchLC6C5VxCM4nNZfCbJiXlQTJ8S7Xz4yBJ+N4oiCqpCWlzeNliAWy5BYhpegLbRPktD6QhnkIQ4iwQiXrBsVkWOi4Lf5XkerIkcV1iKVrQCc6/xdyL3cxHw5DMFicS2r3GDnxFeAxgyWrj2EgUq3jMXBItmryZRixhHRPFeS2GdtGytSup18GwxUSiT1t99SXIgwDdYj/Pe4TUNFnXsuAK/NJeKE2H+rYIdC+3P80cL9vGEM/ujKKo3zY6/M4fxrg+kITbhJDgc5EJjKRf0j+AL0maRPvQEehAAAAAElFTkSuQmCC" mix-blend-mode="multiply" opacity=".85"/>
+          <g>
+            <text transform="translate(2.68 17.91)" fill="#2b333b" font-family="SquareFont, SquareFont" font-size="17.56" letter-spacing=".08em"><tspan x="0" y="0">08/25</tspan></text>
+            <text transform="translate(2 17.24)" fill="#fff" font-family="SquareFont, SquareFont" font-size="17.56" letter-spacing=".08em"><tspan x="0" y="0">08/25</tspan></text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
