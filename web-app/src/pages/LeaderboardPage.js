@@ -7,17 +7,13 @@ import '../styles/LeaderboardPage.css';
 function HeroCardLeaderboard() {
   const navigate = useNavigate();
   return (
-    <div className="hero-card leaderboard-hero-card">
+    <div className="hero-card">
       <div className="hero-card-content">
         <h2 className="hero-title">Topul manelistilor</h2>
         <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
-        <Button variant="secondary" size="small" className="hero-btn" onClick={() => navigate('/select-style')}>
+        <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
           <span className="hero-btn-text">Generează acum</span>
         </Button>
-      </div>
-      <div className="hero-card-img">
-        <div className="ellipse-bg"></div>
-        <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
       </div>
     </div>
   );
@@ -45,6 +41,14 @@ export default function LeaderboardPage() {
 
   const renderTableContent = () => {
     const activeData = getActiveData();
+    
+    if (!activeData || activeData.length === 0) {
+      return (
+        <div className="no-data-message">
+          <p>Nu există date pentru această categorie.</p>
+        </div>
+      );
+    }
     
     return (
       <table className="leaderboard-table">
@@ -91,8 +95,9 @@ export default function LeaderboardPage() {
         backgroundRepeat: 'repeat',
       }}
     >
-      {/* Hero Section copiată din HomePage, ca un card separat */}
-      <div className="hero-section leaderboard-hero-section">
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="hero-section-overlay"></div>
         <HeroCardLeaderboard />
       </div>
       

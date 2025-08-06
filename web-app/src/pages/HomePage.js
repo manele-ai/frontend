@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
 import { getStripe } from 'services/stripe';
+import AudioPlayer from '../components/AudioPlayer';
 import { useAuth } from '../components/auth/AuthContext';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
@@ -12,8 +13,16 @@ import '../styles/HomePage.css';
 
  
 
-function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }) {
+function ReusableCard({ background, title, subtitle }) {
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  // Hardcoded audio URL - aceeași piesă pentru toate stilurile
+  const audioUrl = '/music/mohanveena-indian-guitar-374179.mp3';
+  
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
   
   return (
     <div 
@@ -24,9 +33,14 @@ function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }
       <div className="style-example-card-content">
         <h2 className="style-example-title">{title}</h2>
         <p className="style-example-subtitle">{subtitle}</p>
-        <Button className="hero-btn style-example-card-button" onClick={onButtonClick}>
-          <span className="hero-btn-text">{buttonText}</span>
-        </Button>
+        <div className="style-example-audio-player">
+          <AudioPlayer 
+            audioUrl={audioUrl}
+            isPlaying={isPlaying}
+            onPlayPause={handlePlayPause}
+            onError={() => console.error('Audio playback error')}
+          />
+        </div>
       </div>
     </div>
   );
@@ -91,7 +105,7 @@ export default function HomePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
+            <h2 className="hero-title">Genereaza-ti propria manea<br></br> in cateva minute.</h2>
             <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
             <div className="hero-buttons" style={{ 
               display: 'flex', 
@@ -111,10 +125,6 @@ export default function HomePage() {
               )}
             </div>
           </div>
-          <div className="hero-card-img">
-            <div className="ellipse-bg"></div>
-            <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
-          </div>
         </div>
       </div>
       {/* <HeroCard /> */}
@@ -128,8 +138,6 @@ export default function HomePage() {
               background={`url(${style.image}) center/cover no-repeat`}
               title={style.title}
               subtitle={style.subtitle}
-              buttonText="Exemple"
-              onButtonClick={() => navigate('/exemple')}
             />
           ))}
         </div>

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { generateManeaSong } from '../api';
 import ExampleSongsList from '../components/ExampleSongsList';
-import { useGeneration } from '../context/GenerationContext';
+
 import { db } from '../services/firebase';
 import '../styles/LoadingPage.css';
 
@@ -12,7 +12,7 @@ const GIF = '/NeTf.gif';
 export default function LoadingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { startGeneration } = useGeneration();
+
   const [status, setStatus] = useState('Se pregătește generarea...');
   const [error, setError] = useState(null);
   const [taskId, setTaskId] = useState(null);
@@ -73,9 +73,6 @@ export default function LoadingPage() {
         
         setTaskId(result.taskId);
         setStatus('AI-ul compune maneaua...');
-        
-        // Set generation context for navigation
-        startGeneration(result.taskId);
         
         // Navigate to result page with the task ID
         navigate('/result', { 

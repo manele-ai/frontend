@@ -13,24 +13,6 @@ export default function BottomMenu() {
   const location = useLocation();
 
   const handleNavigation = (route) => {
-    // If it's the plus button, check if there's an active generation
-    if (route === '/generate') {
-      const saved = localStorage.getItem('generationState');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // If there's an active generation, go to result page
-        if (parsed.isGenerating && parsed.generationRequestId) {
-          navigate('/result', { 
-            state: { 
-              requestId: parsed.generationRequestId, 
-              songId: parsed.generationSongId 
-            } 
-          });
-          return;
-        }
-      }
-    }
-    // Otherwise, navigate normally
     navigate(route);
   };
 

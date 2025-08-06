@@ -1,10 +1,13 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
 import Button from '../components/ui/Button';
-import { useGeneration } from '../context/GenerationContext';
+import { useNotification } from '../context/NotificationContext';
+import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
+
+import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
@@ -14,7 +17,9 @@ const GIF = '/NeTf.gif';
 export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { clearGeneration, startGeneration, isGenerating, updateSongId, generationSongId } = useGeneration();
+  const { showNotification } = useNotification();
+  const { setupGenerationListener } = useGlobalSongStatus();
+
   const mounted = useRef(true);
   
   // Initialize loading progress from localStorage or 0
@@ -32,31 +37,42 @@ export default function ResultPage() {
   const [taskId, setTaskId] = useState(null);
   const [songId, setSongId] = useState(songIdState || null);
 
-  // Set generation state when we have a requestId (from Stripe payment)
-  useEffect(() => {
-    if (requestId && !isGenerating) {
-      startGeneration(requestId);
-    }
-  }, [requestId, isGenerating, startGeneration]);
-
   // Reset loading progress when starting a new generation
   useEffect(() => {
     if (requestId) {
       const savedRequestId = localStorage.getItem('resultPageRequestId');
       if (savedRequestId !== requestId) {
-        // Reset loading progress for new generation
         setLoadingProgress(0);
         localStorage.setItem('resultPageLoadingProgress', '0');
         localStorage.setItem('resultPageRequestId', requestId);
+        
+        // Save requestId for global monitoring
+        localStorage.setItem('activeGenerationRequestId', requestId);
+        
+        // Show loading notification for this generation
+        showNotification({
+          type: 'loading',
+          title: 'Se generează maneaua...',
+          message: 'AI-ul compune melodia ta personalizată.',
+          duration: 'manual',
+          requestId: requestId
+        });
+        
+        // Set up global listener for this generation
+        setupGenerationListener(requestId);
       }
     }
-  }, [requestId]);
+  }, [requestId, showNotification, setupGenerationListener]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Use a stable audio URL to prevent player reload
+  const [stableAudioUrl, setStableAudioUrl] = useState(null);
+  const [hasStableUrl, setHasStableUrl] = useState(false);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -135,6 +151,7 @@ export default function ResultPage() {
             if (!snap.exists()) return;
             const data = snap.data();
 
+            console.log('Task status update:', data.status, data);
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
@@ -142,12 +159,14 @@ export default function ResultPage() {
               case 'partial':
               case 'completed':
                 if (data.songId) {
+                  console.log('Setting songId:', data.songId);
                   setSongId(data.songId);
-                  // Update generation context with song ID when it becomes available
-                  updateSongId(data.songId);
+                } else {
+                  console.log('No songId in task data');
                 }
                 break;
               case 'failed':
+                // Set error state for UI
                 setError(data.error || 'Generarea a eșuat.');
                 break;
               default:
@@ -180,6 +199,7 @@ export default function ResultPage() {
 
   // ---- Listen to song document when songId available ----
   useEffect(() => {
+    console.log('songId changed:', songId);
     if (!songId) return;
 
     let unsubscribe = null;
@@ -193,17 +213,20 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
+              console.log('Song data received:', songData);
+              
               setSongData(songData);
               
-              // Clear generation state when song is fully loaded
+              // Clear localStorage items when song is complete
               if (songData && songData.apiData && songData.apiData.title) {
-                // Update the generation context with the song ID first
-                updateSongId(songId);
-                // Clear localStorage items when song is complete
                 localStorage.removeItem('resultPageLoadingProgress');
                 localStorage.removeItem('resultPageRequestId');
-                // Don't clear generation state - let the notification handle it
+                console.log('Song is complete, cleared localStorage');
+              } else {
+                console.log('Song data incomplete');
               }
+            } else {
+              console.log('Song document does not exist');
             }
           },
           (err) => {
@@ -228,13 +251,15 @@ export default function ResultPage() {
         unsubscribe();
       }
     };
-  }, [songId, clearGeneration]); // Added clearGeneration to dependency array
+  }, [songId]);
 
   // Add loading progress animation
   useEffect(() => {
+    console.log('Loading effect - songData:', songData);
     if (songData) {
       // Clear loading progress when song is loaded
       localStorage.removeItem('resultPageLoadingProgress');
+      console.log('Song data available, stopping loading animation');
       return;
     }
     
@@ -279,19 +304,78 @@ export default function ResultPage() {
     }
   };
 
-  // Get the appropriate audio URL based on availability
-  const getAudioUrl = () => {
-    if (songData?.storage?.url) {
-      return songData.storage.url;
-    }
-    if (songData?.apiData?.audioUrl) {
-      return songData.apiData.audioUrl;
-    }
-    if (songData?.apiData?.streamAudioUrl) {
-      return songData.apiData.streamAudioUrl;
-    }
-    return null;
+
+
+  // Get song style information
+  const getSongStyle = () => {
+    if (!songData?.userGenerationInput?.style) return null;
+    
+    const style = styles.find(s => s.value === songData.userGenerationInput.style);
+    return style;
   };
+
+  // Get song lyrics from API data
+  const getSongLyrics = () => {
+    if (!songData?.apiData?.lyrics) return null;
+    return songData.apiData.lyrics;
+  };
+
+  // Get dedication from user input
+  const getDedication = () => {
+    return songData.userGenerationInput?.dedication || null;
+  };
+
+  // Get donation amount from user input
+  const getDonation = () => {
+    return songData.userGenerationInput?.donationAmount || null;
+  };
+
+  // Set stable URL once we have a good audio URL - keep the first URL we get
+  useEffect(() => {
+    console.log('songData changed:', songData);
+    if (songData && !hasStableUrl) {
+      // Get the first available URL (prefer stream URL for stability)
+      let audioUrl = null;
+      if (songData?.apiData?.streamAudioUrl) {
+        audioUrl = songData.apiData.streamAudioUrl;
+      } else if (songData?.apiData?.audioUrl) {
+        audioUrl = songData.apiData.audioUrl;
+      } else if (songData?.storage?.url) {
+        audioUrl = songData.storage.url;
+      }
+      
+      console.log('First audioUrl:', audioUrl);
+      if (audioUrl) {
+        // Only set stable URL once - keep the first URL we get
+        setStableAudioUrl(audioUrl);
+        setHasStableUrl(true);
+        console.log('Set stable URL (first URL):', audioUrl);
+      }
+    }
+  }, [songData, hasStableUrl]);
+
+  // Prevent re-renders when songData changes but we already have stable URL
+  const shouldRenderPlayer = stableAudioUrl && songData;
+  
+  // Memoize player to prevent unnecessary re-renders
+  const playerKey = stableAudioUrl || 'no-audio';
+  
+  // Memoize AudioPlayer to prevent re-renders
+  const memoizedAudioPlayer = useMemo(() => {
+    if (!shouldRenderPlayer) return null;
+    
+    return (
+      <AudioPlayer
+        key={playerKey}
+        audioUrl={stableAudioUrl}
+        isPlaying={isPlaying}
+        onPlayPause={handlePlayPause}
+        onError={setError}
+      />
+    );
+  }, [playerKey, stableAudioUrl, isPlaying]); // Removed handlePlayPause and setError from dependencies
+  
+
 
   // Show error state
   if (error) {
@@ -312,7 +396,7 @@ export default function ResultPage() {
             className="back-button"
             onClick={() => navigate('/')}
           >
-            ← Înapoi
+            <span className="hero-btn-text">← Înapoi</span>
           </button>
         </div>
       </div>
@@ -320,6 +404,7 @@ export default function ResultPage() {
   }
 
   // Show loading state while waiting for song or status
+  console.log('Rendering with songData:', songData, 'stableAudioUrl:', stableAudioUrl);
   if (!songData) {
     return (
       <div 
@@ -331,7 +416,7 @@ export default function ResultPage() {
           backgroundRepeat: 'repeat',
         }}
       >
-        <div className="container">
+        <div className="loading-container">
           <div className="loading-gif-container">
             <img
               src={GIF}
@@ -358,8 +443,11 @@ export default function ResultPage() {
     );
   }
 
-  const audioUrl = getAudioUrl();
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
+  const songStyle = getSongStyle();
+  const songLyrics = getSongLyrics();
+  const dedication = getDedication();
+  const donation = getDonation();
 
   return (
     <div 
@@ -371,27 +459,88 @@ export default function ResultPage() {
         backgroundRepeat: 'repeat',
       }}
     >
-      <div className="container">
-        <h1 className="result-title" style={{ marginBottom: 12 }}>{songData.apiData.title || 'Piesa ta e gata!'}</h1>
+      <div className="result-container"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}>
+  
        
         <div className="player-box">
+          <h2 className="player-song-title">{songData.apiData.title || 'Piesa ta e gata!'}</h2>
           <img
             src={songData.apiData.imageUrl || 'https://via.placeholder.com/150'}
             alt="Song artwork"
             className="song-artwork"
           />
           
-          {audioUrl ? (
+          {shouldRenderPlayer ? (
             <>
               {/* Player audio încadrat într-un container cu fundal gri */}
               <div className="result-player-container">
-                <AudioPlayer
-                  audioUrl={audioUrl}
-                  isPlaying={isPlaying}
-                  onPlayPause={handlePlayPause}
-                  onError={setError}
-                />
+                {memoizedAudioPlayer}
+              {/* Song Style Section - inside the same card */}
+              {songStyle && (
+                <div className="song-style-inline">
+                  <h3 className="song-style-title">Stilul melodiei</h3>
+                  <div className="song-style-card">
+                    <img 
+                      src={songStyle.image} 
+                      alt={songStyle.title}
+                      className="song-style-image"
+                    />
+                    <div className="song-style-info">
+                      <h4 className="song-style-name">{songStyle.title}</h4>
+                      <p className="song-style-description">{songStyle.description}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Song Lyrics Section - inside the same card */}
+                  {songLyrics && (
+                    <div className="song-lyrics-inline">
+                      <h3 className="song-lyrics-title">Versurile piesei</h3>
+                      <div className="song-lyrics-content">
+                        <p className="song-lyrics-text">{songLyrics}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dedication Section - inside the same card */}
+                  {dedication && (
+                    <div className="song-dedication-inline">
+                      <h3 className="song-dedication-title">Dedicația</h3>
+                      <div className="song-dedication-content">
+                        <p className="song-dedication-text">{dedication}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Donation Section - inside the same card */}
+                  {donation && (
+                    <div className="song-donation-inline">
+                      <h3 className="song-donation-title">Donația</h3>
+                      <div className="song-donation-content">
+                        <p className="song-donation-text">{donation} RON</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
+              
+
+              {/* Song Lyrics Section - standalone (if no style) */}
+              {!songStyle && songLyrics && (
+                <div className="song-lyrics-inline">
+                  <h3 className="song-lyrics-title">Versurile piesei</h3>
+                  <div className="song-lyrics-content">
+                    <p className="song-lyrics-text">{songLyrics}</p>
+                  </div>
+                </div>
+              )}
+              
               {/* Spațiu între player și butoane */}
               <div style={{ marginBottom: 28 }} />
               {canDownload && (

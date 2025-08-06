@@ -90,17 +90,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       }
     } else {
       audio.pause();
-      // Only switch to storage URL when user has stopped playing
-      const currentSrc = audio.src || '';
-      const newSrc = audioUrl || '';
-      if (currentSrc !== newSrc && newSrc) {
-        const currentTime = audio.currentTime;
-        audio.src = audioUrl;
-        audio.load();
-        if (currentTime > 0) {
-          audio.currentTime = currentTime;
-        }
-      }
+      // Don't change URL at all - keep the original URL
       if (!audioUrl) {
         audio.removeAttribute('src'); // More reliable than setting empty string
         setCurrentTime(0);
@@ -140,18 +130,6 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     <div className="song-playback">
       <audio ref={audioRef} />
       <div className="song-slider-row">
-        <span className="time-display time-current">{formatTime(currentTime)}</span>
-        <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          value={currentTime}
-          onChange={handleSeek}
-          className="progress-bar"
-          disabled={isLoading}
-          style={{ flex: 1, minWidth: 80, maxWidth: 360 }}
-        />
-        <span className="time-display time-duration">{formatTime(duration)}</span>
         <button 
           className="play-pause-button" 
           onClick={onPlayPause}
@@ -175,6 +153,18 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
             )
           )}
         </button>
+        <span className="time-display time-current">{formatTime(currentTime)}</span>
+        <input
+          type="range"
+          min="0"
+          max={duration || 0}
+          value={currentTime}
+          onChange={handleSeek}
+          className="progress-bar"
+          disabled={isLoading}
+          style={{ flex: 1, minWidth: 80, maxWidth: 360 }}
+        />
+        <span className="time-display time-duration">{formatTime(duration)}</span>
       </div>
 
       {error && isPlaying && (

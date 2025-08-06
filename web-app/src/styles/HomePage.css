@@ -40,10 +40,22 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-image: url('../../public/photos/HeroTest.jpeg');
   border-radius: 0px 20px 20px 20px;
-  padding: 2.5%;
   margin-bottom: 32px;
+  position: relative;
+}
+
+.home-page .hero-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #e0c181 0%, #e0c181 53%, rgba(255,224,161,0.8) 62%, rgba(255,224,161,0.4) 69%, transparent 80%);
+  border-radius: 0px 20px 20px 20px;
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* Main Content Container - fără background */
@@ -59,7 +71,7 @@
 
 
 /* Hero Section Styles - copiat din GeneratePage */
-.hero-card {
+.home-page .hero-card {
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
@@ -68,61 +80,53 @@
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  min-height: 300px;
   gap: 10%;
 }
 
-.hero-card-content {
+.home-page .hero-card-content {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
   gap: 20px;
   z-index: 2;
   width: 50%;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* background-color: red; */
 }
 
-.hero-card-img {
-  width: 30%;
-  height: 288px;
-  border-radius: 288px;
+.home-page .hero-card-img {
+  width: 60%;
+  height: 300px;
+  border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  background-image: url('../../public/photos/HeroTest.jpeg');
+  background-size: 140%;
+  background-position: 90% center;
+  background-repeat: no-repeat;
 }
 
-.ellipse-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 288px;
-  background: linear-gradient(0deg, #FFF0DA 0%, #94641E 100%);
-  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
-  filter: blur(8px);
-  z-index: 1;
-}
 
-.hero-icon {
-  position: relative;
-  z-index: 2;
-  height: 180px;
-  width: 180px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
-}
-
-.hero-title {
+.home-page .hero-title {
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
-  color: #080A0B;
+  color: rgb(29 20 3);
   text-align: left;
+  line-height: 1.1;
+  position: relative;
 }
 
-.hero-subtitle {
+.home-page .hero-subtitle {
   font-family: 'Satoshi', sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -130,6 +134,7 @@
   line-height: normal;
   color: #000;
   text-align: left;
+  position: relative;
 }
 
 /* Stiluri pentru butonul hero (specifice pentru HomePage) */
@@ -166,7 +171,7 @@
 }
 
 /* Stiluri pentru textul din buton conform specificațiilor din imagini */
-.hero-btn-text {
+.home-page .hero-btn-text {
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -216,7 +221,7 @@
 }
 
 /* Stiluri pentru butonul din hero section */
-.hero-section-button {
+.home-page .hero-section-button {
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
@@ -237,13 +242,13 @@
   letter-spacing: inherit;
 }
 
-.hero-section-button:hover {
+.home-page .hero-section-button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.hero-section-button:active {
+.home-page .hero-section-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
@@ -358,56 +363,51 @@
 
   
   /* Hero section responsive */
-  .hero-card {
-    flex-direction: row;
-    gap: 15px;
+  .home-page .hero-card {
+    flex-direction: column;
+    gap: 20px;
     min-height: auto;
-    justify-content: space-between;
+    justify-content: center;
   }
   
-  .hero-card-content {
-    width: 60%;
-    align-items: flex-start;
-    gap: 12px;
+  .home-page .hero-card-content {
+    width: 100%;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
   }
   
-  .hero-title {
-    font-size: 16px;
+  .home-page .hero-title {
+    font-size: 24px;
     line-height: 1.3;
-    text-align: left;
+    text-align: center;
   }
   
-  .hero-subtitle {
-    font-size: 12px;
+  .home-page .hero-subtitle {
+    font-size: 16px;
     line-height: 1.4;
-    text-align: left;
+    text-align: center;
   }
   
   /* Butonul din hero section pe mobile */
-  .hero-section-button {
-    width: 160px;
-    height: 45px;
+  .home-page .hero-section-button {
+    width: 180px;
+    height: 50px;
     font-size: 14px;
   }
   
-  .hero-section-button .hero-btn-text {
+  .home-page .hero-section-button .hero-btn-text {
     font-size: 14px;
   }
   
-  .hero-card-img {
-    width: 100px;
-    height: 100px;
+  .home-page .hero-card-img {
+    width: 100%;
+    height: 200px;
     flex-shrink: 0;
   }
   
-  .hero-icon {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .ellipse-bg {
-    width: 100px;
-    height: 100px;
+  .home-page .hero-section-overlay {
+    background: transparent;
   }
   
   /* Styles grid responsive */
@@ -448,8 +448,51 @@
   }
   
   .home-page .hero-btn.button .hero-btn-text {
-    font-size: 14px;
+  font-size: 14px;
+}
+
+/* Mobile Play Buttons - only on HomePage cards */
+.mobile-play-buttons {
+  display: none; /* Hidden by default */
+}
+
+.mobile-play-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  margin-top: 12px;
+}
+
+.mobile-play-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.mobile-play-btn:active {
+  transform: scale(0.95);
+}
+
+/* Show mobile buttons only on mobile devices */
+@media (max-width: 768px) {
+  .mobile-play-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
+  
+  /* Hide the regular audio player on mobile */
+  .style-example-audio-player {
+    display: none;
+  }
+}
 }
 
 @media (max-width: 480px) {
@@ -462,13 +505,13 @@
   }
   
   /* Butonul din hero section pe ecrane foarte mici */
-  .hero-section-button {
+  .home-page .hero-section-button {
     width: 140px;
     height: 40px;
     font-size: 12px;
   }
   
-  .hero-section-button .hero-btn-text {
+  .home-page .hero-section-button .hero-btn-text {
     font-size: 12px;
   }
   
@@ -484,15 +527,211 @@
     font-size: 10px; /* Redus și mai mult */
   }
   
-  /* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
-  .home-page .hero-btn.button {
-    width: 140px;
-    height: 40px;
+  .home-page .hero-card-img {
+    width: 100%;
+    height: 150px;
   }
   
-  .home-page .hero-btn.button .hero-btn-text {
-    font-size: 12px;
+  .home-page .hero-section-overlay {
+    background: transparent;
   }
+}
+
+/* Stiluri pentru player-ul audio în carduri */
+.style-example-audio-player {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.style-example-audio-player .song-playback {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.style-example-audio-player .song-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.style-example-audio-player .time-display {
+  color: #FFEEA6;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  text-align: center;
+}
+
+.home-page .style-example-audio-player .progress-bar {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 0.3) 0%, rgba(207, 175, 110, 0.3) 100%);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  box-shadow: 0 0 12px rgba(255, 238, 204, 0.4);
+}
+
+.home-page .style-example-audio-player .progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  cursor: pointer;
+  border: none;
+}
+
+.home-page .style-example-audio-player .progress-bar::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  cursor: pointer;
+  border: none;
+}
+
+.style-example-audio-player .play-pause-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+}
+
+.style-example-audio-player .play-pause-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.style-example-audio-player .play-pause-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.style-example-audio-player .play-icon {
+  filter: brightness(0) saturate(100%) invert(89%) sepia(12%) saturate(1234%) hue-rotate(359deg) brightness(103%) contrast(101%);
+}
+
+/* Stiluri responsive pentru player-ul audio */
+@media (max-width: 768px) {
+  .style-example-audio-player {
+    max-width: 250px;
+    margin-top: 12px;
+  }
+  
+  .style-example-audio-player .song-playback {
+    padding: 8px;
+  }
+  
+  .style-example-audio-player .time-display {
+    font-size: 10px;
+    min-width: 25px;
+  }
+  
+  .style-example-audio-player .progress-bar {
+    height: 3px;
+  }
+  
+  .style-example-audio-player .progress-bar::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .style-example-audio-player .play-pause-button {
+    min-width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .style-example-audio-player {
+    max-width: 200px;
+    margin-top: 10px;
+  }
+  
+  .style-example-audio-player .song-playback {
+    padding: 6px;
+  }
+  
+  .style-example-audio-player .time-display {
+    font-size: 9px;
+    min-width: 20px;
+  }
+  
+  .style-example-audio-player .progress-bar {
+    height: 2px;
+  }
+  
+  .style-example-audio-player .progress-bar::-webkit-slider-thumb {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .style-example-audio-player .play-pause-button {
+    min-width: 24px;
+    height: 24px;
+  }
+  
+  /* HomePage specific - move play button under progress bar on mobile */
+  .home-page .style-example-audio-player .song-slider-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .home-page .style-example-audio-player .play-pause-button {
+    order: 2; /* Move button after progress bar */
+    margin-top: 4px;
+  }
+  
+  .home-page .style-example-audio-player .time-display {
+    order: 1; /* Keep time displays at top */
+  }
+  
+  .home-page .style-example-audio-player .progress-bar {
+    order: 1; /* Keep progress bar at top */
+  }
+  
+  /* Create a wrapper for time and progress bar to keep them in same row */
+  .home-page .style-example-audio-player .song-slider-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Force time displays and progress bar to stay in same row */
+  .home-page .style-example-audio-player .time-display,
+  .home-page .style-example-audio-player .progress-bar {
+    order: 1;
+  }
+}
+
+/* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
+.home-page .hero-btn.button {
+  width: 140px;
+  height: 40px;
+}
+
+.home-page .hero-btn.button .hero-btn-text {
+  font-size: 12px;
 }
 
 

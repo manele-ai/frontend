@@ -16,6 +16,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   overflow-y: auto;
   padding-bottom: 150px; /* Extra space for bottom menu */
+  border-radius: 0px;
 }
 
 /* Overlay pentru fundal */
@@ -37,30 +38,34 @@
   z-index: 2;
 }
 
-/* Hero Section - cu background gradient */
+/* Hero Section Styles pentru GeneratePage */
 .generate-page .hero-section {
   width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-image: url('../../public/photos/HeroTest.jpeg');
+  background-repeat: no-repeat;
   border-radius: 0px 20px 20px 20px;
-  padding: 2.5%;
   margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
-/* Main Content Container - fără background */
-.generate-page .main-content-container {
-  width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
+.generate-page .hero-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background: linear-gradient(90deg, #e0c181 0%, #e0c181 53%, rgba(255,224,161,0.8) 62%, rgba(255,224,161,0.4) 69%, transparent 80%); */
+  border-radius: 0px 20px 20px 20px;
+  z-index: 2;
+  pointer-events: none;
 }
 
-/* Hero Section Styles - specific pentru GeneratePage */
 .generate-page .hero-card {
   display: inline-flex;
   justify-content: flex-start;
@@ -70,58 +75,48 @@
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  min-height: 300px;
   gap: 10%;
 }
 
 .generate-page .hero-card-content {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   z-index: 2;
   width: 50%;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .generate-page .hero-card-img {
-  width: 30%;
-  height: 288px;
-  border-radius: 288px;
+  width: 60%;
+  height: 300px;
+  border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 1;
-}
-
-.generate-page .ellipse-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 288px;
-  background: linear-gradient(0deg, #FFF0DA 0%, #94641E 100%);
-  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
-  filter: blur(8px);
-  z-index: 1;
-}
-
-.generate-page .hero-icon {
-  position: relative;
-  z-index: 2;
-  height: 180px;
-  width: 180px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+  overflow: hidden;
+  background-image: url('../../public/photos/HeroSectionHomePage.jpeg');
+  background-size: 140%;
+  background-position: 90% center;
+  background-repeat: no-repeat;
 }
 
 .generate-page .hero-title {
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
-  color: #080A0B;
+  color: rgb(29 20 3);
   text-align: left;
+  line-height: 1.1;
+  position: relative;
 }
 
 .generate-page .hero-subtitle {
@@ -132,7 +127,102 @@
   line-height: normal;
   color: #000;
   text-align: left;
+  position: relative;
 }
+
+.generate-page .hero-btn-text {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Stiluri pentru butonul hero (specifice pentru GeneratePage) */
+.generate-page .hero-btn.button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.generate-page .hero-btn.button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.generate-page .hero-btn.button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+.generate-page .hero-section-button {
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.generate-page .hero-section-button:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.generate-page .hero-section-button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+
+
+/* Main Content Container - fără background */
+.generate-page .main-content-container {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  padding: 20px;
+}
+
+
 
 /* Titlu - specific pentru GeneratePage */
 .generate-page .title {
@@ -480,52 +570,7 @@
   color: transparent;
 }
 
-/* Hero button styles - specific pentru GeneratePage */
-.generate-page .hero-btn.button {
-  box-sizing: border-box;
-  width: 190.8px;
-  height: 51.675px;
-  flex-shrink: 0;
-  border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
-  background: #1F1F1F;
-  box-shadow: -1px 2px 0px 0px #000;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: transparent;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-}
 
-.generate-page .hero-btn.button:hover {
-  background: #2a2a2a;
-  transform: translateY(-1px);
-  box-shadow: -1px 3px 2px 0px #000;
-}
-
-.generate-page .hero-btn.button:active {
-  transform: translateY(0);
-  box-shadow: -1px 1px 0px 0px #000;
-}
-
-.generate-page .hero-btn-text {
-  font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: -0.2px;
-  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
 
 .generate-page .price-container-wrapper {
   display: flex;
@@ -664,6 +709,7 @@
 @media (max-width: 768px) {
   .generate-page {
     padding: 10px;
+    padding-bottom: 150px;
   }
   
   .generate-page .hero-section {
@@ -678,45 +724,53 @@
   
   /* Hero section responsive */
   .generate-page .hero-card {
-    flex-direction: row;
-    gap: 15px;
+    flex-direction: column;
+    gap: 20px;
     min-height: auto;
-    justify-content: space-between;
+    justify-content: center;
   }
   
   .generate-page .hero-card-content {
-    width: 60%;
-    align-items: flex-start;
-    gap: 12px;
+    width: 100%;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
   }
   
   .generate-page .hero-title {
-    font-size: 16px;
+    font-size: 24px;
     line-height: 1.3;
-    text-align: left;
+    text-align: center;
   }
   
   .generate-page .hero-subtitle {
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.4;
-    text-align: left;
+    text-align: center;
+  }
+  
+  /* Butonul din hero section pe mobile */
+  .generate-page .hero-section-button {
+    width: 180px;
+    height: 50px;
+    font-size: 14px;
+  }
+  
+  .generate-page .hero-section-button .hero-btn-text {
+    font-size: 14px;
   }
   
   .generate-page .hero-card-img {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 200px;
     flex-shrink: 0;
   }
   
-  .generate-page .hero-icon {
-    width: 100px;
-    height: 100px;
+  .generate-page .hero-section-overlay {
+    background: transparent;
   }
   
-  .generate-page .ellipse-bg {
-    width: 100px;
-    height: 100px;
-  }
+
   
   .generate-page .title {
     font-size: 24px;
@@ -784,6 +838,26 @@
   
   .generate-page .main-content-container {
     padding: 0 10px;
+  }
+  
+  /* Butonul din hero section pe ecrane foarte mici */
+  .generate-page .hero-section-button {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+  
+  .generate-page .hero-section-button .hero-btn-text {
+    font-size: 12px;
+  }
+  
+  .generate-page .hero-card-img {
+    width: 100%;
+    height: 150px;
+  }
+  
+  .generate-page .hero-section-overlay {
+    background: transparent;
   }
   
   .generate-page .title {
@@ -882,13 +956,13 @@
 
 @media (max-width: 768px) {
   .style-cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
   }
   
   .style-mini-card {
-    padding: 10px 12px;
-    min-height: 50px;
+    padding: 12px 8px;
+    min-height: 60px;
   }
   
   .style-mini-card-title {
@@ -899,12 +973,12 @@
 @media (max-width: 480px) {
   .style-cards-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    gap: 10px;
   }
   
   .style-mini-card {
-    padding: 8px 10px;
-    min-height: 45px;
+    padding: 10px 8px;
+    min-height: 55px;
   }
   
   .style-mini-card-title {
@@ -957,4 +1031,27 @@
   border: 1px solid #ff6b6b;
   font-family: 'Satoshi', sans-serif;
   font-weight: 500;
+}
+
+/* Stiluri responsive pentru butoanele hero din GeneratePage */
+@media (max-width: 768px) {
+  .generate-page .hero-btn.button {
+    width: 160px;
+    height: 45px;
+  }
+  
+  .generate-page .hero-btn.button .hero-btn-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .generate-page .hero-btn.button {
+    width: 140px;
+    height: 40px;
+  }
+  
+  .generate-page .hero-btn.button .hero-btn-text {
+    font-size: 12px;
+  }
 }
