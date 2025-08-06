@@ -58,7 +58,10 @@ export namespace Database {
       | 'subscription_free'
       | 'subscription_discount'
       | 'onetime_unsubscribed';
-    dedicationPaymentType: 'balance' | 'onetime';
+    dedicationPaymentType:
+      'no_payment'
+      | 'balance'
+      | 'onetime';
     aruncaCuBaniAmountToPay?: number;
     shouldFulfillDedication?: boolean;
     shouldFulfillAruncaCuBani?: boolean;

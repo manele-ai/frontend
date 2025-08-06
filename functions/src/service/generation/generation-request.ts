@@ -51,7 +51,7 @@ export async function createGenerationRequestTransaction(
       aruncaCuBaniAmountToPay,
       paymentStatus,
     } = determinePaymentTypes(
-      userData, 
+      userData,
       {
         shouldFulfillDedication,
         shouldFulfillAruncaCuBani,
@@ -61,8 +61,8 @@ export async function createGenerationRequestTransaction(
 
     // Decrement now to avoid double-spending (concurrent generation requests from same user)
     await decrementUserBalanceIfNeeded(
-      transaction, 
-      userRef, 
+      transaction,
+      userRef,
       {
         songPaymentType,
         dedicationPaymentType,
@@ -136,9 +136,9 @@ function determinePaymentTypes(
     const { shouldFulfillDedication, shouldFulfillAruncaCuBani, aruncaCuBaniAmountToFulfill } = data;
 
     // Check if song needs payment
-    let songPaymentType: Database.GenerationRequest['songPaymentType'] = 'onetime_unsubscribed';
+    let songPaymentType: Database.GenerationRequest['songPaymentType'];
     const isSubscribed = userData.subscription?.status === 'active';
-    const hasSongCredits = (userData.creditsBalance || 0) > 0;
+    const hasSongCredits = userData.creditsBalance && userData.creditsBalance > 0;
 
     if (hasSongCredits) {
       songPaymentType = isSubscribed ? 'subscription_free' : 'balance';
@@ -149,30 +149,34 @@ function determinePaymentTypes(
     }
 
     // Check if dedication needs payment
-    let dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'] = 'onetime';
+    let dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'];
     if (shouldFulfillDedication) {
       if (userData.dedicationBalance && userData.dedicationBalance > 0) {
         dedicationPaymentType = 'balance';
       } else {
         dedicationPaymentType = 'onetime';
       }
+    } else {
+      dedicationPaymentType = 'no_payment';
     }
-    
+
     // Check if arunca cu bani needs payment
-    let aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'] = aruncaCuBaniAmountToFulfill;
+    let aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
     if (shouldFulfillAruncaCuBani && aruncaCuBaniAmountToFulfill > 0) {
-      if (userData.aruncaCuBaniBalance 
+      if (userData.aruncaCuBaniBalance
         && (userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill) >= 0) {
         aruncaCuBaniAmountToPay = userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill;
       } else {
         aruncaCuBaniAmountToPay = aruncaCuBaniAmountToFulfill;
       }
+    } else {
+      aruncaCuBaniAmountToPay = 0;
     }
 
     // If we have a free generation, return success
     if (
       ['balance', 'subscription_free'].includes(songPaymentType)
-      && dedicationPaymentType === 'balance'
+      && ['no_payment', 'balance'].includes(dedicationPaymentType)
       && aruncaCuBaniAmountToPay === 0
     ) {
       return {
