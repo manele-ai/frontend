@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from 'services/firebase';
 import { getStripe } from 'services/stripe';
@@ -11,6 +11,22 @@ import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import '../styles/HomePage.css';
+
+// Constante pentru localStorage
+const FORM_DATA_KEYS = {
+  SELECTED_STYLE: 'generateForm_selectedStyle',
+  SONG_NAME: 'generateForm_songName',
+  SONG_DETAILS: 'generateForm_songDetails',
+  WANTS_DEDICATION: 'generateForm_wantsDedication',
+  FROM_NAME: 'generateForm_fromName',
+  TO_NAME: 'generateForm_toName',
+  DEDICATION: 'generateForm_dedication',
+  WANTS_DONATION: 'generateForm_wantsDonation',
+  DONOR_NAME: 'generateForm_donorName',
+  DONATION_AMOUNT: 'generateForm_donationAmount',
+  MODE: 'generateForm_mode',
+  IS_ACTIVE: 'generateForm_isActive'
+};
 
 export default function GeneratePage() {
   const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
@@ -27,6 +43,8 @@ export default function GeneratePage() {
   const [donationAmount, setDonationAmount] = useState('');
   const [donorName, setDonorName] = useState('');
   const [mode, setMode] = useState('hard');
+  
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,9 +64,141 @@ export default function GeneratePage() {
 
   const navigate = useNavigate();
 
+  // Funcții pentru persistența formularului
+  const saveFormData = useCallback(() => {
+    // Accesează direct state-urile curente pentru a evita problemele de closure
+    const formData = {
+      selectedStyle,
+      songName,
+      songDetails,
+      wantsDedication,
+      fromName,
+      toName,
+      dedication,
+      wantsDonation,
+      donorName,
+      donationAmount,
+      mode
+    };
+    
+    Object.entries(formData).forEach(([key, value]) => {
+      // Mapare corectă pentru chei camelCase la SCREAMING_SNAKE_CASE
+      const keyMapping = {
+        'selectedStyle': 'SELECTED_STYLE',
+        'songName': 'SONG_NAME',
+        'songDetails': 'SONG_DETAILS',
+        'wantsDedication': 'WANTS_DEDICATION',
+        'fromName': 'FROM_NAME',
+        'toName': 'TO_NAME',
+        'dedication': 'DEDICATION',
+        'wantsDonation': 'WANTS_DONATION',
+        'donorName': 'DONOR_NAME',
+        'donationAmount': 'DONATION_AMOUNT',
+        'mode': 'MODE'
+      };
+      
+      const mappedKey = keyMapping[key];
+      const storageKey = mappedKey ? FORM_DATA_KEYS[mappedKey] : undefined;
+      
+      if (storageKey) {
+        // Pentru string-uri, nu mai facem JSON.stringify
+        if (typeof value === 'string') {
+          localStorage.setItem(storageKey, value);
+        } else {
+          localStorage.setItem(storageKey, JSON.stringify(value));
+        }
+      }
+    });
+    localStorage.setItem(FORM_DATA_KEYS.IS_ACTIVE, 'true');
+  }, [songName, songDetails, wantsDedication, fromName, toName, dedication, wantsDonation, donorName, donationAmount, mode]);
+
+  const loadFormData = useCallback(() => {
+    const isActive = localStorage.getItem(FORM_DATA_KEYS.IS_ACTIVE) === 'true';
+    
+    if (!isActive) return false;
+    
+    try {
+      // Funcție helper pentru încărcarea sigură
+      const safeParse = (key, defaultValue) => {
+        try {
+          const value = localStorage.getItem(key);
+          if (value === null || value === undefined) return defaultValue;
+          
+          // Pentru selectedStyle, tratează ca string dacă nu este JSON valid
+          if (key === FORM_DATA_KEYS.SELECTED_STYLE) {
+            try {
+              return JSON.parse(value);
+            } catch {
+              // Dacă nu este JSON valid, tratează ca string
+              return value;
+            }
+          }
+          
+          return JSON.parse(value);
+        } catch (error) {
+          console.warn(`Eroare la parsarea ${key}:`, error);
+          return defaultValue;
+        }
+      };
+      
+      const safeGet = (key, defaultValue = '') => {
+        const value = localStorage.getItem(key);
+        return value !== null ? value : defaultValue;
+      };
+      
+      const safeGetString = (key, defaultValue = '') => {
+        const value = localStorage.getItem(key);
+        return value !== null && value !== undefined ? value : defaultValue;
+      };
+      
+      const loadedStyle = safeParse(FORM_DATA_KEYS.SELECTED_STYLE, null);
+      const loadedSongName = safeGetString(FORM_DATA_KEYS.SONG_NAME, '');
+      const loadedSongDetails = safeGetString(FORM_DATA_KEYS.SONG_DETAILS, '');
+      const loadedWantsDedication = safeParse(FORM_DATA_KEYS.WANTS_DEDICATION, false);
+      const loadedFromName = safeGetString(FORM_DATA_KEYS.FROM_NAME, '');
+      const loadedToName = safeGetString(FORM_DATA_KEYS.TO_NAME, '');
+      const loadedDedication = safeGetString(FORM_DATA_KEYS.DEDICATION, '');
+      const loadedWantsDonation = safeParse(FORM_DATA_KEYS.WANTS_DONATION, false);
+      const loadedDonorName = safeGetString(FORM_DATA_KEYS.DONOR_NAME, '');
+      const loadedDonationAmount = safeGetString(FORM_DATA_KEYS.DONATION_AMOUNT, '');
+      const loadedMode = safeGetString(FORM_DATA_KEYS.MODE, 'hard');
+      
+
+      
+      setSelectedStyle(loadedStyle);
+      setSongName(loadedSongName);
+      setSongDetails(loadedSongDetails);
+      setWantsDedication(loadedWantsDedication);
+      setFromName(loadedFromName);
+      setToName(loadedToName);
+      setDedication(loadedDedication);
+      setWantsDonation(loadedWantsDonation);
+      setDonorName(loadedDonorName);
+      setDonationAmount(loadedDonationAmount);
+      setMode(loadedMode);
+      
+      return true;
+    } catch (error) {
+      console.error('Eroare la încărcarea datelor formularului:', error);
+      return false;
+    }
+  }, []);
+
+  const clearFormData = useCallback(() => {
+    Object.values(FORM_DATA_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+  }, []);
+
   // Reset donation and dedication when switching to easy mode
   useEffect(() => {
-    if (mode === 'easy') {
+    // Nu reseta datele dacă sunt încărcate din localStorage
+    const isLoadedFromStorage = localStorage.getItem(FORM_DATA_KEYS.IS_ACTIVE) === 'true';
+    const hasData = localStorage.getItem(FORM_DATA_KEYS.SONG_NAME) || 
+                    localStorage.getItem(FORM_DATA_KEYS.SELECTED_STYLE) ||
+                    localStorage.getItem(FORM_DATA_KEYS.SONG_DETAILS);
+    
+    if (mode === 'easy' && !isLoadedFromStorage && !hasData) {
       setWantsDedication(false);
       setWantsDonation(false);
       setDonationAmount('');
@@ -58,6 +208,40 @@ export default function GeneratePage() {
       setDedication('');
     }
   }, [mode]);
+
+  // Încărcare date formular la mount
+  useEffect(() => {
+    const hasLoadedData = loadFormData();
+    if (hasLoadedData) {
+      // Marchează că datele au fost încărcate pentru a preveni resetarea
+      localStorage.setItem(FORM_DATA_KEYS.IS_ACTIVE, 'true');
+    }
+  }, [loadFormData]);
+
+  // Salvare automată pentru selectedStyle
+  useEffect(() => {
+    if (selectedStyle && selectedStyle !== null) {
+      saveFormData();
+    }
+  }, [selectedStyle, saveFormData]);
+
+  // Salvare automată a datelor formularului
+  useEffect(() => {
+    // Salvează doar dacă există date reale (nu doar valori default)
+    const hasRealData = (songName && songName.trim()) || 
+                       (songDetails && songDetails.trim()) ||
+                       wantsDedication || 
+                       wantsDonation ||
+                       (fromName && fromName.trim()) ||
+                       (toName && toName.trim()) ||
+                       (dedication && dedication.trim()) ||
+                       (donorName && donorName.trim()) ||
+                       (donationAmount && donationAmount.trim());
+    
+    if (hasRealData) {
+      saveFormData();
+    }
+  }, [songName, songDetails, wantsDedication, fromName, toName, dedication, wantsDonation, donorName, donationAmount, mode, saveFormData]);
 
   useEffect(() => {
     // Grab user credits
@@ -170,6 +354,10 @@ export default function GeneratePage() {
       
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] GenPage: Creare notificare loading cu requestId:', response.requestId);
+        
+        // Șterge datele formularului când generarea începe cu succes
+        clearFormData();
+        
         // Show loading notification with requestId
         const notificationId = showNotification({
           type: 'loading',

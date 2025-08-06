@@ -4,6 +4,28 @@ import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import { db } from '../services/firebase';
 
+// Funcție utilitară pentru ștergerea datelor formularului
+const clearFormData = () => {
+  const FORM_DATA_KEYS = {
+    SELECTED_STYLE: 'generateForm_selectedStyle',
+    SONG_NAME: 'generateForm_songName',
+    SONG_DETAILS: 'generateForm_songDetails',
+    WANTS_DEDICATION: 'generateForm_wantsDedication',
+    FROM_NAME: 'generateForm_fromName',
+    TO_NAME: 'generateForm_toName',
+    DEDICATION: 'generateForm_dedication',
+    WANTS_DONATION: 'generateForm_wantsDonation',
+    DONOR_NAME: 'generateForm_donorName',
+    DONATION_AMOUNT: 'generateForm_donationAmount',
+    MODE: 'generateForm_mode',
+    IS_ACTIVE: 'generateForm_isActive'
+  };
+  
+  Object.values(FORM_DATA_KEYS).forEach(key => {
+    localStorage.removeItem(key);
+  });
+};
+
 export const useGlobalSongStatus = () => {
   const { showNotification, clearAll } = useNotification();
   const navigate = useNavigate();
@@ -39,6 +61,10 @@ export const useGlobalSongStatus = () => {
           clearAll();
           // Clear the saved requestId when song is complete
           localStorage.removeItem('activeGenerationRequestId');
+          
+          // Șterge datele formularului când piesa este generată cu succes
+          clearFormData();
+          
           showNotification({
             type: 'success',
             title: 'Maneaua e gata!',
@@ -92,6 +118,10 @@ export const useGlobalSongStatus = () => {
             clearAll();
             // Clear the saved requestId when task fails
             localStorage.removeItem('activeGenerationRequestId');
+            
+            // NU șterge datele formularului când generarea eșuează
+            // clearFormData();
+            
             showNotification({
               type: 'error',
               title: 'Eroare la generare',
