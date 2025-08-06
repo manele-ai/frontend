@@ -36,7 +36,6 @@
   flex-direction: column;
   align-items: stretch;
   background-image: url('../../public/photos/HeroTest.jpeg');
-  background-position: 90% center;
   background-repeat: no-repeat;
   border-radius: 0px 20px 20px 20px;
   margin-bottom: 32px;
@@ -439,61 +438,66 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .leaderboard-page {
-    padding: 15px;
-    padding-top: 70px;
-    padding-bottom: 200px; /* Extra space for bottom menu on mobile */
+    padding: 10px;
+    padding-bottom: 150px;
   }
   
   .leaderboard-page .hero-section {
     width: 100%;
     padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .leaderboard-page .main-content-container {
+    width: 100%;
+    gap: 15px;
   }
   
   /* Hero section responsive */
-  .hero-card {
+  .leaderboard-page .hero-card {
     flex-direction: column;
     gap: 20px;
     min-height: auto;
     justify-content: center;
   }
   
-  .hero-card-content {
+  .leaderboard-page .hero-card-content {
     width: 100%;
     align-items: center;
     gap: 15px;
     text-align: center;
   }
   
-  .hero-title {
+  .leaderboard-page .hero-title {
     font-size: 24px;
     line-height: 1.3;
     text-align: center;
   }
   
-  .hero-subtitle {
+  .leaderboard-page .hero-subtitle {
     font-size: 16px;
     line-height: 1.4;
     text-align: center;
   }
   
   /* Butonul din hero section pe mobile */
-  .hero-section-button {
+  .leaderboard-page .hero-section-button {
     width: 180px;
     height: 50px;
     font-size: 14px;
   }
   
-  .hero-section-button .hero-btn-text {
+  .leaderboard-page .hero-section-button .hero-btn-text {
     font-size: 14px;
   }
   
-  .hero-card-img {
+  .leaderboard-page .hero-card-img {
     width: 100%;
     height: 200px;
     flex-shrink: 0;
   }
   
-  .hero-section-overlay {
+  .leaderboard-page .hero-section-overlay {
     background: transparent;
   }
   
@@ -532,14 +536,53 @@
 @media (max-width: 480px) {
   .leaderboard-page .hero-section {
     padding: 10px;
+    margin-bottom: 15px;
   }
   
-  .hero-card-img {
+  .leaderboard-page .main-content-container {
+    padding: 0 10px;
+  }
+  
+  /* Butonul din hero section pe ecrane foarte mici */
+  .leaderboard-page .hero-section-button {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+  
+  .leaderboard-page .hero-section-button .hero-btn-text {
+    font-size: 12px;
+  }
+  
+  .leaderboard-page .hero-card-img {
     width: 100%;
     height: 150px;
   }
   
-  .hero-section-overlay {
+  .leaderboard-page .hero-section-overlay {
     background: transparent;
+  }
+}
+
+/* Stiluri responsive pentru butoanele hero din LeaderboardPage */
+@media (max-width: 768px) {
+  .leaderboard-page .hero-btn.button {
+    width: 160px;
+    height: 45px;
+  }
+  
+  .leaderboard-page .hero-btn.button .hero-btn-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-page .hero-btn.button {
+    width: 140px;
+    height: 40px;
+  }
+  
+  .leaderboard-page .hero-btn.button .hero-btn-text {
+    font-size: 12px;
   }
 }

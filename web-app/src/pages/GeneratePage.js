@@ -10,7 +10,6 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
-import '../styles/HomePage.css';
 
 // Constante pentru localStorage
 const FORM_DATA_KEYS = {

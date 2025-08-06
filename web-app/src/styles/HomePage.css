@@ -688,6 +688,40 @@
     min-width: 24px;
     height: 24px;
   }
+  
+  /* HomePage specific - move play button under progress bar on mobile */
+  .home-page .style-example-audio-player .song-slider-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .home-page .style-example-audio-player .play-pause-button {
+    order: 2; /* Move button after progress bar */
+    margin-top: 4px;
+  }
+  
+  .home-page .style-example-audio-player .time-display {
+    order: 1; /* Keep time displays at top */
+  }
+  
+  .home-page .style-example-audio-player .progress-bar {
+    order: 1; /* Keep progress bar at top */
+  }
+  
+  /* Create a wrapper for time and progress bar to keep them in same row */
+  .home-page .style-example-audio-player .song-slider-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Force time displays and progress bar to stay in same row */
+  .home-page .style-example-audio-player .time-display,
+  .home-page .style-example-audio-player .progress-bar {
+    order: 1;
+  }
 }
 
 /* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
