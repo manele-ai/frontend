@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 
+import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
@@ -303,6 +304,30 @@ export default function ResultPage() {
     return null;
   };
 
+  // Get song style information
+  const getSongStyle = () => {
+    if (!songData?.userGenerationInput?.style) return null;
+    
+    const style = styles.find(s => s.value === songData.userGenerationInput.style);
+    return style;
+  };
+
+  // Get song lyrics from API data
+  const getSongLyrics = () => {
+    if (!songData?.apiData?.lyrics) return null;
+    return songData.apiData.lyrics;
+  };
+
+  // Get dedication from user input
+  const getDedication = () => {
+    return songData.userGenerationInput?.dedication || null;
+  };
+
+  // Get donation amount from user input
+  const getDonation = () => {
+    return songData.userGenerationInput?.donationAmount || null;
+  };
+
   // Show error state
   if (error) {
     return (
@@ -341,7 +366,7 @@ export default function ResultPage() {
           backgroundRepeat: 'repeat',
         }}
       >
-        <div className="container">
+        <div className="loading-container">
           <div className="loading-gif-container">
             <img
               src={GIF}
@@ -370,6 +395,10 @@ export default function ResultPage() {
 
   const audioUrl = getAudioUrl();
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
+  const songStyle = getSongStyle();
+  const songLyrics = getSongLyrics();
+  const dedication = getDedication();
+  const donation = getDonation();
 
   return (
     <div 
@@ -381,10 +410,17 @@ export default function ResultPage() {
         backgroundRepeat: 'repeat',
       }}
     >
-      <div className="container">
-        <h1 className="result-title" style={{ marginBottom: 12 }}>{songData.apiData.title || 'Piesa ta e gata!'}</h1>
+      <div className="result-container"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}>
+  
        
         <div className="player-box">
+          <h2 className="player-song-title">{songData.apiData.title || 'Piesa ta e gata!'}</h2>
           <img
             src={songData.apiData.imageUrl || 'https://via.placeholder.com/150'}
             alt="Song artwork"
@@ -401,7 +437,66 @@ export default function ResultPage() {
                   onPlayPause={handlePlayPause}
                   onError={setError}
                 />
+              {/* Song Style Section - inside the same card */}
+              {songStyle && (
+                <div className="song-style-inline">
+                  <h3 className="song-style-title">Stilul melodiei</h3>
+                  <div className="song-style-card">
+                    <img 
+                      src={songStyle.image} 
+                      alt={songStyle.title}
+                      className="song-style-image"
+                    />
+                    <div className="song-style-info">
+                      <h4 className="song-style-name">{songStyle.title}</h4>
+                      <p className="song-style-description">{songStyle.description}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Song Lyrics Section - inside the same card */}
+                  {songLyrics && (
+                    <div className="song-lyrics-inline">
+                      <h3 className="song-lyrics-title">Versurile piesei</h3>
+                      <div className="song-lyrics-content">
+                        <p className="song-lyrics-text">{songLyrics}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dedication Section - inside the same card */}
+                  {dedication && (
+                    <div className="song-dedication-inline">
+                      <h3 className="song-dedication-title">Dedicația</h3>
+                      <div className="song-dedication-content">
+                        <p className="song-dedication-text">{dedication}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Donation Section - inside the same card */}
+                  {donation && (
+                    <div className="song-donation-inline">
+                      <h3 className="song-donation-title">Donația</h3>
+                      <div className="song-donation-content">
+                        <p className="song-donation-text">{donation} RON</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
+              
+
+              {/* Song Lyrics Section - standalone (if no style) */}
+              {!songStyle && songLyrics && (
+                <div className="song-lyrics-inline">
+                  <h3 className="song-lyrics-title">Versurile piesei</h3>
+                  <div className="song-lyrics-content">
+                    <p className="song-lyrics-text">{songLyrics}</p>
+                  </div>
+                </div>
+              )}
+              
               {/* Spațiu între player și butoane */}
               <div style={{ marginBottom: 28 }} />
               {canDownload && (
