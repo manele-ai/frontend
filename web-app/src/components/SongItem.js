@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../styles/SongItem.css';
 import AudioPlayer from './AudioPlayer';
 
-export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel }) {
+export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel, creationDate }) {
   const [error, setError] = useState(null);
 
   // Get the appropriate audio URL based on availability
@@ -35,9 +35,14 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
         />
         <div className="song-title-style-col">
           <span className="song-title song-title-inline">{song.apiData?.title || 'Manea fără nume'}</span>
-          {styleLabel && (
-            <span className="song-style-label">{styleLabel}</span>
-          )}
+          <div className="song-metadata">
+            {styleLabel && (
+              <span className="song-style-label">{styleLabel}</span>
+            )}
+            {creationDate && (
+              <span className="song-date">{creationDate}</span>
+            )}
+          </div>
         </div>
       </div>
       {audioUrl && (

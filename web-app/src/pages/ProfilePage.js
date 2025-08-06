@@ -277,7 +277,9 @@ export default function ProfilePage() {
         ) : (
           <div className="profile-song-list">
             {filteredSongs.length > 0 ? (
-              filteredSongs.map((song) => (
+              [...filteredSongs]
+                .sort((a, b) => b.createdAt._seconds - a.createdAt._seconds)
+                .map((song) => (
                 <div className="profile-song-card" key={song.id}>
                   <SongItem
                     song={song}
@@ -285,6 +287,11 @@ export default function ProfilePage() {
                     onPlayPause={handlePlayPause}
                     onDownload={handleDownload}
                     styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
+                    creationDate={new Date(song.createdAt.toDate()).toLocaleDateString('ro-RO', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   />
                 </div>
               ))
