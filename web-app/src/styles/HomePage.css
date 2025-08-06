@@ -42,8 +42,21 @@
   align-items: stretch;
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
   border-radius: 0px 20px 20px 20px;
-  padding: 2.5%;
+  /* padding: 2.5%; */
   margin-bottom: 32px;
+  position: relative;
+}
+
+.hero-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #e0c181 0%, #e0c181 53%, rgba(255,224,161,0.8) 62%, rgba(255,224,161,0.4) 69%, transparent 80%);
+  border-radius: 0px 20px 20px 20px;
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* Main Content Container - fără background */
@@ -73,46 +86,35 @@
 
 .hero-card-content {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   z-index: 2;
   width: 50%;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* background-color: red; */
 }
 
 .hero-card-img {
-  width: 30%;
-  height: 288px;
-  border-radius: 288px;
+  width: 60%;
+  height: 300px;
+  border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  background-image: url('../../public/photos/HeroSectionHomePage.jpeg');
+  background-size: 140%;
+  background-position: 90% center;
+  background-repeat: no-repeat;
 }
 
-.ellipse-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 288px;
-  background: linear-gradient(0deg, #FFF0DA 0%, #94641E 100%);
-  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.25);
-  filter: blur(8px);
-  z-index: 1;
-}
-
-.hero-icon {
-  position: relative;
-  z-index: 2;
-  height: 180px;
-  width: 180px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
-}
 
 .hero-title {
   font-family: 'Satoshi', sans-serif;
@@ -359,34 +361,35 @@
   
   /* Hero section responsive */
   .hero-card {
-    flex-direction: row;
-    gap: 15px;
+    flex-direction: column;
+    gap: 20px;
     min-height: auto;
-    justify-content: space-between;
+    justify-content: center;
   }
   
   .hero-card-content {
-    width: 60%;
-    align-items: flex-start;
-    gap: 12px;
+    width: 100%;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
   }
   
   .hero-title {
-    font-size: 16px;
+    font-size: 24px;
     line-height: 1.3;
-    text-align: left;
+    text-align: center;
   }
   
   .hero-subtitle {
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.4;
-    text-align: left;
+    text-align: center;
   }
   
   /* Butonul din hero section pe mobile */
   .hero-section-button {
-    width: 160px;
-    height: 45px;
+    width: 180px;
+    height: 50px;
     font-size: 14px;
   }
   
@@ -395,19 +398,13 @@
   }
   
   .hero-card-img {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 200px;
     flex-shrink: 0;
   }
   
-  .hero-icon {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .ellipse-bg {
-    width: 100px;
-    height: 100px;
+  .hero-section-overlay {
+    background: transparent;
   }
   
   /* Styles grid responsive */
@@ -481,7 +478,17 @@
   }
   
   .style-example-card-button .hero-btn-text {
-  font-size: 10px; /* Redus și mai mult */
+    font-size: 10px; /* Redus și mai mult */
+  }
+  
+  .hero-card-img {
+    width: 100%;
+    height: 150px;
+  }
+  
+  .hero-section-overlay {
+    background: transparent;
+  }
 }
 
 /* Stiluri pentru player-ul audio în carduri */
@@ -645,7 +652,6 @@
 
 .home-page .hero-btn.button .hero-btn-text {
   font-size: 12px;
-}
 }
 
 

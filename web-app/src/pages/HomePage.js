@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
 import { getStripe } from 'services/stripe';
-import { useAuth } from '../components/auth/AuthContext';
 import AudioPlayer from '../components/AudioPlayer';
+import { useAuth } from '../components/auth/AuthContext';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
@@ -38,6 +38,7 @@ function ReusableCard({ background, title, subtitle }) {
             audioUrl={audioUrl}
             isPlaying={isPlaying}
             onPlayPause={handlePlayPause}
+            onError={() => console.error('Audio playback error')}
           />
         </div>
       </div>
@@ -102,6 +103,7 @@ export default function HomePage() {
     >
       {/* Hero Section */}
       <div className="hero-section">
+        <div className="hero-section-overlay"></div>
         <div className="hero-card">
           <div className="hero-card-content">
             <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
@@ -125,8 +127,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-card-img">
-            <div className="ellipse-bg"></div>
-            <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
+            <div className="hero-image-overlay"></div>
           </div>
         </div>
       </div>
