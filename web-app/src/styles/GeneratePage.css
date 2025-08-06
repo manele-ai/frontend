@@ -45,10 +45,14 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-image: url('../../public/photos/HeroTest.jpeg');
+  background-position: 90% center;
+  background-repeat: no-repeat;
   border-radius: 0px 20px 20px 20px;
   margin-bottom: 32px;
   position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
 .generate-page .hero-section-overlay {
@@ -72,6 +76,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  min-height: 300px;
   gap: 10%;
 }
 
@@ -109,8 +114,10 @@
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
-  color: #080A0B;
+  color: rgb(29 20 3);
   text-align: left;
+  line-height: 1.1;
+  position: relative;
 }
 
 .generate-page .hero-subtitle {
@@ -121,6 +128,7 @@
   line-height: normal;
   color: #000;
   text-align: left;
+  position: relative;
 }
 
 .generate-page .hero-btn-text {

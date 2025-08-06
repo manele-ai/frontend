@@ -15,9 +15,6 @@ function HeroCardLeaderboard() {
           <span className="hero-btn-text">Generează acum</span>
         </Button>
       </div>
-      <div className="hero-card-img">
-        <div className="hero-image-overlay"></div>
-      </div>
     </div>
   );
 }

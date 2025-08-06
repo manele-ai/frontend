@@ -103,10 +103,9 @@ export default function HomePage() {
     >
       {/* Hero Section */}
       <div className="hero-section">
-        <div className="hero-section-overlay"></div>
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
+            <h2 className="hero-title">Genereaza-ti propria manea<br></br> in cateva minute.</h2>
             <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
             <div className="hero-buttons" style={{ 
               display: 'flex', 
@@ -125,9 +124,6 @@ export default function HomePage() {
                 </Button>
               )}
             </div>
-          </div>
-          <div className="hero-card-img">
-            <div className="hero-image-overlay"></div>
           </div>
         </div>
       </div>

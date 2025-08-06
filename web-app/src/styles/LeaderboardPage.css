@@ -35,23 +35,16 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-image: url('../../public/photos/HeroTest.jpeg');
+  background-position: 90% center;
+  background-repeat: no-repeat;
   border-radius: 0px 20px 20px 20px;
   margin-bottom: 32px;
   position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
-.leaderboard-page .hero-section-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* background: linear-gradient(90deg, #e0c181 0%, #e0c181 53%, rgba(255,224,161,0.8) 62%, rgba(255,224,161,0.4) 69%, transparent 80%); */
-  border-radius: 0px 20px 20px 20px;
-  z-index: 2;
-  pointer-events: none;
-}
 
 .leaderboard-page .hero-card {
   display: inline-flex;
@@ -62,6 +55,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  min-height: 300px;
   gap: 10%;
 }
 
@@ -79,28 +73,15 @@
   margin-bottom: 20px;
 }
 
-.leaderboard-page .hero-card-img {
-  width: 60%;
-  height: 300px;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  background-image: url('../../public/photos/HeroSectionHomePage.jpeg');
-  background-size: 140%;
-  background-position: 90% center;
-  background-repeat: no-repeat;
-}
 
 .leaderboard-page .hero-title {
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
-  color: #080A0B;
+  color: rgb(29 20 3);
   text-align: left;
+  line-height: 1.1;
+  position: relative;
 }
 
 .leaderboard-page .hero-subtitle {
@@ -111,6 +92,7 @@
   line-height: normal;
   color: #000;
   text-align: left;
+  position: relative;
 }
 
 .leaderboard-page .hero-btn-text {
