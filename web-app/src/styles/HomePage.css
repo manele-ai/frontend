@@ -47,7 +47,7 @@
   position: relative;
 }
 
-.hero-section-overlay {
+.home-page .hero-section-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -72,7 +72,7 @@
 
 
 /* Hero Section Styles - copiat din GeneratePage */
-.hero-card {
+.home-page .hero-card {
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
@@ -84,7 +84,7 @@
   gap: 10%;
 }
 
-.hero-card-content {
+.home-page .hero-card-content {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
@@ -99,7 +99,7 @@
   /* background-color: red; */
 }
 
-.hero-card-img {
+.home-page .hero-card-img {
   width: 60%;
   height: 300px;
   border-radius: 20px;
@@ -116,7 +116,7 @@
 }
 
 
-.hero-title {
+.home-page .hero-title {
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
@@ -124,7 +124,7 @@
   text-align: left;
 }
 
-.hero-subtitle {
+.home-page .hero-subtitle {
   font-family: 'Satoshi', sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -168,7 +168,7 @@
 }
 
 /* Stiluri pentru textul din buton conform specificațiilor din imagini */
-.hero-btn-text {
+.home-page .hero-btn-text {
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -218,7 +218,7 @@
 }
 
 /* Stiluri pentru butonul din hero section */
-.hero-section-button {
+.home-page .hero-section-button {
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
@@ -239,13 +239,13 @@
   letter-spacing: inherit;
 }
 
-.hero-section-button:hover {
+.home-page .hero-section-button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.hero-section-button:active {
+.home-page .hero-section-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
@@ -360,50 +360,50 @@
 
   
   /* Hero section responsive */
-  .hero-card {
+  .home-page .hero-card {
     flex-direction: column;
     gap: 20px;
     min-height: auto;
     justify-content: center;
   }
   
-  .hero-card-content {
+  .home-page .hero-card-content {
     width: 100%;
     align-items: center;
     gap: 15px;
     text-align: center;
   }
   
-  .hero-title {
+  .home-page .hero-title {
     font-size: 24px;
     line-height: 1.3;
     text-align: center;
   }
   
-  .hero-subtitle {
+  .home-page .hero-subtitle {
     font-size: 16px;
     line-height: 1.4;
     text-align: center;
   }
   
   /* Butonul din hero section pe mobile */
-  .hero-section-button {
+  .home-page .hero-section-button {
     width: 180px;
     height: 50px;
     font-size: 14px;
   }
   
-  .hero-section-button .hero-btn-text {
+  .home-page .hero-section-button .hero-btn-text {
     font-size: 14px;
   }
   
-  .hero-card-img {
+  .home-page .hero-card-img {
     width: 100%;
     height: 200px;
     flex-shrink: 0;
   }
   
-  .hero-section-overlay {
+  .home-page .hero-section-overlay {
     background: transparent;
   }
   
@@ -459,13 +459,13 @@
   }
   
   /* Butonul din hero section pe ecrane foarte mici */
-  .hero-section-button {
+  .home-page .hero-section-button {
     width: 140px;
     height: 40px;
     font-size: 12px;
   }
   
-  .hero-section-button .hero-btn-text {
+  .home-page .hero-section-button .hero-btn-text {
     font-size: 12px;
   }
   
@@ -481,12 +481,12 @@
     font-size: 10px; /* Redus și mai mult */
   }
   
-  .hero-card-img {
+  .home-page .hero-card-img {
     width: 100%;
     height: 150px;
   }
   
-  .hero-section-overlay {
+  .home-page .hero-section-overlay {
     background: transparent;
   }
 }
