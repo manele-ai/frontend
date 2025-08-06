@@ -46,6 +46,14 @@ export default function LeaderboardPage() {
   const renderTableContent = () => {
     const activeData = getActiveData();
     
+    if (!activeData || activeData.length === 0) {
+      return (
+        <div className="no-data-message">
+          <p>Nu există date pentru această categorie.</p>
+        </div>
+      );
+    }
+    
     return (
       <table className="leaderboard-table">
         <thead>

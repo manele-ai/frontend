@@ -70,7 +70,7 @@ export function useLeaderboardData() {
             })
           );
 
-          return statsWithUserDetails;
+          return statsWithUserDetails.filter(user => user.count > 0); // Filtrează doar utilizatorii cu count > 0
         };
 
         // Helper function to fetch all-time stats from usersPublic
@@ -84,15 +84,17 @@ export function useLeaderboardData() {
           console.log('Fetching all-time stats for:', fieldName);
           const snapshot = await getDocs(q);
           
-          return snapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              displayName: data.displayName || 'Anonymous User',
-              photoURL: data.photoURL || null,
-              count: data.stats?.[fieldName] || 0
-            };
-          });
+          return snapshot.docs
+            .map(doc => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                displayName: data.displayName || 'Anonymous User',
+                photoURL: data.photoURL || null,
+                count: data.stats?.[fieldName] || 0
+              };
+            })
+            .filter(user => user.count > 0); // Filtrează doar utilizatorii cu count > 0
         };
 
         // Initialize results with empty arrays

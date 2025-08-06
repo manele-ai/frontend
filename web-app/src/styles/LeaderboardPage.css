@@ -97,7 +97,8 @@
 
 .leaderboard-container {
   display: flex;
-  width: 338px;
+  width: 100%;
+  max-width: 1200px;
   padding: 20px 25px;
   flex-direction: column;
   justify-content: center;
@@ -130,28 +131,72 @@
 
 .leaderboard-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
 }
 
 .leaderboard-table th,
 .leaderboard-table td {
   padding: 15px;
-  text-align: left;
+  text-align: center;
   color: var(--text-primary);
 }
 
 .leaderboard-table th {
   font-weight: 600;
   border-bottom: 2px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-table tr {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-table tr td:first-child {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.leaderboard-table tr td:last-child {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.leaderboard-table thead tr {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.leaderboard-table thead tr th:first-child {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.leaderboard-table thead tr th:last-child {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.leaderboard-table tr:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(234, 177, 17, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .leaderboard-table tr:not(:last-child) td {
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
 }
 
 .user-cell {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -200,6 +245,20 @@
   text-align: center;
   color: var(--error);
   padding: 20px;
+}
+
+.no-data-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-data-message p {
+  font-size: 16px;
+  margin: 0;
 }
 
 /* HERO SECTION LEADERBOARD (copiat și adaptat din HomePage.css) */
@@ -427,5 +486,101 @@
   .leaderboard-table td {
     padding: 8px;
     font-size: 14px;
+  }
+
+  /* Hero section responsive pentru LeaderboardPage */
+  .leaderboard-hero-section {
+    width: 100%;
+    padding: 15px;
+  }
+  
+  .leaderboard-hero-card {
+    flex-direction: row;
+    gap: 15px;
+    min-height: auto;
+    justify-content: space-between;
+  }
+  
+  .leaderboard-hero-card .hero-card-content {
+    width: 60%;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .leaderboard-hero-card .hero-title {
+    font-size: 16px;
+    line-height: 1.3;
+    text-align: left;
+  }
+  
+  .leaderboard-hero-card .hero-subtitle {
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: left;
+  }
+  
+  .leaderboard-hero-card .hero-btn.button {
+    width: 160px;
+    height: 45px;
+    font-size: 14px;
+  }
+  
+  .leaderboard-hero-card .hero-btn-text {
+    font-size: 14px;
+  }
+  
+  .leaderboard-hero-card .hero-card-img {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+  
+  .leaderboard-hero-card .hero-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .leaderboard-hero-card .ellipse-bg {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-hero-section {
+    padding: 10px;
+  }
+  
+  .leaderboard-hero-card .hero-btn.button {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+  
+  .leaderboard-hero-card .hero-btn-text {
+    font-size: 12px;
+  }
+  
+  .leaderboard-hero-card .hero-title {
+    font-size: 14px;
+  }
+  
+  .leaderboard-hero-card .hero-subtitle {
+    font-size: 11px;
+  }
+  
+  .leaderboard-hero-card .hero-card-img {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .leaderboard-hero-card .hero-icon {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .leaderboard-hero-card .ellipse-bg {
+    width: 80px;
+    height: 80px;
   }
 } 

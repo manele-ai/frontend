@@ -48,7 +48,19 @@
 }
 
 .notification-loading {
-  border-left: 4px solid #FFD700;
+  position: relative;
+  border: none;
+}
+
+.notification-loading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  border-radius: 16px 0 0 16px;
 }
 
 .notification-content {
@@ -90,7 +102,7 @@
 }
 
 .notification-icon-loading {
-  background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   color: white;
 }
 
@@ -177,8 +189,28 @@
 
 .notification-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
   animation: progressShrink linear forwards;
+}
+
+/* Progress bar colors for different notification types */
+.notification-success .notification-progress-bar {
+  background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+}
+
+.notification-error .notification-progress-bar {
+  background: linear-gradient(90deg, #f44336 0%, #d32f2f 100%);
+}
+
+.notification-warning .notification-progress-bar {
+  background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+}
+
+.notification-info .notification-progress-bar {
+  background: linear-gradient(90deg, #2196F3 0%, #1976D2 100%);
+}
+
+.notification-loading .notification-progress-bar {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
 }
 
 /* Animations */
