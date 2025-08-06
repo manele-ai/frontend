@@ -40,9 +40,8 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-image: url('../../public/photos/HeroTest.jpeg');
   border-radius: 0px 20px 20px 20px;
-  /* padding: 2.5%; */
   margin-bottom: 32px;
   position: relative;
 }
@@ -81,6 +80,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  min-height: 300px;
   gap: 10%;
 }
 
@@ -89,7 +89,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   z-index: 2;
   width: 50%;
   margin-left: 20px;
@@ -109,7 +109,7 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
-  background-image: url('../../public/photos/HeroSectionHomePage.jpeg');
+  background-image: url('../../public/photos/HeroTest.jpeg');
   background-size: 140%;
   background-position: 90% center;
   background-repeat: no-repeat;
@@ -120,8 +120,10 @@
   font-family: 'Satoshi', sans-serif;
   font-weight: 700;
   font-size: 40px;
-  color: #080A0B;
+  color: rgb(29 20 3);
   text-align: left;
+  line-height: 1.1;
+  position: relative;
 }
 
 .home-page .hero-subtitle {
@@ -132,6 +134,7 @@
   line-height: normal;
   color: #000;
   text-align: left;
+  position: relative;
 }
 
 /* Stiluri pentru butonul hero (specifice pentru HomePage) */

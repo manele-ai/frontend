@@ -306,14 +306,10 @@ export default function GeneratePage() {
     >
       {/* Hero Section */}
       <div className="hero-section">
-        <div className="hero-section-overlay"></div>
         <div className="hero-card">
           <div className="hero-card-content">
             <h2 className="hero-title">Configureaza maneaua</h2>
             <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
-          </div>
-          <div className="hero-card-img">
-            <div className="hero-image-overlay"></div>
           </div>
         </div>
       </div>
