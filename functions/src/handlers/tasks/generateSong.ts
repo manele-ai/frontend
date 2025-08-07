@@ -109,6 +109,7 @@ export const generateSongTask = onTaskDispatched({
         wantsDonation: generationData.wantsDonation,
         donationAmount: generationData.donationAmount
       },
+      lyrics,
       createdAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
       updatedAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
     } as Database.TaskStatus);
