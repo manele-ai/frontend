@@ -44,6 +44,7 @@ export namespace Database {
     userGenerationInput: UserGenerationInput;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
+    lyrics?: string;
   }
 
   export interface GenerationRequest {
