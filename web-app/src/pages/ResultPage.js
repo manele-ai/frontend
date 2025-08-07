@@ -77,6 +77,7 @@ export default function ResultPage() {
   // Use a stable audio URL to prevent player reload
   const [stableAudioUrl, setStableAudioUrl] = useState(null);
   const [hasStableUrl, setHasStableUrl] = useState(false);
+  const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -155,14 +156,26 @@ export default function ResultPage() {
             if (!snap.exists()) return;
             const data = snap.data();
 
+            console.log('Task status update:', data.status, data);
+            
+            // Extrage versurile dacă există în data
+            if (data.lyrics) {
+              console.log('Lyrics found in task data:', data.lyrics);
+              // Salvează versurile în state
+              setCurrentSongLyrics(data.lyrics);
+            }
+            
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
                 break;
               case 'partial':
               case 'completed':
-                if (data.songId) {
-                  setSongId(data.songId);
+                if (data.songIds) {
+                  console.log('Setting songId:', data.songIds[0]);
+                  setSongId(data.songIds[0]);
+                } else {
+                  console.log('No songId in task data');
                 }
                 break;
               case 'failed':
@@ -319,18 +332,17 @@ export default function ResultPage() {
     return style;
   };
 
-  // Get song lyrics from API data
+  // Get song lyrics from state or API data
   const getSongLyrics = () => {
-    // Try multiple possible locations for lyrics
-    const lyrics = songData?.apiData?.prompt || 
-                   songData?.generatedLyrics || 
-                   songData?.lyrics ||
-                   songData?.userGenerationInput?.lyricsDetails;
-    
-    if (!lyrics) {
-      return null;
+    // Încearcă să citească versurile din state (din taskStatuses)
+    if (currentSongLyrics) {
+      console.log('Lyrics found in state:', currentSongLyrics);
+      return currentSongLyrics;
     }
-    return lyrics;
+    
+    // Fallback la versurile din API data
+    if (!songData?.apiData?.lyrics) return null;
+    return songData.apiData.lyrics;
   };
 
   // Get dedication from user input
