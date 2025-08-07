@@ -31,7 +31,7 @@ export function ResetPasswordForm({
       </div>
       <button type="submit" className="auth-button" disabled={loading}>
         <span className="auth-button-text">
-          {loading ? 'Se trimite...' : 'Trimite Email Resetare'}
+          {loading ? 'Se trimite...' : 'Trimite Email'}
         </span>
       </button>
       <button

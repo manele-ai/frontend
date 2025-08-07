@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { PhoneInput } from './PhoneInput';
 
-export function SignupForm({ 
-  formData, 
-  handleInputChange, 
-  handleAuthSubmit, 
-  handleGoogleSignIn, 
-  loading, 
+export function SignupForm({
+  formData,
+  handleInputChange,
+  handleAuthSubmit,
+  handleGoogleSignIn,
+  loading,
   toggleMode,
   formError,
   fieldErrors,
@@ -116,21 +117,12 @@ export function SignupForm({
       </div>
 
       {isPhoneAuth ? (
-        <div className="input-group">
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="Număr de telefon (ex: +40712345678)"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            className={`auth-input ${fieldErrors.phoneNumber ? 'auth-input-error' : ''}`}
-            required
-            ref={isPhoneAuth ? inputRef : null}
-          />
-          {fieldErrors.phoneNumber && (
-            <div className="field-error">{fieldErrors.phoneNumber}</div>
-          )}
-        </div>
+        <PhoneInput
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+          error={fieldErrors.phoneNumber}
+          autoFocus={false}
+        />
       ) : (
         <>
           <div className="input-group">

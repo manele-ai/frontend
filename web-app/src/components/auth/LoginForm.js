@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { PhoneInput } from './PhoneInput';
 
 export function LoginForm({ 
   formData, 
@@ -104,21 +105,12 @@ export function LoginForm({
       </div>
 
       {isPhoneAuth ? (
-        <div className="input-group">
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="Număr de telefon (ex: +40712345678)"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            className={`auth-input ${fieldErrors.phoneNumber ? 'auth-input-error' : ''}`}
-            required
-            ref={inputRef}
-          />
-          {fieldErrors.phoneNumber && (
-            <div className="field-error">{fieldErrors.phoneNumber}</div>
-          )}
-        </div>
+        <PhoneInput
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+          error={fieldErrors.phoneNumber}
+          autoFocus={true}
+        />
       ) : (
         <>
           <div className="input-group">

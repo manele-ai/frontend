@@ -42,11 +42,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     return (
       <div className="auth-modal-overlay">
         <div className="auth-modal">
-          <div className="auth-modal-header">
-            <h2>Resetare Parolă</h2>
-            <p>Introdu adresa de email pentru a primi link-ul de resetare</p>
-          </div>
+          <button className="auth-modal-close" onClick={closeModal}>×</button>
           <div className="auth-modal-content">
+            <h1 className="auth-title">Resetare Parolă</h1>
+            <p className="auth-subtitle">Introdu adresa de email pentru a primi link-ul de resetare</p>
             <ResetPasswordForm
               formData={formData}
               handleInputChange={handleInputChange}
@@ -64,6 +63,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   return (
     <div className="auth-modal-overlay">
       <div className="auth-modal">
+        <button className="auth-modal-close" onClick={closeModal}>×</button>
         <div className="auth-modal-content">
           {isLogin ? (
             <LoginForm

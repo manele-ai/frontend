@@ -29,6 +29,36 @@
   position: relative;
 }
 
+/* Close button */
+.auth-modal-close {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.auth-modal-close:hover {
+  transform: scale(1.2);
+}
+
+.auth-modal-close:active {
+  transform: scale(0.95);
+}
+
 /* Modal Header */
 .auth-modal-header {
   text-align: center;
@@ -58,36 +88,40 @@
   margin-bottom: 12px;
 }
 
-.auth-modal-content h3 {
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
+.auth-modal-content .auth-title {
+  color: #080A0B;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 45px;
+  letter-spacing: -1.35px;
   text-align: center;
+  margin-bottom: 0px;
 }
 
-.auth-modal-content p {
-  color: #a2a5bd;
-  font-size: 13px;
+.auth-modal-content .auth-subtitle {
+  color: #000 !important;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.6px;
   text-align: center;
-  margin-bottom: 15px;
-  line-height: 1.4;
+  margin-bottom: 6px;
 }
 
 /* Form Styles */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .auth-form-row {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
 .auth-form-row .input-group {
@@ -96,6 +130,32 @@
 
 .input-group {
   position: relative;
+  margin-bottom: 0;
+}
+
+.phone-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.country-prefix {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 10px;
+  color: #e2e2e1;
+  font-size: 14px;
+  white-space: nowrap;
+  height: 45px;
+}
+
+.phone-input {
+  flex: 1;
+  height: 45px;
 }
 
 .auth-input {
@@ -105,9 +165,11 @@
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 14px;
-  color: #fff;
+  color: #e2e2e1;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  margin-bottom: 0;
+  height: 45px;
 }
 
 .auth-input:focus {
