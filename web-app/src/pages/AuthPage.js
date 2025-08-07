@@ -77,15 +77,6 @@ export default function AuthPage() {
       }}
     >
       <div className="auth-container">
-        <h1 className="auth-title">
-          {isLogin ? 'Autentificare' : 'Înregistrare'}
-        </h1>
-        <p className="auth-subtitle">
-          {isLogin 
-            ? 'Bine ai revenit! Autentifică-te pentru a continua.' 
-            : 'Creează-ți contul pentru a începe să generezi manele.'
-          }
-        </p>
         {infoMessage && (
           <div className="auth-error" style={{ background: '#eab111', color: '#23242b', marginBottom: 16, fontWeight: 600 }}>
             {infoMessage}

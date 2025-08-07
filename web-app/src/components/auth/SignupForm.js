@@ -15,7 +15,9 @@ export function SignupForm({
   resendTimer,
   lastPhoneNumber,
   handleResendCode,
-  handleBackToPhone
+  handleBackToPhone,
+  title = 'Înregistrare',
+  subtitle = 'Creează-ți contul pentru a începe să generezi manele.'
 }) {
   const inputRef = useRef(null);
 
@@ -80,18 +82,8 @@ export function SignupForm({
 
   return (
     <form onSubmit={handleAuthSubmit} className="auth-form">
-      <div className="input-group">
-        <input
-          type="text"
-          name="displayName"
-          placeholder="Nume complet"
-          value={formData.displayName}
-          onChange={handleInputChange}
-          className="auth-input"
-          required
-          ref={!isPhoneAuth ? inputRef : null}
-        />
-      </div>
+      <h1 className="auth-title">{title}</h1>
+      <p className="auth-subtitle">{subtitle}</p>
 
       <div className="auth-toggle-method">
         <button
@@ -108,6 +100,19 @@ export function SignupForm({
         >
           Telefon
         </button>
+      </div>
+
+      <div className="input-group">
+        <input
+          type="text"
+          name="displayName"
+          placeholder="Nume complet"
+          value={formData.displayName}
+          onChange={handleInputChange}
+          className="auth-input"
+          required
+          ref={!isPhoneAuth ? inputRef : null}
+        />
       </div>
 
       {isPhoneAuth ? (
@@ -182,9 +187,19 @@ export function SignupForm({
         </span>
       </button>
 
+      <button
+        type="button"
+        onClick={toggleMode}
+        className="auth-link-button"
+      >
+        Ai deja cont? Autentifică-te
+      </button>
+
       {!isPhoneAuth && (
         <>
-          <div className="auth-divider"></div>
+          <div className="auth-divider">
+            <span>OR</span>
+          </div>
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -201,14 +216,6 @@ export function SignupForm({
           </button>
         </>
       )}
-
-      <button
-        type="button"
-        onClick={toggleMode}
-        className="auth-link-button"
-      >
-        Ai deja cont? Autentifică-te
-      </button>
     </form>
   );
 } 
