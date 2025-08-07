@@ -13,6 +13,7 @@ import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
+const TIMEOUT_DURATION = 0.5 * 60 * 1000; // 5 minutes
 
 export default function ResultPage() {
   const location = useLocation();
@@ -69,6 +70,9 @@ export default function ResultPage() {
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Add timeout state to track if we've exceeded the wait time
+  const [hasTimedOut, setHasTimedOut] = useState(false);
 
   // Use a stable audio URL to prevent player reload
   const [stableAudioUrl, setStableAudioUrl] = useState(null);
@@ -253,7 +257,7 @@ export default function ResultPage() {
     };
   }, [songId]);
 
-  // Add loading progress animation
+  // Add loading progress animation and timeout
   useEffect(() => {
     console.log('Loading effect - songData:', songData);
     if (songData) {
@@ -262,6 +266,16 @@ export default function ResultPage() {
       console.log('Song data available, stopping loading animation');
       return;
     }
+
+    // Set a timeout
+    const timeoutTimer = setTimeout(() => {
+      if (!songData && !error) {
+        setHasTimedOut(true);
+        setError('Generarea a durat prea mult. Te rugăm să încerci din nou.');
+        // Clear loading progress on timeout
+        localStorage.removeItem('resultPageLoadingProgress');
+      }
+    }, TIMEOUT_DURATION);
     
     const duration = 120000; // 2 minute în milisecunde
     const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
@@ -280,8 +294,11 @@ export default function ResultPage() {
       });
     }, interval);
 
-    return () => clearInterval(timer);
-  }, [songData]);
+    return () => {
+      clearInterval(timer);
+      clearTimeout(timeoutTimer);
+    };
+  }, [songData, error]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
