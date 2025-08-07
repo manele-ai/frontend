@@ -38,17 +38,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="auth-modal-overlay">
-      <div className="auth-modal">
-        <div className="auth-modal-header">
-          <h2>Autentificare necesară</h2>
-          <p>Pentru a genera o manea, trebuie să te autentifici sau să îți creezi un cont</p>
-        </div>
-        {showResetPassword ? (
+  if (showResetPassword) {
+    return (
+      <div className="auth-modal-overlay">
+        <div className="auth-modal">
+          <button className="auth-modal-close" onClick={closeModal}>×</button>
           <div className="auth-modal-content">
-            <h3>Resetare Parolă</h3>
-            <p>Introdu adresa de email pentru a primi link-ul de resetare</p>
+            <h1 className="auth-title">Resetare Parolă</h1>
+            <p className="auth-subtitle">Introdu adresa de email pentru a primi link-ul de resetare</p>
             <ResetPasswordForm
               formData={formData}
               handleInputChange={handleInputChange}
@@ -58,49 +55,59 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             />
             {formError && <div className="auth-error">{formError}</div>}
           </div>
-        ) : (
-          <div className="auth-modal-content">
-             
-            {isLogin ? (
-              <LoginForm
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleAuthSubmit={handleAuthSubmit}
-                handleGoogleSignIn={handleGoogleSignIn}
-                loading={loading}
-                toggleMode={toggleMode}
-                setShowResetPassword={setShowResetPassword}
-                formError={formError}
-                fieldErrors={fieldErrors}
-                isPhoneAuth={isPhoneAuth}
-                showVerificationCode={showVerificationCode}
-                toggleAuthMethod={toggleAuthMethod}
-                resendTimer={resendTimer}
-                lastPhoneNumber={lastPhoneNumber}
-                handleResendCode={handleResendCode}
-                handleBackToPhone={handleBackToPhone}
-              />
-            ) : (
-              <SignupForm
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleAuthSubmit={handleAuthSubmit}
-                handleGoogleSignIn={handleGoogleSignIn}
-                loading={loading}
-                toggleMode={toggleMode}
-                formError={formError}
-                fieldErrors={fieldErrors}
-                isPhoneAuth={isPhoneAuth}
-                showVerificationCode={showVerificationCode}
-                toggleAuthMethod={toggleAuthMethod}
-                resendTimer={resendTimer}
-                lastPhoneNumber={lastPhoneNumber}
-                handleResendCode={handleResendCode}
-                handleBackToPhone={handleBackToPhone}
-              />
-            )}
-          </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="auth-modal-overlay">
+      <div className="auth-modal">
+        <button className="auth-modal-close" onClick={closeModal}>×</button>
+        <div className="auth-modal-content">
+          {isLogin ? (
+            <LoginForm
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleAuthSubmit={handleAuthSubmit}
+              handleGoogleSignIn={handleGoogleSignIn}
+              loading={loading}
+              toggleMode={toggleMode}
+              setShowResetPassword={setShowResetPassword}
+              formError={formError}
+              fieldErrors={fieldErrors}
+              isPhoneAuth={isPhoneAuth}
+              showVerificationCode={showVerificationCode}
+              toggleAuthMethod={toggleAuthMethod}
+              resendTimer={resendTimer}
+              lastPhoneNumber={lastPhoneNumber}
+              handleResendCode={handleResendCode}
+              handleBackToPhone={handleBackToPhone}
+              title="Autentificare"
+              subtitle="Trebuie să te autentifici pentru a genera manele."
+            />
+          ) : (
+            <SignupForm
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleAuthSubmit={handleAuthSubmit}
+              handleGoogleSignIn={handleGoogleSignIn}
+              loading={loading}
+              toggleMode={toggleMode}
+              formError={formError}
+              fieldErrors={fieldErrors}
+              isPhoneAuth={isPhoneAuth}
+              showVerificationCode={showVerificationCode}
+              toggleAuthMethod={toggleAuthMethod}
+              resendTimer={resendTimer}
+              lastPhoneNumber={lastPhoneNumber}
+              handleResendCode={handleResendCode}
+              handleBackToPhone={handleBackToPhone}
+              title="Înregistrare"
+              subtitle="Trebuie să te autentifici pentru a genera manele."
+            />
+          )}
+        </div>
       </div>
     </div>
   );

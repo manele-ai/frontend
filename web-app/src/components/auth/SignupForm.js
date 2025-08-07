@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { PhoneInput } from './PhoneInput';
 
-export function SignupForm({ 
-  formData, 
-  handleInputChange, 
-  handleAuthSubmit, 
-  handleGoogleSignIn, 
-  loading, 
+export function SignupForm({
+  formData,
+  handleInputChange,
+  handleAuthSubmit,
+  handleGoogleSignIn,
+  loading,
   toggleMode,
   formError,
   fieldErrors,
@@ -15,7 +16,9 @@ export function SignupForm({
   resendTimer,
   lastPhoneNumber,
   handleResendCode,
-  handleBackToPhone
+  handleBackToPhone,
+  title = 'Înregistrare',
+  subtitle = 'Creează-ți contul pentru a începe să generezi manele.'
 }) {
   const inputRef = useRef(null);
 
@@ -80,18 +83,8 @@ export function SignupForm({
 
   return (
     <form onSubmit={handleAuthSubmit} className="auth-form">
-      <div className="input-group">
-        <input
-          type="text"
-          name="displayName"
-          placeholder="Nume complet"
-          value={formData.displayName}
-          onChange={handleInputChange}
-          className="auth-input"
-          required
-          ref={!isPhoneAuth ? inputRef : null}
-        />
-      </div>
+      <h1 className="auth-title">{title}</h1>
+      <p className="auth-subtitle">{subtitle}</p>
 
       <div className="auth-toggle-method">
         <button
@@ -110,22 +103,26 @@ export function SignupForm({
         </button>
       </div>
 
+      <div className="input-group">
+        <input
+          type="text"
+          name="displayName"
+          placeholder="Nume complet"
+          value={formData.displayName}
+          onChange={handleInputChange}
+          className="auth-input"
+          required
+          ref={!isPhoneAuth ? inputRef : null}
+        />
+      </div>
+
       {isPhoneAuth ? (
-        <div className="input-group">
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="Număr de telefon (ex: +40712345678)"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            className={`auth-input ${fieldErrors.phoneNumber ? 'auth-input-error' : ''}`}
-            required
-            ref={isPhoneAuth ? inputRef : null}
-          />
-          {fieldErrors.phoneNumber && (
-            <div className="field-error">{fieldErrors.phoneNumber}</div>
-          )}
-        </div>
+        <PhoneInput
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+          error={fieldErrors.phoneNumber}
+          autoFocus={false}
+        />
       ) : (
         <>
           <div className="input-group">
@@ -182,9 +179,19 @@ export function SignupForm({
         </span>
       </button>
 
+      <button
+        type="button"
+        onClick={toggleMode}
+        className="auth-link-button"
+      >
+        Ai deja cont? Autentifică-te
+      </button>
+
       {!isPhoneAuth && (
         <>
-          <div className="auth-divider"></div>
+          <div className="auth-divider">
+            <span>OR</span>
+          </div>
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -201,14 +208,6 @@ export function SignupForm({
           </button>
         </>
       )}
-
-      <button
-        type="button"
-        onClick={toggleMode}
-        className="auth-link-button"
-      >
-        Ai deja cont? Autentifică-te
-      </button>
     </form>
   );
 } 

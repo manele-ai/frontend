@@ -15,7 +15,7 @@ jobs:
           # These are public, don't worry
           FIREBASE_REGION: europe-central2
           FIREBASE_PROJECT_ID: manele-io-test
-          REACT_APP_STRIPE_PUBLISHABLE_KEY: pk_test_51RoNSY52PGkk7WNvAXBljO2IYGljmOW5dLgiJ1cdnEHRcgkCtHDsuD3v93bvpE9mNpXNGUU0fq38banmvAP0rRwB00newRAyiz
+          REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
           REACT_APP_FIREBASE_API_KEY: AIzaSyAd-_OJQfpGyMBh9wKA_526ZtMUvMOUtqQ
           REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-test.firebaseapp.com
           REACT_APP_FIREBASE_PROJECT_ID: manele-io-test
