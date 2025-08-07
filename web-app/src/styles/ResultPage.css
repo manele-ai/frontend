@@ -616,16 +616,18 @@
 }
 
 .song-lyrics-standalone-content {
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
+  max-height: 120px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .song-lyrics-standalone-text {
   color: #FFF;
   font-family: Satoshi;
-  font-size: 10px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -934,6 +936,15 @@
     font-size: 12px;
   }
 
+  .song-lyrics-standalone-content {
+    max-height: 100px;
+    padding: 12px;
+  }
+
+  .song-lyrics-standalone-text {
+    font-size: 12px;
+  }
+
   .song-dedication-inline {
     margin-top: 12px;
     padding-top: 12px;
@@ -1053,6 +1064,15 @@
 
   .song-lyrics-inline .song-lyrics-text {
     font-size: 11px;
+  }
+
+  .song-lyrics-standalone-content {
+    max-height: 80px;
+    padding: 10px;
+  }
+
+  .song-lyrics-standalone-text {
+    font-size: 12px;
   }
 
   .song-dedication-inline {

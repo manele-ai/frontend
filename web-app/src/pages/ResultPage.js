@@ -500,7 +500,16 @@ export default function ResultPage() {
                 {memoizedAudioPlayer}
               </div>
               
-              {/* Spațiu între player și butoane */}
+              {/* Versurile piesei - între player și butoane */}
+              {songLyrics && (
+                <div className="song-lyrics-standalone">
+                  <div className="song-lyrics-standalone-content">
+                    <p className="song-lyrics-standalone-text">{songLyrics}</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Spațiu între versuri și butoane */}
               <div style={{ marginBottom: 16 }} />
               {canDownload && (
                 <Button
@@ -523,18 +532,8 @@ export default function ResultPage() {
           ) : (
             <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
           )}
+                  </div>
         </div>
-
-        {/* Versurile melodiei - sub player, în afara cardului */}
-        {shouldRenderPlayer && songLyrics && (
-          <div className="song-lyrics-standalone">
-            <h3 className="song-lyrics-standalone-title">Versurile piesei</h3>
-            <div className="song-lyrics-standalone-content">
-              <p className="song-lyrics-standalone-text">{songLyrics}</p>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 } 
