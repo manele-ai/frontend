@@ -89,14 +89,14 @@
 }
 
 .song-style-name {
-  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background: rgba(158, 158, 158, 1);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
   font-family: 'Satoshi', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 400;
   margin: 0 0 8px 0;
 }
 
@@ -292,16 +292,10 @@
 .result-page .result-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding-top: 20px;
-  padding-bottom: 24px;
+  background-color: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -313,7 +307,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
   z-index: 1;
   pointer-events: none;
 }
@@ -354,7 +347,11 @@
 }
 
 .loading-gif-overlay .title {
-  color: #eab111;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-family: 'Satoshi', sans-serif;
   font-size: 24px;
   font-weight: 700;
@@ -448,31 +445,30 @@
 }
 
 .player-box {
-  width: 100%;
-  max-width: 600px;
-  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
-  border-radius: 20px;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
+  width: 350px;
+  padding: 19px 19px 19px 19px;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 10px;
+  border-radius: 20px;
+  background: #1F1F1F;
+  box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.25);
 }
 
 .player-song-title {
-  color: #000;
+  color: #fff;
   font-family: 'Satoshi', sans-serif;
-  font-size: 40px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0 0 20px 0;
   text-align: center;
   line-height: 1.2;
 }
 
 .song-artwork {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   border-radius: 12px;
   margin: 0 auto 20px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -592,14 +588,50 @@
 }
 
 .result-player-container {
-  background: rgb(26 26 26);
-  ;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px 0;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10px;
+  align-self: stretch;
+  border-radius: 8px;
+  background: #1F1F1F;
+}
+
+/* Versurile melodiei - standalone, sub player */
+.song-lyrics-standalone {
+  margin-top: 24px;
   width: 100%;
-  max-width: 420px;
+  max-width: 350px;
+}
+
+.song-lyrics-standalone-title {
+  color: #FFF;
+  font-family: Satoshi;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.song-lyrics-standalone-content {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+}
+
+.song-lyrics-standalone-text {
+  color: #FFF;
+  font-family: Satoshi;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0;
+  white-space: pre-wrap;
+  text-align: center;
 }
 
 /* Song Style Inline Section (inside player box) */

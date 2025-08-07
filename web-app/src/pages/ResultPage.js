@@ -13,7 +13,7 @@ import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
-const TIMEOUT_DURATION = 0.5 * 60 * 1000; // 5 minutes
+const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export default function ResultPage() {
   const location = useLocation();
@@ -155,7 +155,6 @@ export default function ResultPage() {
             if (!snap.exists()) return;
             const data = snap.data();
 
-            console.log('Task status update:', data.status, data);
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
@@ -163,10 +162,7 @@ export default function ResultPage() {
               case 'partial':
               case 'completed':
                 if (data.songId) {
-                  console.log('Setting songId:', data.songId);
                   setSongId(data.songId);
-                } else {
-                  console.log('No songId in task data');
                 }
                 break;
               case 'failed':
@@ -203,7 +199,6 @@ export default function ResultPage() {
 
   // ---- Listen to song document when songId available ----
   useEffect(() => {
-    console.log('songId changed:', songId);
     if (!songId) return;
 
     let unsubscribe = null;
@@ -225,12 +220,7 @@ export default function ResultPage() {
               if (songData && songData.apiData && songData.apiData.title) {
                 localStorage.removeItem('resultPageLoadingProgress');
                 localStorage.removeItem('resultPageRequestId');
-                console.log('Song is complete, cleared localStorage');
-              } else {
-                console.log('Song data incomplete');
               }
-            } else {
-              console.log('Song document does not exist');
             }
           },
           (err) => {
@@ -259,11 +249,9 @@ export default function ResultPage() {
 
   // Add loading progress animation and timeout
   useEffect(() => {
-    console.log('Loading effect - songData:', songData);
     if (songData) {
       // Clear loading progress when song is loaded
       localStorage.removeItem('resultPageLoadingProgress');
-      console.log('Song data available, stopping loading animation');
       return;
     }
 
@@ -333,8 +321,16 @@ export default function ResultPage() {
 
   // Get song lyrics from API data
   const getSongLyrics = () => {
-    if (!songData?.apiData?.lyrics) return null;
-    return songData.apiData.lyrics;
+    // Try multiple possible locations for lyrics
+    const lyrics = songData?.apiData?.prompt || 
+                   songData?.generatedLyrics || 
+                   songData?.lyrics ||
+                   songData?.userGenerationInput?.lyricsDetails;
+    
+    if (!lyrics) {
+      return null;
+    }
+    return lyrics;
   };
 
   // Get dedication from user input
@@ -361,12 +357,10 @@ export default function ResultPage() {
         audioUrl = songData.storage.url;
       }
       
-      console.log('First audioUrl:', audioUrl);
       if (audioUrl) {
         // Only set stable URL once - keep the first URL we get
         setStableAudioUrl(audioUrl);
         setHasStableUrl(true);
-        console.log('Set stable URL (first URL):', audioUrl);
       }
     }
   }, [songData, hasStableUrl]);
@@ -421,7 +415,6 @@ export default function ResultPage() {
   }
 
   // Show loading state while waiting for song or status
-  console.log('Rendering with songData:', songData, 'stableAudioUrl:', stableAudioUrl);
   if (!songData) {
     return (
       <div 
@@ -476,90 +469,27 @@ export default function ResultPage() {
         backgroundRepeat: 'repeat',
       }}
     >
-      <div className="result-container"
-      style={{
-        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
-        backgroundSize: '30%',
-        backgroundPosition: '0 0',
-        backgroundRepeat: 'repeat',
-      }}>
+      <div className="result-container">
   
        
         <div className="player-box">
-          <h2 className="player-song-title">{songData.apiData.title || 'Piesa ta e gata!'}</h2>
           <img
             src={songData.apiData.imageUrl || 'https://via.placeholder.com/150'}
             alt="Song artwork"
             className="song-artwork"
           />
+          <h2 className="player-song-title">{songData.apiData.title || 'Piesa ta e gata!'}</h2>
+          <h4 className="song-style-name">{songStyle.title}</h4>
           
           {shouldRenderPlayer ? (
             <>
               {/* Player audio încadrat într-un container cu fundal gri */}
               <div className="result-player-container">
                 {memoizedAudioPlayer}
-              {/* Song Style Section - inside the same card */}
-              {songStyle && (
-                <div className="song-style-inline">
-                  <h3 className="song-style-title">Stilul melodiei</h3>
-                  <div className="song-style-card">
-                    <img 
-                      src={songStyle.image} 
-                      alt={songStyle.title}
-                      className="song-style-image"
-                    />
-                    <div className="song-style-info">
-                      <h4 className="song-style-name">{songStyle.title}</h4>
-                      <p className="song-style-description">{songStyle.description}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Song Lyrics Section - inside the same card */}
-                  {songLyrics && (
-                    <div className="song-lyrics-inline">
-                      <h3 className="song-lyrics-title">Versurile piesei</h3>
-                      <div className="song-lyrics-content">
-                        <p className="song-lyrics-text">{songLyrics}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Dedication Section - inside the same card */}
-                  {dedication && (
-                    <div className="song-dedication-inline">
-                      <h3 className="song-dedication-title">Dedicația</h3>
-                      <div className="song-dedication-content">
-                        <p className="song-dedication-text">{dedication}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Donation Section - inside the same card */}
-                  {donation && (
-                    <div className="song-donation-inline">
-                      <h3 className="song-donation-title">Donația</h3>
-                      <div className="song-donation-content">
-                        <p className="song-donation-text">{donation} RON</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
               </div>
               
-
-              {/* Song Lyrics Section - standalone (if no style) */}
-              {!songStyle && songLyrics && (
-                <div className="song-lyrics-inline">
-                  <h3 className="song-lyrics-title">Versurile piesei</h3>
-                  <div className="song-lyrics-content">
-                    <p className="song-lyrics-text">{songLyrics}</p>
-                  </div>
-                </div>
-              )}
-              
               {/* Spațiu între player și butoane */}
-              <div style={{ marginBottom: 28 }} />
+              <div style={{ marginBottom: 16 }} />
               {canDownload && (
                 <Button
                   className="hero-btn"
@@ -582,6 +512,16 @@ export default function ResultPage() {
             <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
           )}
         </div>
+
+        {/* Versurile melodiei - sub player, în afara cardului */}
+        {shouldRenderPlayer && songLyrics && (
+          <div className="song-lyrics-standalone">
+            <h3 className="song-lyrics-standalone-title">Versurile piesei</h3>
+            <div className="song-lyrics-standalone-content">
+              <p className="song-lyrics-standalone-text">{songLyrics}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
