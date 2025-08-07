@@ -13,7 +13,7 @@ import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
-const TIMEOUT_DURATION = 0.5 * 60 * 1000; // 5 minutes
+const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export default function ResultPage() {
   const location = useLocation();
@@ -77,6 +77,7 @@ export default function ResultPage() {
   // Use a stable audio URL to prevent player reload
   const [stableAudioUrl, setStableAudioUrl] = useState(null);
   const [hasStableUrl, setHasStableUrl] = useState(false);
+  const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -156,15 +157,23 @@ export default function ResultPage() {
             const data = snap.data();
 
             console.log('Task status update:', data.status, data);
+            
+            // Extrage versurile dacă există în data
+            if (data.lyrics) {
+              console.log('Lyrics found in task data:', data.lyrics);
+              // Salvează versurile în state
+              setCurrentSongLyrics(data.lyrics);
+            }
+            
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
                 break;
               case 'partial':
               case 'completed':
-                if (data.songId) {
-                  console.log('Setting songId:', data.songId);
-                  setSongId(data.songId);
+                if (data.songIds) {
+                  console.log('Setting songId:', data.songIds[0]);
+                  setSongId(data.songIds[0]);
                 } else {
                   console.log('No songId in task data');
                 }
@@ -331,8 +340,15 @@ export default function ResultPage() {
     return style;
   };
 
-  // Get song lyrics from API data
+  // Get song lyrics from state or API data
   const getSongLyrics = () => {
+    // Încearcă să citească versurile din state (din taskStatuses)
+    if (currentSongLyrics) {
+      console.log('Lyrics found in state:', currentSongLyrics);
+      return currentSongLyrics;
+    }
+    
+    // Fallback la versurile din API data
     if (!songData?.apiData?.lyrics) return null;
     return songData.apiData.lyrics;
   };
