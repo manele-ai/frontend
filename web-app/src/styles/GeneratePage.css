@@ -145,12 +145,29 @@
 
 /* Stiluri pentru butonul hero (specifice pentru GeneratePage) */
 .generate-page .hero-btn.button {
+  /* box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: none;
+  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit; */
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
   background: #1F1F1F;
   box-shadow: -1px 2px 0px 0px #000;
   padding: 0;
@@ -165,15 +182,10 @@
   letter-spacing: inherit;
 }
 
-.generate-page .hero-btn.button:hover {
-  background: #2a2a2a;
-  transform: translateY(-1px);
-  box-shadow: -1px 3px 2px 0px #000;
-}
 
 .generate-page .hero-btn.button:active {
   transform: translateY(0);
-  box-shadow: -1px 1px 0px 0px #000;
+  box-shadow: 0 2px 10px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .generate-page .hero-section-button {
@@ -268,7 +280,11 @@
 }
 
 .generate-page .mode-slider-option:hover {
-  color: #eab111;
+  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   transform: translateY(-1px);
 }
 
@@ -484,29 +500,6 @@
   align-self: stretch;
 }
 
-/* Button styles - specific for generate page buttons */
-.generate-page .generate-back-button,
-.generate-page .generate-button {
-  width: 190.8px;
-  height: 51.675px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
-  background: #1F1F1F;
-  box-shadow: -1px 2px 0px 0px #000;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: transparent;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-  margin: 0;
-}
 
 .generate-page .buttons-container {
   display: flex;

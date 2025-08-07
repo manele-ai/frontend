@@ -137,27 +137,6 @@
   position: relative;
 }
 
-/* Stiluri pentru butonul hero (specifice pentru HomePage) */
-.home-page .hero-btn.button {
-  box-sizing: border-box;
-  width: 190.8px;
-  height: 51.675px;
-  flex-shrink: 0;
-  border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
-  background: #1F1F1F;
-  box-shadow: -1px 2px 0px 0px #000;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: transparent;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-}
 
 .home-page .hero-btn.button:hover {
   background: #2a2a2a;
@@ -190,6 +169,11 @@
   background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
   color: #000000;
   font-weight: 600;
+  box-sizing: border-box;
+  width: 190.8px;
+  height: 51.675px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
   border: 2px solid #B8860B;
   box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
@@ -200,10 +184,14 @@
   overflow: hidden;
 }
 
-.home-page .subscription-btn:hover {
+.home-page .subscription-btn.button:hover { 
+  background: linear-gradient(135deg, #FFE135 0%, #FFD700 30%, #FFE135 50%, #FFD700 70%, #FFE135 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
 }
+
+
+
 
 /* Override global .hero-btn-text for subscription button */
 .home-page .subscription-btn span {
@@ -227,7 +215,6 @@
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
   background: #1F1F1F;
   box-shadow: -1px 2px 0px 0px #000;
   padding: 0;
@@ -241,6 +228,8 @@
   font-weight: inherit;
   letter-spacing: inherit;
 }
+
+
 
 .home-page .hero-section-button:hover {
   background: #2a2a2a;
@@ -726,7 +715,7 @@
 
 /* Stiluri responsive pentru butoanele hero din HomePage pe ecrane foarte mici */
 .home-page .hero-btn.button {
-  width: 140px;
+  /* width: 140px; */
   height: 40px;
 }
 

@@ -117,7 +117,7 @@ export default function HomePage() {
               </Button>
               {!isSubscribed && (
                 <Button 
-                  className="hero-btn hero-section-button"
+                  className="hero-btn subscription-btn"
                   onClick={onClickSubscription}
                 >
                   <span className="hero-btn-text">Abonează-te</span>
