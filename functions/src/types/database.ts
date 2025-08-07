@@ -63,6 +63,10 @@ export namespace Database {
       'no_payment'
       | 'balance'
       | 'onetime';
+    aruncaCuBaniPaymentType:
+      'no_payment'
+      | 'balance'
+      | 'onetime';
     aruncaCuBaniAmountToPay?: number;
     shouldFulfillDedication?: boolean;
     shouldFulfillAruncaCuBani?: boolean;
