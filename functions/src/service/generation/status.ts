@@ -1,30 +1,11 @@
-import { FieldValue } from "firebase-admin/firestore";
+import { DocumentReference, DocumentSnapshot, FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { getTaskStatus } from "../../api/music";
 import { db } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
 import { FAILURE_STATUSES, hasAdvanced, mapExternalStatus, SUCCESS_STATUSES } from "../../handlers/utils/status";
-import { Database } from "../../types";
+import { Database, MusicApi } from "../../types";
 import { handleGenerationFailed } from "./failure";
-
-/**
- * Recursively removes keys with `undefined` values.
- *   • Leaves 0, false, null, '' intact (they’re valid Firestore values)
- *   • Handles nested objects/arrays
- */
-function dropUndefined<T>(input: T): T {
-    if (Array.isArray(input)) {
-      return input.map(dropUndefined) as unknown as T;
-    }
-    if (input && typeof input === "object") {
-      return Object.fromEntries(
-        Object.entries(input)
-              .filter(([, v]) => v !== undefined)
-              .map(([k, v]) => [k, dropUndefined(v)])
-      ) as T;
-    }
-    return input;
-}
 
 export async function getGenerationStatus(taskId: string): Promise<{
     shouldRetry: boolean;
@@ -81,51 +62,14 @@ export async function getGenerationStatus(taskId: string): Promise<{
     }
 
     if (SUCCESS_STATUSES.includes(latestExternalStatus) && response.sunoData) {
-      const songApiData = response.sunoData[0];
-      const filteredSongApiData = dropUndefined(songApiData);
-      // TODO: better check in task for songIds
-      const existingSongQuery = await db.collection(COLLECTIONS.SONGS)
-        .where('externalId', '==', songApiData.id)
-        .limit(1)
-        .get();
-
-      const batch = db.batch();
-      let songId: string;
-      if (!existingSongQuery.empty) {
-        // Song already exists in db, update with new data
-        const existingSongDoc = existingSongQuery.docs[0];
-        songId = existingSongDoc.id;
-        batch.update(existingSongDoc.ref, {
-          updatedAt: FieldValue.serverTimestamp(),
-          apiData: filteredSongApiData, // Overwrite entire map with new data
-        });
-      } else {
-        // First time creating this song in db
-        const newSongRef = db.collection(COLLECTIONS.SONGS).doc();
-        songId = newSongRef.id;
-        batch.set(newSongRef, {
-          externalId: songApiData.id,
-          taskId,
-          externalTaskId,
-          userId,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-          userGenerationInput,
-          apiData: filteredSongApiData,
-        } as Database.SongData);
-      }
-      // Finally, update task and taskStatus to reflect success
-      batch.update(taskRef, {
-        externalStatus: latestExternalStatus,
-        songId,
-        updatedAt: FieldValue.serverTimestamp(),
+      await addSongDataInDB({
+        songData: response.sunoData,
+        taskRef,
+        taskDoc,
+        latestExternalStatus,
+        userGenerationInput,
       });
-      batch.update(db.collection(COLLECTIONS.TASK_STATUSES).doc(taskRef.id), {
-        status: mapExternalStatus(latestExternalStatus).status,
-        songId,
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-      await batch.commit();
+      
       if (latestExternalStatus === "SUCCESS") {
         return {shouldRetry: false, status: "completed"};
       } else if (["TEXT_SUCCESS", "FIRST_SUCCESS"].includes(latestExternalStatus)) {
@@ -135,4 +79,97 @@ export async function getGenerationStatus(taskId: string): Promise<{
     }
     // Should never happen, but just in case
     return {shouldRetry: true, status: "processing"};
+}
+
+/**
+ * Recursively removes keys with `undefined` values.
+ *   • Leaves 0, false, null, '' intact (they’re valid Firestore values)
+ *   • Handles nested objects/arrays
+ */
+function dropUndefined<T>(input: T): T {
+  if (Array.isArray(input)) {
+    return input.map(dropUndefined) as unknown as T;
+  }
+  if (input && typeof input === "object") {
+    return Object.fromEntries(
+      Object.entries(input)
+            .filter(([, v]) => v !== undefined)
+            .map(([k, v]) => [k, dropUndefined(v)])
+    ) as T;
+  }
+  return input;
+}
+
+async function addSongDataInDB({
+    songData,
+    taskRef,
+    taskDoc,
+    latestExternalStatus,
+    userGenerationInput,
+  }: {
+    songData: MusicApi.SunoData[],
+    taskRef: DocumentReference,
+    taskDoc: DocumentSnapshot,
+    latestExternalStatus: MusicApi.TaskStatus,
+    userGenerationInput: Database.UserGenerationInput,
+}) {
+  const taskData = taskDoc.data() as Database.GenerateSongTask;
+  const songApiData = songData[0];
+  const filteredSongApiData = dropUndefined(songApiData);
+
+  await db.runTransaction(async (transaction) => {
+    const songQueries = songData.map((s) => 
+      db.collection(COLLECTIONS.SONGS)
+        .where('externalId', '==', s.id)
+        .limit(1)
+    );
+    // Read both documents in transaction
+    const existingSongSnapshots = await Promise.all(
+      songQueries.map((q) => transaction.get(q))
+    );
+
+    const songIdsDB: string[] = [];
+    existingSongSnapshots.forEach((snapshot) => {
+      let songId: string;
+      if (!snapshot.empty) {
+        // Song already exists in db, update with new data
+        const existingSongDoc = snapshot.docs[0];
+        songId = existingSongDoc.id;
+        transaction.update(existingSongDoc.ref, {
+          updatedAt: FieldValue.serverTimestamp(),
+          apiData: filteredSongApiData, // Overwrite entire map with new data
+        });
+      } else {
+        // First time creating this song in db
+        const newSongRef = db.collection(COLLECTIONS.SONGS).doc();
+        songId = newSongRef.id;
+        transaction.set(newSongRef, {
+          externalId: songApiData.id,
+          taskId: taskRef.id,
+          externalTaskId: taskData.externalId,
+          userId: taskData.userId,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+          userGenerationInput,
+          apiData: filteredSongApiData,
+        } as Database.SongData);
+      }
+      songIdsDB.push(songId);
+    });
+
+    // If we received two songs, then both of them are now in the db
+    // Update task and taskStatus to reflect success
+    transaction.update(taskRef, {
+      externalStatus: latestExternalStatus,
+      songIds: FieldValue.arrayUnion(...songIdsDB),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    const taskStatusRef = db.collection(COLLECTIONS.TASK_STATUSES).doc(taskRef.id);
+    transaction.update(taskStatusRef, {
+      status: mapExternalStatus(latestExternalStatus).status,
+      songIds: FieldValue.arrayUnion(...songIdsDB),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  });
 }

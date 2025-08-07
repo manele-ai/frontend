@@ -77,6 +77,7 @@ export default function ResultPage() {
   // Use a stable audio URL to prevent player reload
   const [stableAudioUrl, setStableAudioUrl] = useState(null);
   const [hasStableUrl, setHasStableUrl] = useState(false);
+  const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -155,19 +156,52 @@ export default function ResultPage() {
             if (!snap.exists()) return;
             const data = snap.data();
 
+            console.log('Task status update:', data.status, data);
+            
+            // Extrage versurile dacă există în data
+            if (data.lyrics) {
+              console.log('Lyrics found in task data:', data.lyrics);
+              // Salvează versurile în state
+              setCurrentSongLyrics(data.lyrics);
+            }
+            
             switch (data.status) {
               case 'processing':
                 setStatusMsg('AI-ul compune piesa...');
                 break;
               case 'partial':
               case 'completed':
-                if (data.songId) {
-                  setSongId(data.songId);
+                if (data.songIds && data.songIds.length > 0) {
+                  console.log('Setting songId:', data.songIds[0]);
+                  console.log('Total songs generated:', data.songIds.length);
+                  setSongId(data.songIds[0]);
+                  
+                  // Dacă avem mai multe piese, putem afișa un mesaj informativ
+                  if (data.songIds.length > 1) {
+                    console.log('Multiple songs available:', data.songIds);
+                  }
+                } else {
+                  console.log('No songId in task data');
                 }
                 break;
               case 'failed':
-                // Set error state for UI
-                setError(data.error || 'Generarea a eșuat.');
+                // Verifică dacă toate piesele au eșuat înainte de a arunca eroarea
+                if (data.songIds && data.songIds.length > 0) {
+                  // Dacă avem songIds, înseamnă că cel puțin o piesă s-a generat cu succes
+                  // Nu aruncăm eroare dacă avem cel puțin o piesă disponibilă
+                  console.log('Some songs failed but we have songIds, not showing error');
+                  console.log('Available songs:', data.songIds.length);
+                  setSongId(data.songIds[0]);
+                  
+                  // Opțional: putem afișa un mesaj că doar o parte din piese s-au generat
+                  if (data.songIds.length < 2) {
+                    console.log('Partial success: only', data.songIds.length, 'song(s) generated');
+                  }
+                } else {
+                  // Dacă nu avem songIds deloc, atunci toate piesele au eșuat
+                  console.log('All songs failed, showing error');
+                  setError(data.error || 'Generarea a eșuat pentru toate piesele.');
+                }
                 break;
               default:
                 break;
@@ -293,14 +327,17 @@ export default function ResultPage() {
   };
 
   const handleDownload = async () => {
-    if (!songData?.storage?.url) {
+    // Verifică toate URL-urile posibile pentru download
+    const downloadUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
+    
+    if (!downloadUrl) {
       console.error('No download URL available');
       return;
     }
 
     setIsDownloading(true);
     try {
-      downloadFile(songData.storage.url, `${songData.apiData.title || 'manea'}.mp3`);
+      downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
       console.error("Failed to download song:", error);
       setError("Failed to download song. Please try again.");
@@ -319,18 +356,17 @@ export default function ResultPage() {
     return style;
   };
 
-  // Get song lyrics from API data
+  // Get song lyrics from state or API data
   const getSongLyrics = () => {
-    // Try multiple possible locations for lyrics
-    const lyrics = songData?.apiData?.prompt || 
-                   songData?.generatedLyrics || 
-                   songData?.lyrics ||
-                   songData?.userGenerationInput?.lyricsDetails;
-    
-    if (!lyrics) {
-      return null;
+    // Încearcă să citească versurile din state (din taskStatuses)
+    if (currentSongLyrics) {
+      console.log('Lyrics found in state:', currentSongLyrics);
+      return currentSongLyrics;
     }
-    return lyrics;
+    
+    // Fallback la versurile din API data
+    if (!songData?.apiData?.lyrics) return null;
+    return songData.apiData.lyrics;
   };
 
   // Get dedication from user input
@@ -453,7 +489,16 @@ export default function ResultPage() {
     );
   }
 
-  const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
+  const canDownload = songData.storage?.url || songData.apiData?.audioUrl || songData.apiData?.streamAudioUrl;
+  
+  // Debug log pentru a vedea ce URL-uri sunt disponibile
+  console.log('Download URLs available:', {
+    storage: songData.storage?.url,
+    audioUrl: songData.apiData?.audioUrl,
+    streamAudioUrl: songData.apiData?.streamAudioUrl,
+    canDownload
+  });
+  
   const songStyle = getSongStyle();
   const songLyrics = getSongLyrics();
   const dedication = getDedication();
@@ -488,7 +533,16 @@ export default function ResultPage() {
                 {memoizedAudioPlayer}
               </div>
               
-              {/* Spațiu între player și butoane */}
+              {/* Versurile piesei - între player și butoane */}
+              {songLyrics && (
+                <div className="song-lyrics-standalone">
+                  <div className="song-lyrics-standalone-content">
+                    <p className="song-lyrics-standalone-text">{songLyrics}</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Spațiu între versuri și butoane */}
               <div style={{ marginBottom: 16 }} />
               {canDownload && (
                 <Button
@@ -511,18 +565,8 @@ export default function ResultPage() {
           ) : (
             <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
           )}
+                  </div>
         </div>
-
-        {/* Versurile melodiei - sub player, în afara cardului */}
-        {shouldRenderPlayer && songLyrics && (
-          <div className="song-lyrics-standalone">
-            <h3 className="song-lyrics-standalone-title">Versurile piesei</h3>
-            <div className="song-lyrics-standalone-content">
-              <p className="song-lyrics-standalone-text">{songLyrics}</p>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 } 
