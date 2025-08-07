@@ -181,11 +181,10 @@
 /* Stiluri pentru butonul hero (specifice pentru ResultPage) */
 .result-page .hero-btn.button {
   box-sizing: border-box;
-  width: 280px;
+  width: 300px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
-  border: 0.5px solid #F4F1E4;
   background: #1F1F1F;
   box-shadow: -1px 2px 0px 0px #000;
   padding: 0;
@@ -198,7 +197,6 @@
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: inherit;
-  margin: 0 auto;
 }
 
 .result-page .hero-btn.button:hover {
@@ -617,16 +615,20 @@
 
 .song-lyrics-standalone-content {
   border-radius: 8px;
-  padding: 16px;
+  padding: 10px;
   max-height: 120px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 5px 10px 0 rgba(0, 0, 0, 0.3);
 }
 
 .song-lyrics-standalone-text {
-  color: #FFF;
-  font-family: Satoshi;
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

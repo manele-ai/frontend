@@ -171,16 +171,37 @@ export default function ResultPage() {
                 break;
               case 'partial':
               case 'completed':
-                if (data.songIds) {
+                if (data.songIds && data.songIds.length > 0) {
                   console.log('Setting songId:', data.songIds[0]);
+                  console.log('Total songs generated:', data.songIds.length);
                   setSongId(data.songIds[0]);
+                  
+                  // Dacă avem mai multe piese, putem afișa un mesaj informativ
+                  if (data.songIds.length > 1) {
+                    console.log('Multiple songs available:', data.songIds);
+                  }
                 } else {
                   console.log('No songId in task data');
                 }
                 break;
               case 'failed':
-                // Set error state for UI
-                setError(data.error || 'Generarea a eșuat.');
+                // Verifică dacă toate piesele au eșuat înainte de a arunca eroarea
+                if (data.songIds && data.songIds.length > 0) {
+                  // Dacă avem songIds, înseamnă că cel puțin o piesă s-a generat cu succes
+                  // Nu aruncăm eroare dacă avem cel puțin o piesă disponibilă
+                  console.log('Some songs failed but we have songIds, not showing error');
+                  console.log('Available songs:', data.songIds.length);
+                  setSongId(data.songIds[0]);
+                  
+                  // Opțional: putem afișa un mesaj că doar o parte din piese s-au generat
+                  if (data.songIds.length < 2) {
+                    console.log('Partial success: only', data.songIds.length, 'song(s) generated');
+                  }
+                } else {
+                  // Dacă nu avem songIds deloc, atunci toate piesele au eșuat
+                  console.log('All songs failed, showing error');
+                  setError(data.error || 'Generarea a eșuat pentru toate piesele.');
+                }
                 break;
               default:
                 break;
@@ -306,14 +327,17 @@ export default function ResultPage() {
   };
 
   const handleDownload = async () => {
-    if (!songData?.storage?.url) {
+    // Verifică toate URL-urile posibile pentru download
+    const downloadUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
+    
+    if (!downloadUrl) {
       console.error('No download URL available');
       return;
     }
 
     setIsDownloading(true);
     try {
-      downloadFile(songData.storage.url, `${songData.apiData.title || 'manea'}.mp3`);
+      downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
       console.error("Failed to download song:", error);
       setError("Failed to download song. Please try again.");
@@ -465,7 +489,16 @@ export default function ResultPage() {
     );
   }
 
-  const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
+  const canDownload = songData.storage?.url || songData.apiData?.audioUrl || songData.apiData?.streamAudioUrl;
+  
+  // Debug log pentru a vedea ce URL-uri sunt disponibile
+  console.log('Download URLs available:', {
+    storage: songData.storage?.url,
+    audioUrl: songData.apiData?.audioUrl,
+    streamAudioUrl: songData.apiData?.streamAudioUrl,
+    canDownload
+  });
+  
   const songStyle = getSongStyle();
   const songLyrics = getSongLyrics();
   const dedication = getDedication();

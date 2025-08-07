@@ -369,9 +369,6 @@ export default function EasyModeForm({ onBack }) {
 
       {/* Buttons */}
       <div className="buttons-container">
-        <button className="hero-btn button generate-back-button" onClick={onBack}>
-          <span className="hero-btn-text">Înapoi</span>
-        </button>
         <button 
           className="hero-btn button generate-button" 
           onClick={handleGenerateOrGoToPay}
