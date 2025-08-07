@@ -354,7 +354,11 @@
 }
 
 .loading-gif-overlay .title {
-  color: #eab111;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-family: 'Satoshi', sans-serif;
   font-size: 24px;
   font-weight: 700;
