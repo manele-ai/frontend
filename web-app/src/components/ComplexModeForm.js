@@ -5,6 +5,7 @@ import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import { useAuth } from './auth/AuthContext';
+import AuthModal from './auth/AuthModal';
 
 // Constante pentru localStorage - Complex Mode
 const COMPLEX_FORM_DATA_KEYS = {
@@ -671,15 +672,11 @@ export default function ComplexModeForm({ onBack }) {
       {error && <div className="error-message">{error}</div>}
 
       {/* Auth Modal Component */}
-      {showAuthModal && (
-        <div className="auth-modal-overlay">
-          <div className="auth-modal">
-            <h3>Autentificare necesară</h3>
-            <p>Te rugăm să te autentifici pentru a continua.</p>
-            <button onClick={() => setShowAuthModal(false)}>Închide</button>
-          </div>
-        </div>
-      )}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }
