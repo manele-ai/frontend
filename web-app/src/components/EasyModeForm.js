@@ -94,6 +94,15 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
       const loadedStyle = safeParse(EASY_FORM_DATA_KEYS.SELECTED_STYLE, null);
       const loadedSongName = safeGetString(EASY_FORM_DATA_KEYS.SONG_NAME, '');
       
+      // Verifică dacă există date reale pentru a încărca
+      const hasRealData = loadedStyle || (loadedSongName && loadedSongName.trim());
+      
+      if (!hasRealData) {
+        // Dacă nu există date reale, șterge IS_ACTIVE și nu încărca nimic
+        localStorage.removeItem(EASY_FORM_DATA_KEYS.IS_ACTIVE);
+        return false;
+      }
+      
       setSelectedStyle(loadedStyle);
       setSongName(loadedSongName);
       
@@ -125,26 +134,30 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
     }
   }, [user, isAuthenticated]);
 
+  // State pentru a ține evidența dacă datele au fost încărcate din localStorage
+  const [dataLoadedFromStorage, setDataLoadedFromStorage] = useState(false);
+
   // Încărcare date formular la mount
   useEffect(() => {
-    loadFormData();
+    const wasLoaded = loadFormData();
+    setDataLoadedFromStorage(wasLoaded);
   }, [loadFormData]);
 
-  // Salvare automată pentru selectedStyle
+  // Salvare automată pentru selectedStyle (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
-    if (selectedStyle && selectedStyle !== null) {
+    if (selectedStyle && selectedStyle !== null && !dataLoadedFromStorage) {
       saveFormData();
     }
-  }, [selectedStyle, saveFormData]);
+  }, [selectedStyle, saveFormData, dataLoadedFromStorage]);
 
-  // Salvare automată a datelor formularului
+  // Salvare automată a datelor formularului (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
     const hasRealData = (songName && songName.trim());
     
-    if (hasRealData) {
+    if (hasRealData && !dataLoadedFromStorage) {
       saveFormData();
     }
-  }, [songName, saveFormData]);
+  }, [songName, saveFormData, dataLoadedFromStorage]);
 
   // Update field errors
   useEffect(() => {

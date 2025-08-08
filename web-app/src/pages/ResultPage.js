@@ -145,7 +145,6 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
-              console.log('Song data received:', songData);
               
               setSongData(songData);
               
@@ -157,14 +156,12 @@ export default function ResultPage() {
             }
           },
           (err) => {
-            console.error('Song data listener error:', err);
             if (mounted.current) {
               setError('Eroare la încărcarea piesei.');
             }
           }
         );
       } catch (err) {
-        console.error('Setup song data listener error:', err);
         if (mounted.current) {
           setError('Eroare la inițializarea ascultătorului pentru piesă.');
         }
@@ -230,7 +227,6 @@ export default function ResultPage() {
     const downloadUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
     
     if (!downloadUrl) {
-      console.error('No download URL available');
       return;
     }
 
@@ -238,7 +234,6 @@ export default function ResultPage() {
     try {
       downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
-      console.error("Failed to download song:", error);
       setError("Failed to download song. Please try again.");
     } finally {
       setIsDownloading(false);
@@ -259,7 +254,6 @@ export default function ResultPage() {
   const getSongLyrics = () => {
     // Încearcă să citească versurile din state (din taskStatuses)
     if (currentSongLyrics) {
-      console.log('Lyrics found in state:', currentSongLyrics);
       return currentSongLyrics;
     }
     
@@ -280,7 +274,6 @@ export default function ResultPage() {
 
   // Set stable URL once we have a good audio URL - keep the first URL we get
   useEffect(() => {
-    console.log('songData changed:', songData);
     if (songData && !hasStableUrl) {
       // Get the first available URL (prefer stream URL for stability)
       let audioUrl = null;
@@ -391,12 +384,6 @@ export default function ResultPage() {
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl || songData.apiData?.streamAudioUrl;
   
   // Debug log pentru a vedea ce URL-uri sunt disponibile
-  console.log('Download URLs available:', {
-    storage: songData.storage?.url,
-    audioUrl: songData.apiData?.audioUrl,
-    streamAudioUrl: songData.apiData?.streamAudioUrl,
-    canDownload
-  });
   
   const songStyle = getSongStyle();
   const songLyrics = getSongLyrics();
