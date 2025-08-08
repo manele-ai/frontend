@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 // import UserMenu from '../auth/UserMenu';
 import './Header.css';
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -18,6 +20,9 @@ export default function Header() {
   };
 
   const isActive = (route) => {
+    if (route === '/profile' && !isAuthenticated) {
+      return location.pathname === '/auth';
+    }
     return location.pathname === route;
   };
 
@@ -54,16 +59,16 @@ export default function Header() {
             <span className="desktop-nav-text">TOPUL MANELISTILOR</span>
           </button>
           <button 
-            className={`desktop-nav-btn ${isActive('/profile') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/profile')}
-          >
-            <span className="desktop-nav-text">PROFIL</span>
-          </button>
-          <button 
             className={`desktop-nav-btn ${isActive('/tarife') ? 'active' : ''}`}
             onClick={() => handleNavigation('/tarife')}
           >
             <span className="desktop-nav-text">TARIFE</span>
+          </button>
+          <button 
+            className={`desktop-nav-btn ${isActive('/profile') ? 'active' : ''}`}
+            onClick={() => handleNavigation(isAuthenticated ? '/profile' : '/auth')}
+          >
+            <span className="desktop-nav-text">{isAuthenticated ? 'PROFIL' : 'LOGIN/REGISTER'}</span>
           </button>
         </nav>
       </div>
@@ -94,16 +99,16 @@ export default function Header() {
             <span className="mobile-nav-text">TOPUL MANELISTILOR</span>
           </button>
           <button 
-            className={`mobile-nav-btn ${isActive('/profile') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/profile')}
-          >
-            <span className="mobile-nav-text">PROFIL</span>
-          </button>
-          <button 
             className={`mobile-nav-btn ${isActive('/tarife') ? 'active' : ''}`}
             onClick={() => handleNavigation('/tarife')}
           >
             <span className="mobile-nav-text">TARIFE</span>
+          </button>
+          <button 
+            className={`mobile-nav-btn ${isActive('/profile') ? 'active' : ''}`}
+            onClick={() => handleNavigation(isAuthenticated ? '/profile' : '/auth')}
+          >
+            <span className="mobile-nav-text">{isAuthenticated ? 'PROFIL' : 'LOGIN/REGISTER'}</span>
           </button>
         </div>
       </div>
