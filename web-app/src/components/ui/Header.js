@@ -9,12 +9,17 @@ export default function Header() {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(location.pathname);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleNavigation = (route) => {
+    if (route === currentPage) {
+      return;
+    }
+    setCurrentPage(route);
     navigate(route);
     setIsMenuOpen(false);
   };
