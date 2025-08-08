@@ -48,6 +48,7 @@ export async function createGenerationRequestTransaction(
     const {
       songPaymentType,
       dedicationPaymentType,
+      aruncaCuBaniPaymentType,
       aruncaCuBaniAmountToPay,
       paymentStatus,
     } = determinePaymentTypes(
@@ -66,6 +67,7 @@ export async function createGenerationRequestTransaction(
       {
         songPaymentType,
         dedicationPaymentType,
+        aruncaCuBaniPaymentType,
         aruncaCuBaniAmountToPay,
       }
     );
@@ -78,6 +80,7 @@ export async function createGenerationRequestTransaction(
       paymentStatus,
       songPaymentType,
       dedicationPaymentType,
+      aruncaCuBaniPaymentType,
       aruncaCuBaniAmountToPay,
       createdAt: now as any,
       updatedAt: now as any,
@@ -130,6 +133,7 @@ function determinePaymentTypes(
 ): {
     songPaymentType: Database.GenerationRequest['songPaymentType'];
     dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'];
+    aruncaCuBaniPaymentType: Database.GenerationRequest['aruncaCuBaniPaymentType'];
     aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
     paymentStatus: Database.GenerationRequest['paymentStatus'];
   } {
@@ -161,15 +165,19 @@ function determinePaymentTypes(
     }
 
     // Check if arunca cu bani needs payment
+    let aruncaCuBaniPaymentType: Database.GenerationRequest['aruncaCuBaniPaymentType'];
     let aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
     if (shouldFulfillAruncaCuBani && aruncaCuBaniAmountToFulfill > 0) {
       if (userData.aruncaCuBaniBalance
         && (userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill) >= 0) {
-        aruncaCuBaniAmountToPay = userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill;
+          aruncaCuBaniPaymentType = 'balance';
+          aruncaCuBaniAmountToPay = userData.aruncaCuBaniBalance - aruncaCuBaniAmountToFulfill;
       } else {
+        aruncaCuBaniPaymentType = 'onetime';
         aruncaCuBaniAmountToPay = aruncaCuBaniAmountToFulfill;
       }
     } else {
+      aruncaCuBaniPaymentType = 'no_payment';
       aruncaCuBaniAmountToPay = 0;
     }
 
@@ -177,11 +185,12 @@ function determinePaymentTypes(
     if (
       ['balance', 'subscription_free'].includes(songPaymentType)
       && ['no_payment', 'balance'].includes(dedicationPaymentType)
-      && aruncaCuBaniAmountToPay === 0
+      && ['no_payment', 'balance'].includes(aruncaCuBaniPaymentType)
     ) {
       return {
         songPaymentType,
         dedicationPaymentType,
+        aruncaCuBaniPaymentType,
         aruncaCuBaniAmountToPay,
         paymentStatus: 'success', // Free generation
       };
@@ -191,6 +200,7 @@ function determinePaymentTypes(
     return {
       songPaymentType,
       dedicationPaymentType,
+      aruncaCuBaniPaymentType,
       aruncaCuBaniAmountToPay,
       paymentStatus: 'pending',
     };
@@ -209,10 +219,16 @@ async function decrementUserBalanceIfNeeded(
     paymentTypes: {
       songPaymentType: Database.GenerationRequest['songPaymentType'];
       dedicationPaymentType: Database.GenerationRequest['dedicationPaymentType'];
+      aruncaCuBaniPaymentType: Database.GenerationRequest['aruncaCuBaniPaymentType'];
       aruncaCuBaniAmountToPay: Database.GenerationRequest['aruncaCuBaniAmountToPay'];
     }
   ) {
-    const { songPaymentType, dedicationPaymentType, aruncaCuBaniAmountToPay } = paymentTypes;
+    const {
+      songPaymentType,
+      dedicationPaymentType,
+      aruncaCuBaniPaymentType,
+      aruncaCuBaniAmountToPay
+    } = paymentTypes;
     
     if (['balance', 'subscription_free'].includes(songPaymentType)) {
       transaction.update(userRef, {
@@ -228,9 +244,9 @@ async function decrementUserBalanceIfNeeded(
       });
     }
 
-    if (aruncaCuBaniAmountToPay && aruncaCuBaniAmountToPay > 0) {
+    if (aruncaCuBaniPaymentType === 'balance') {
       transaction.update(userRef, {
-        aruncaCuBaniBalance: FieldValue.increment(-aruncaCuBaniAmountToPay),
+        aruncaCuBaniBalance: FieldValue.increment(-aruncaCuBaniAmountToPay!), // must not be undefined
         updatedAt: FieldValue.serverTimestamp(),
       });
     }
