@@ -7,6 +7,7 @@ import BottomMenu from './components/ui/BottomMenu';
 import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
 import Marquee from './components/ui/Marquee';
+import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
 
@@ -77,6 +78,7 @@ function AppContent() {
           </ProtectedRoute>
         } />
       </Routes>
+      <StickyGenerateButton />
       <BottomMenu />
       <Footer />
     </div>
