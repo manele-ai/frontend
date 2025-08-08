@@ -1,3 +1,4 @@
+import ProfileCard from 'components/ProfileCard';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
@@ -129,44 +130,14 @@ export default function ProfilePage() {
     >
       {/* Butonul de Înapoi eliminat */}
       <div className="container">
-        <div className="profile-content">
-          <div className="profile-avatar">
-            {userProfile?.photoURL ? (
-              <img 
-                src={userProfile.photoURL} 
-                alt={userProfile.displayName}
-                className="avatar-image"
-              />
-            ) : (
-              <div className="avatar-placeholder">
-                {userProfile?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
-              </div>
-            )}
-          </div>
-          
-          <h2 className="profile-name">
-            {userProfile?.displayName || 'Utilizator'}
-          </h2>
-          
-          <p className="profile-email">{user?.email}</p>
-          
-          <p className="profile-joined">
-            {userProfile?.createdAt?._seconds
-              ? 'Membru din ' + new Date(userProfile.createdAt._seconds * 1000).toLocaleDateString('ro-RO', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })
-              : 'Membru recent'}
-          </p>
-
-          <div className="profile-stats">
-            <div className="stat-item">
-              <span className="stat-number">{songs.length}</span>
-              <span className="stat-label">Piese generate</span>
-            </div>
-          </div>
-        </div>
+        <ProfileCard
+          subscribed={userProfile?.subscription?.active}
+          credits={20}
+          maneleCount={5}
+          dedicationsCount={3}
+          money={100}
+          profileName={userProfile?.displayName || user?.email}
+        />
 
         {!isEditing ? (
           <div className="quick-actions">
