@@ -264,10 +264,14 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     try {
       if (isPhoneAuth) {
         if (showVerificationCode) {
+          const trimmedDisplayName = !isLogin ? formData.displayName.trim() : undefined;
+          if (!isLogin && !trimmedDisplayName) {
+            throw new Error('Numele este obligatoriu.');
+          }
           await verifyPhoneCode(
             confirmationResult, 
             formData.verificationCode,
-            !isLogin ? formData.displayName : undefined
+            trimmedDisplayName
           );
           if (onClose) onClose();
           resetForm();
@@ -301,7 +305,11 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
         if (isLogin) {
           await signIn(formData.email, formData.password);
         } else {
-          await signUp(formData.email, formData.password, formData.displayName);
+          const trimmedDisplayName = formData.displayName.trim();
+          if (!trimmedDisplayName) {
+            throw new Error('Numele este obligatoriu.');
+          }
+          await signUp(formData.email, formData.password, trimmedDisplayName);
         }
         
         if (onClose) onClose();
