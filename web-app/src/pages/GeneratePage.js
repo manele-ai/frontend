@@ -10,7 +10,7 @@ export default function GeneratePage() {
   const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const { isGenerationActive, activeRequestId } = useGlobalSongStatus();
+  const { isGenerationActive, activeRequestId, hasTimedOut } = useGlobalSongStatus();
   
   // Get pre-selected style from navigation state
   const preSelectedStyle = location.state?.selectedStyle;
@@ -19,6 +19,12 @@ export default function GeneratePage() {
   // Check for active generation on component mount and redirect if needed
   useEffect(() => {
     const checkAndRedirect = () => {
+      // Nu e necesar, dar sa fim siguri
+      if (hasTimedOut) {
+        setIsChecking(false);
+        return;
+      }
+      
       if (isGenerationActive()) {
         // Navigate to result page with the active request ID
         const savedRequestId = localStorage.getItem('activeGenerationRequestId');
@@ -38,7 +44,7 @@ export default function GeneratePage() {
 
     // Check immediately
     checkAndRedirect();
-  }, [isGenerationActive, activeRequestId, navigate]);
+  }, [isGenerationActive, activeRequestId, hasTimedOut, navigate]);
 
   const handleBack = () => {
     navigate('/');

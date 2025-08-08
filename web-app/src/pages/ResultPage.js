@@ -19,7 +19,7 @@ export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-  const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData } = useGlobalSongStatus();
+  const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData, hasTimedOut } = useGlobalSongStatus();
 
   const mounted = useRef(true);
   
@@ -68,8 +68,7 @@ export default function ResultPage() {
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Add timeout state to track if we've exceeded the wait time
-  const [hasTimedOut, setHasTimedOut] = useState(false);
+  // Timeout state now comes from useGlobalSongStatus hook
 
   // Use a stable audio URL to prevent player reload
   const [stableAudioUrl, setStableAudioUrl] = useState(null);
@@ -177,23 +176,13 @@ export default function ResultPage() {
     };
   }, [activeSongId, songId]);
 
-  // Add loading progress animation and timeout
+  // Add loading progress animation (timeout is now handled by useGlobalSongStatus hook)
   useEffect(() => {
     if (songData) {
       // Clear loading progress when song is loaded
       localStorage.removeItem('resultPageLoadingProgress');
       return;
     }
-
-    // Set a timeout
-    const timeoutTimer = setTimeout(() => {
-      if (!songData && !error) {
-        setHasTimedOut(true);
-        setError('Generarea a durat prea mult. Te rugăm să încerci din nou.');
-        // Clear loading progress on timeout
-        localStorage.removeItem('resultPageLoadingProgress');
-      }
-    }, TIMEOUT_DURATION);
     
     const duration = 120000; // 2 minute în milisecunde
     const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
@@ -214,9 +203,17 @@ export default function ResultPage() {
 
     return () => {
       clearInterval(timer);
-      clearTimeout(timeoutTimer);
     };
-  }, [songData, error]);
+  }, [songData]);
+
+  // Handle global timeout state
+  useEffect(() => {
+    if (hasTimedOut && !error) {
+      setError('Generarea a durat prea mult. Te rugăm să încerci din nou.');
+      // Clear loading progress on timeout
+      localStorage.removeItem('resultPageLoadingProgress');
+    }
+  }, [hasTimedOut, error]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);

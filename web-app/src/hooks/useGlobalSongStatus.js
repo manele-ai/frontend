@@ -34,10 +34,15 @@ const clearFormData = () => {
   });
 };
 
+  // Timeout duration: 6 minutes
+  const TIMEOUT_DURATION = 6 * 60 * 1000;
+
 export const useGlobalSongStatus = () => {
   const { showNotification, clearAll } = useNotification();
   const navigate = useNavigate();
   const activeListeners = useRef(new Map());
+  // Add timeout tracking
+  const timeoutRef = useRef(null);
 
   // Reactive state to expose to consumers
   const [activeRequestId, setActiveRequestId] = useState(null);
@@ -45,9 +50,32 @@ export const useGlobalSongStatus = () => {
   const [activeSongId, setActiveSongId] = useState(null);
   const [latestTaskData, setLatestTaskData] = useState(null);
   const [latestGenerationData, setLatestGenerationData] = useState(null);
+  // Add timeout state
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+  const [timeoutStartTime, setTimeoutStartTime] = useState(null);
+
+  // Function to clear timeout and reset timeout state
+  const clearGenerationTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setTimeoutStartTime(null);
+  }, []);
+
+  // Function to reset timeout state (useful when starting a new generation)
+  const resetTimeoutState = useCallback(() => {
+    clearGenerationTimeout();
+    setHasTimedOut(false);
+  }, [clearGenerationTimeout]);
 
   // Helper function to determine if there's an active generation
   const isGenerationActive = () => {
+    // If we've timed out, no active generation
+    if (hasTimedOut) {
+      return false;
+    }
+    
     // Check if there's an active request ID (from localStorage or state)
     const savedRequestId = localStorage.getItem('activeGenerationRequestId');
     const hasActiveRequest = savedRequestId || activeRequestId;
@@ -93,6 +121,46 @@ export const useGlobalSongStatus = () => {
       activeListeners.current.delete(songId);
     }
   }, []);
+
+  // Function to start timeout when generation enters processing
+  const startGenerationTimeout = useCallback((requestId, taskId) => {
+    // Clear any existing timeout first
+    clearGenerationTimeout();
+    
+    setTimeoutStartTime(Date.now());
+    setHasTimedOut(false);
+    
+    timeoutRef.current = setTimeout(() => {
+      console.log('Generation timeout reached for:', { requestId, taskId });
+      
+      // Set timeout state
+      setHasTimedOut(true);
+      
+      // Clear notifications and show timeout error
+      clearAll();
+      
+      // Clear the saved requestId when timeout occurs
+      localStorage.removeItem('activeGenerationRequestId');
+      
+      // Show timeout notification
+      showNotification({
+        type: 'error',
+        title: 'Generarea a durat prea mult',
+        message: 'Generarea a depășit timpul maxim permis. Te rugăm să încerci din nou.',
+        duration: 30000
+      });
+      
+      // Clean up listeners
+      cleanupListeners(requestId, taskId);
+      
+      // Reset states
+      setActiveRequestId(null);
+      setActiveTaskId(null);
+      setActiveSongId(null);
+      setLatestTaskData(null);
+      setLatestGenerationData(null);
+    }, TIMEOUT_DURATION);
+  }, [clearGenerationTimeout, clearAll, showNotification, cleanupListeners]);
 
   const setupSongListener = useCallback((songId, requestId, taskId) => {
     const unsubscribe = onSnapshot(
@@ -161,6 +229,9 @@ export const useGlobalSongStatus = () => {
         
         switch (data.status) {
           case 'completed': {
+            // Clear timeout when task completes
+            clearGenerationTimeout();
+            
             const resolvedSongId = data.songId || (Array.isArray(data.songIds) && data.songIds.length > 0 ? data.songIds[0] : null);
             if (resolvedSongId) {
               // Set up song listener
@@ -169,6 +240,9 @@ export const useGlobalSongStatus = () => {
             break;
           }
           case 'partial':
+            // Clear timeout when task reaches partial status
+            clearGenerationTimeout();
+            
             // Clear form data when status is partial (user requirement)
             clearFormData();
             
@@ -179,6 +253,9 @@ export const useGlobalSongStatus = () => {
             }
             break;
           case 'failed':
+            // Clear timeout when task fails
+            clearGenerationTimeout();
+            
             // Clear loading notifications and show error
             clearAll();
             // Clear the saved requestId when task fails
@@ -197,6 +274,9 @@ export const useGlobalSongStatus = () => {
             cleanupListeners(requestId, taskId);
             break;
           case 'processing':
+            // Start timeout when task enters processing status
+            startGenerationTimeout(requestId, taskId);
+            
             if (data.songId) {
               // Set up song listener even for processing status if we have songId
               setupSongListener(data.songId, requestId, taskId);
@@ -212,12 +292,15 @@ export const useGlobalSongStatus = () => {
     );
 
     activeListeners.current.set(taskId, unsubscribe);
-  }, [clearAll, showNotification, setupSongListener, cleanupListeners]);
+  }, [clearAll, showNotification, setupSongListener, cleanupListeners, clearGenerationTimeout, startGenerationTimeout]);
 
   const setupGenerationListener = useCallback((requestId) => {
     if (activeListeners.current.has(requestId)) {
       return; // Already listening
     }
+
+    // Reset timeout state when setting up a new generation listener
+    resetTimeoutState();
 
     const unsubscribe = onSnapshot(
       doc(db, 'generationRequests', requestId),
@@ -257,7 +340,7 @@ export const useGlobalSongStatus = () => {
     );
 
     activeListeners.current.set(requestId, unsubscribe);
-  }, [setupTaskListener]);
+  }, [setupTaskListener, resetTimeoutState]);
 
   // Check for active generations in localStorage
   useEffect(() => {
@@ -297,10 +380,13 @@ export const useGlobalSongStatus = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Clear timeout on unmount
+      clearGenerationTimeout();
+      
       activeListeners.current.forEach(unsubscribe => unsubscribe());
       activeListeners.current.clear();
     };
-  }, []);
+  }, [clearGenerationTimeout]);
 
   return {
     setupGenerationListener,
@@ -312,6 +398,9 @@ export const useGlobalSongStatus = () => {
     latestTaskData,
     latestGenerationData,
     // Helper function
-    isGenerationActive
+    isGenerationActive,
+    // New timeout state
+    hasTimedOut,
+    timeoutStartTime
   };
 }; 
