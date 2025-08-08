@@ -88,12 +88,6 @@ export default function Header() {
             <span className="mobile-nav-text">ACASA</span>
           </button>
           <button 
-            className={`mobile-nav-btn generate-btn ${isActive('/select-style') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/select-style')}
-          >
-            <span className="mobile-nav-text">GENEREAZA</span>
-          </button>
-          <button 
             className={`mobile-nav-btn ${isActive('/leaderboard') ? 'active' : ''}`}
             onClick={() => handleNavigation('/leaderboard')}
           >
