@@ -10,8 +10,7 @@
   background-color: #1a1a1a;
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow-y: auto;
-  padding-bottom: 150px; /* Extra space for bottom menu */
+  overflow-y: auto; /* Extra space for bottom menu */
 }
 
 /* Overlay pentru fundal */
@@ -44,7 +43,7 @@
   gap: 0;
   margin-bottom: 40px;
   background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
-  border-radius: 0px 20px 20px 20px;
+  border-radius: 20px 20px 20px 20px;
   min-height: unset;
   position: relative;
   overflow: hidden;
@@ -73,6 +72,13 @@
   margin-bottom: 32px;
   width: 100%;
   /* max-width: 1034px; eliminat, lăsăm doar pe .container */
+}
+
+.profile-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
 }
 
 .profile-avatar {
@@ -369,7 +375,7 @@
 
 .action-button {
   box-sizing: border-box;
-  width: 190.8px;
+  width: 300px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
@@ -563,7 +569,7 @@
   
   .action-button {
     width: 100%;
-    max-width: 300px;
+    max-width: 350px;
   }
   
   .back-button {

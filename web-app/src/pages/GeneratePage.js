@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ComplexModeForm from '../components/ComplexModeForm';
 import EasyModeForm from '../components/EasyModeForm';
 import '../styles/GeneratePage.css';
@@ -7,6 +7,11 @@ import '../styles/GeneratePage.css';
 export default function GeneratePage() {
   const [mode, setMode] = useState('hard');
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get pre-selected style from navigation state
+  const preSelectedStyle = location.state?.selectedStyle;
+  const fromHomePage = location.state?.fromHomePage;
 
   const handleBack = () => {
     navigate('/');
@@ -54,9 +59,9 @@ export default function GeneratePage() {
 
         {/* Render appropriate form based on mode */}
         {mode === 'easy' ? (
-          <EasyModeForm onBack={handleBack} />
+          <EasyModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
         ) : (
-          <ComplexModeForm onBack={handleBack} />
+          <ComplexModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
         )}
       </div>
     </div>

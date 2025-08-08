@@ -10,10 +10,8 @@ import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/HomePage.css';
 
-
- 
-
-function ReusableCard({ background, title, subtitle }) {
+function ReusableCard({ background, title, subtitle, styleValue }) {
+  const navigate = useNavigate();
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -22,6 +20,16 @@ function ReusableCard({ background, title, subtitle }) {
   
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
+  };
+
+  const handleGenerateClick = () => {
+    // Navigate to generate page with the selected style
+    navigate('/generate', { 
+      state: { 
+        selectedStyle: styleValue,
+        fromHomePage: true 
+      } 
+    });
   };
   
   return (
@@ -40,6 +48,14 @@ function ReusableCard({ background, title, subtitle }) {
             onPlayPause={handlePlayPause}
             onError={() => console.error('Audio playback error')}
           />
+        </div>
+        <div className="style-example-generate-button">
+          <Button 
+            className="hero-btn hero-section-button" 
+            onClick={handleGenerateClick}
+          >
+            <span className="hero-btn-text">Generează acum</span>
+          </Button>
         </div>
       </div>
     </div>
@@ -105,22 +121,22 @@ export default function HomePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Genereaza-ti propria manea<br></br> in cateva minute.</h2>
-            <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+            <h2 className="hero-title">Fa-ti propria manea acum</h2>
+            <p className="hero-subtitle">Genereaza-ti propria manea instant</p>
             <div className="hero-buttons" style={{ 
               display: 'flex', 
               gap: '20px',
               alignItems: 'center' 
             }}>
               <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
-                <span className="hero-btn-text">Genereaza acum</span>
+                <span className="hero-btn-text">Fa-ti o manea</span>
               </Button>
               {!isSubscribed && (
                 <Button 
                   className="hero-btn subscription-btn"
                   onClick={onClickSubscription}
                 >
-                  <span className="hero-btn-text">Abonează-te</span>
+                  <span className="hero-btn-text">Fa-ti abonament</span>
                 </Button>
               )}
             </div>
@@ -138,6 +154,7 @@ export default function HomePage() {
               background={`url(${style.image}) center/cover no-repeat`}
               title={style.title}
               subtitle={style.subtitle}
+              styleValue={style.value}
             />
           ))}
         </div>
