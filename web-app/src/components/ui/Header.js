@@ -42,7 +42,7 @@ export default function Header() {
             <span className="desktop-nav-text">ACASA</span>
           </button>
           <button 
-            className={`desktop-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
+            className={`desktop-nav-btn generate-btn ${isActive('/select-style') ? 'active' : ''}`}
             onClick={() => handleNavigation('/select-style')}
           >
             <span className="desktop-nav-text">GENEREAZA</span>
@@ -88,7 +88,7 @@ export default function Header() {
             <span className="mobile-nav-text">ACASA</span>
           </button>
           <button 
-            className={`mobile-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
+            className={`mobile-nav-btn generate-btn ${isActive('/select-style') ? 'active' : ''}`}
             onClick={() => handleNavigation('/select-style')}
           >
             <span className="mobile-nav-text">GENEREAZA</span>

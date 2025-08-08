@@ -103,6 +103,51 @@
   opacity: 1;
 }
 
+/* Special styling for Generate button - same as sticky button */
+.desktop-nav-btn.generate-btn {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  border-radius: 50px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+}
+
+.desktop-nav-btn.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.desktop-nav-btn.generate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+.desktop-nav-btn.generate-btn .desktop-nav-text {
+  background: #1a1a1a;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.desktop-nav-btn.generate-btn:hover .desktop-nav-text {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.desktop-nav-btn.generate-btn.active .desktop-nav-text {
+  opacity: 1;
+}
+
+.desktop-nav-btn.generate-btn.active::after {
+  display: none;
+}
+
 /* Mobile menu styles */
 .mobile-menu {
   display: none;
@@ -219,6 +264,50 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Special styling for Generate button in mobile menu */
+.mobile-nav-btn.generate-btn {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  border-color: rgba(255, 224, 161, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-nav-btn.generate-btn:hover {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-nav-btn.generate-btn .mobile-nav-text {
+  background: #1a1a1a;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-btn.generate-btn:hover .mobile-nav-text {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.mobile-nav-btn.generate-btn.active {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  border-color: rgba(255, 224, 161, 1);
+}
+
+.mobile-nav-btn.generate-btn.active .mobile-nav-text {
+  background: #1a1a1a;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .logo-button {
   background: none;
   border: none;
@@ -268,6 +357,15 @@
   .desktop-nav {
     gap: 20px;
   }
+  
+  .desktop-nav-btn.generate-btn {
+    padding: 10px 16px;
+    min-width: 100px;
+  }
+  
+  .desktop-nav-btn.generate-btn .desktop-nav-text {
+    font-size: 11px;
+  }
 }
 
 @media (min-width: 769px) {
@@ -304,6 +402,15 @@
   .header-logo {
     left: 10px;
     height: 30px;
+  }
+  
+  .desktop-nav-btn.generate-btn {
+    padding: 8px 14px;
+    min-width: 90px;
+  }
+  
+  .desktop-nav-btn.generate-btn .desktop-nav-text {
+    font-size: 10px;
   }
 }
 
