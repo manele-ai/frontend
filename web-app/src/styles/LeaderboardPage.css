@@ -5,7 +5,7 @@
   background-color: #1a1a1a;
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  padding-bottom: 200px; 
+  padding-bottom: 100px; 
 }
 
 /* Overlay pentru fundal */
@@ -34,9 +34,9 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background-image: url('../../public/photos/HeroTest.jpeg');
+  background-image: url('../../public/photos/Topul.png');
   background-repeat: no-repeat;
-  border-radius: 0px 20px 20px 20px;
+  border-radius: 20px 20px 20px 20px;
   margin-bottom: 32px;
   position: relative;
   z-index: 1;
@@ -91,6 +91,13 @@
   color: #000;
   text-align: left;
   position: relative;
+}
+
+.leaderboard-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .leaderboard-page .hero-btn-text {
@@ -306,8 +313,18 @@
 .user-cell {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  max-width: 200px;
+  min-width: 200px;
+}
+
+.user-cell-container{
+  display: flex;
+  align-items: center;
   justify-content: center;
   gap: 10px;
+  padding-left: 20px;
 }
 
 .user-avatar {
@@ -436,7 +453,7 @@
 @media (max-width: 768px) {
   .leaderboard-page {
     padding: 10px;
-    padding-bottom: 150px;
+    padding-bottom: 100px;
   }
   
   .leaderboard-page .hero-section {
@@ -581,5 +598,160 @@
   
   .leaderboard-page .hero-btn.button .hero-btn-text {
     font-size: 12px;
+  }
+}
+
+/* Current User Rank Section */
+.current-user-rank {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.current-user-rank-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.current-user-rank-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.current-user-rank-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.current-user-avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.current-user-rank-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.current-user-rank-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.current-user-rank-position {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.current-user-rank-name {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.current-user-rank-value {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Responsive design for current user rank */
+@media (max-width: 768px) {
+  .current-user-rank {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .current-user-rank-info {
+    gap: 8px;
+  }
+  
+  .current-user-avatar,
+  .current-user-avatar-placeholder {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .current-user-rank-position {
+    font-size: 14px;
+  }
+  
+  .current-user-rank-name {
+    font-size: 12px;
+  }
+  
+  .current-user-rank-value {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .current-user-rank {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .current-user-rank-info {
+    gap: 6px;
+  }
+  
+  .current-user-avatar,
+  .current-user-avatar-placeholder {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .current-user-rank-position {
+    font-size: 12px;
+  }
+  
+  .current-user-rank-name {
+    font-size: 11px;
+  }
+  
+  .current-user-rank-value {
+    font-size: 10px;
   }
 }
