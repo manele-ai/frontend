@@ -20,6 +20,9 @@ export const onGenerationRequestPaymentSuccess = onDocumentWritten(
     if (before && before.paymentStatus === 'success') {
       return; // It was already success before – ignore duplicate writes.
     }
+    if (after.taskId) {
+      return; // Task already enqueued – ignore duplicate writes.
+    }
 
     try {
       const generationData: Requests.GenerateSong = {
@@ -27,7 +30,6 @@ export const onGenerationRequestPaymentSuccess = onDocumentWritten(
         wantsDedication: after.userGenerationInput.wantsDedication || false,
         wantsDonation: after.userGenerationInput.wantsDonation || false
       };
-
       await enqueueGenerateSongTask(
         after.userId,
         generationData,
