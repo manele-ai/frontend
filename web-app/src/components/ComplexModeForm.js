@@ -166,6 +166,24 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       const loadedDonorName = safeGetString(COMPLEX_FORM_DATA_KEYS.DONOR_NAME, '');
       const loadedDonationAmount = safeGetString(COMPLEX_FORM_DATA_KEYS.DONATION_AMOUNT, '');
       
+            // Verifică dacă există date reale pentru a încărca
+      const hasRealData = loadedStyle || 
+                         (loadedSongName && loadedSongName.trim()) ||
+                         (loadedSongDetails && loadedSongDetails.trim()) ||
+                         (loadedWantsDedication && (loadedFromName && loadedFromName.trim() && loadedToName && loadedToName.trim() && loadedDedication && loadedDedication.trim())) ||
+                         (loadedWantsDonation && (loadedDonorName && loadedDonorName.trim() && loadedDonationAmount && loadedDonationAmount.trim())) ||
+                         (loadedFromName && loadedFromName.trim()) ||
+                         (loadedToName && loadedToName.trim()) ||
+                         (loadedDedication && loadedDedication.trim()) ||
+                         (loadedDonorName && loadedDonorName.trim()) ||
+                         (loadedDonationAmount && loadedDonationAmount.trim());
+      
+      if (!hasRealData) {
+        // Dacă nu există date reale, șterge IS_ACTIVE și nu încărca nimic
+        localStorage.removeItem(COMPLEX_FORM_DATA_KEYS.IS_ACTIVE);
+        return false;
+      }
+      
       setSelectedStyle(loadedStyle);
       setSongName(loadedSongName);
       setSongDetails(loadedSongDetails);
@@ -205,34 +223,38 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     }
   }, [user, isAuthenticated]);
 
+  // State pentru a ține evidența dacă datele au fost încărcate din localStorage
+  const [dataLoadedFromStorage, setDataLoadedFromStorage] = useState(false);
+
   // Încărcare date formular la mount
   useEffect(() => {
-    loadFormData();
+    const wasLoaded = loadFormData();
+    setDataLoadedFromStorage(wasLoaded);
   }, [loadFormData]);
 
-  // Salvare automată pentru selectedStyle
+  // Salvare automată pentru selectedStyle (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
-    if (selectedStyle && selectedStyle !== null) {
+    if (selectedStyle && selectedStyle !== null && !dataLoadedFromStorage) {
       saveFormData();
     }
-  }, [selectedStyle, saveFormData]);
+  }, [selectedStyle, saveFormData, dataLoadedFromStorage]);
 
-  // Salvare automată a datelor formularului
+  // Salvare automată a datelor formularului (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
     const hasRealData = (songName && songName.trim()) || 
                        (songDetails && songDetails.trim()) ||
-                       wantsDedication || 
-                       wantsDonation ||
+                       (wantsDedication && (fromName && fromName.trim() && toName && toName.trim() && dedication && dedication.trim())) ||
+                       (wantsDonation && (donorName && donorName.trim() && donationAmount && donationAmount.trim())) ||
                        (fromName && fromName.trim()) ||
                        (toName && toName.trim()) ||
                        (dedication && dedication.trim()) ||
                        (donorName && donorName.trim()) ||
                        (donationAmount && donationAmount.trim());
     
-    if (hasRealData) {
+    if (hasRealData && !dataLoadedFromStorage) {
       saveFormData();
     }
-  }, [songName, songDetails, wantsDedication, wantsDonation, fromName, toName, dedication, donorName, donationAmount, saveFormData]);
+  }, [songName, songDetails, wantsDedication, wantsDonation, fromName, toName, dedication, donorName, donationAmount, saveFormData, dataLoadedFromStorage]);
 
   // Update field errors
   useEffect(() => {

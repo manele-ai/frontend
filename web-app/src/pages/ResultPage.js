@@ -117,14 +117,12 @@ export default function ResultPage() {
             }
           },
           (err) => {
-            console.error('Generation request listener error:', err);
             if (mounted.current) {
               setError('Eroare la citirea cererii de generare.');
             }
           }
         );
       } catch (err) {
-        console.error('Setup generation request listener error:', err);
         if (mounted.current) {
           setError('Eroare la inițializarea ascultătorului pentru cererea de generare.');
         }
@@ -156,11 +154,8 @@ export default function ResultPage() {
             if (!snap.exists()) return;
             const data = snap.data();
 
-            console.log('Task status update:', data.status, data);
-            
             // Extrage versurile dacă există în data
             if (data.lyrics) {
-              console.log('Lyrics found in task data:', data.lyrics);
               // Salvează versurile în state
               setCurrentSongLyrics(data.lyrics);
             }
@@ -172,16 +167,14 @@ export default function ResultPage() {
               case 'partial':
               case 'completed':
                 if (data.songIds && data.songIds.length > 0) {
-                  console.log('Setting songId:', data.songIds[0]);
-                  console.log('Total songs generated:', data.songIds.length);
                   setSongId(data.songIds[0]);
                   
                   // Dacă avem mai multe piese, putem afișa un mesaj informativ
                   if (data.songIds.length > 1) {
-                    console.log('Multiple songs available:', data.songIds);
+                    // Multiple songs available
                   }
                 } else {
-                  console.log('No songId in task data');
+                  // No songId in task data
                 }
                 break;
               case 'failed':
@@ -189,17 +182,14 @@ export default function ResultPage() {
                 if (data.songIds && data.songIds.length > 0) {
                   // Dacă avem songIds, înseamnă că cel puțin o piesă s-a generat cu succes
                   // Nu aruncăm eroare dacă avem cel puțin o piesă disponibilă
-                  console.log('Some songs failed but we have songIds, not showing error');
-                  console.log('Available songs:', data.songIds.length);
                   setSongId(data.songIds[0]);
                   
                   // Opțional: putem afișa un mesaj că doar o parte din piese s-au generat
                   if (data.songIds.length < 2) {
-                    console.log('Partial success: only', data.songIds.length, 'song(s) generated');
+                    // Partial success: only some songs generated
                   }
                 } else {
                   // Dacă nu avem songIds deloc, atunci toate piesele au eșuat
-                  console.log('All songs failed, showing error');
                   setError(data.error || 'Generarea a eșuat pentru toate piesele.');
                 }
                 break;
@@ -208,14 +198,12 @@ export default function ResultPage() {
             }
           },
           (err) => {
-            console.error('Task status listener error:', err);
             if (mounted.current) {
               setError('Eroare la citirea statusului taskului.');
             }
           }
         );
       } catch (err) {
-        console.error('Setup task status listener error:', err);
         if (mounted.current) {
           setError('Eroare la inițializarea ascultătorului pentru status.');
         }
@@ -246,7 +234,6 @@ export default function ResultPage() {
             
             if (docSnap.exists()) {
               const songData = docSnap.data();
-              console.log('Song data received:', songData);
               
               setSongData(songData);
               
@@ -258,14 +245,12 @@ export default function ResultPage() {
             }
           },
           (err) => {
-            console.error('Song data listener error:', err);
             if (mounted.current) {
               setError('Eroare la încărcarea piesei.');
             }
           }
         );
       } catch (err) {
-        console.error('Setup song data listener error:', err);
         if (mounted.current) {
           setError('Eroare la inițializarea ascultătorului pentru piesă.');
         }
@@ -331,7 +316,6 @@ export default function ResultPage() {
     const downloadUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
     
     if (!downloadUrl) {
-      console.error('No download URL available');
       return;
     }
 
@@ -339,7 +323,6 @@ export default function ResultPage() {
     try {
       downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
-      console.error("Failed to download song:", error);
       setError("Failed to download song. Please try again.");
     } finally {
       setIsDownloading(false);
@@ -360,7 +343,6 @@ export default function ResultPage() {
   const getSongLyrics = () => {
     // Încearcă să citească versurile din state (din taskStatuses)
     if (currentSongLyrics) {
-      console.log('Lyrics found in state:', currentSongLyrics);
       return currentSongLyrics;
     }
     
@@ -381,7 +363,6 @@ export default function ResultPage() {
 
   // Set stable URL once we have a good audio URL - keep the first URL we get
   useEffect(() => {
-    console.log('songData changed:', songData);
     if (songData && !hasStableUrl) {
       // Get the first available URL (prefer stream URL for stability)
       let audioUrl = null;
@@ -492,12 +473,6 @@ export default function ResultPage() {
   const canDownload = songData.storage?.url || songData.apiData?.audioUrl || songData.apiData?.streamAudioUrl;
   
   // Debug log pentru a vedea ce URL-uri sunt disponibile
-  console.log('Download URLs available:', {
-    storage: songData.storage?.url,
-    audioUrl: songData.apiData?.audioUrl,
-    streamAudioUrl: songData.apiData?.streamAudioUrl,
-    canDownload
-  });
   
   const songStyle = getSongStyle();
   const songLyrics = getSongLyrics();

@@ -6,22 +6,30 @@ import { db } from '../services/firebase';
 
 // Funcție utilitară pentru ștergerea datelor formularului
 const clearFormData = () => {
-  const FORM_DATA_KEYS = {
-    SELECTED_STYLE: 'generateForm_selectedStyle',
-    SONG_NAME: 'generateForm_songName',
-    SONG_DETAILS: 'generateForm_songDetails',
-    WANTS_DEDICATION: 'generateForm_wantsDedication',
-    FROM_NAME: 'generateForm_fromName',
-    TO_NAME: 'generateForm_toName',
-    DEDICATION: 'generateForm_dedication',
-    WANTS_DONATION: 'generateForm_wantsDonation',
-    DONOR_NAME: 'generateForm_donorName',
-    DONATION_AMOUNT: 'generateForm_donationAmount',
-    MODE: 'generateForm_mode',
-    IS_ACTIVE: 'generateForm_isActive'
-  };
+  // Chei pentru Easy Mode
+  const EASY_FORM_KEYS = [
+    'easyForm_selectedStyle',
+    'easyForm_songName',
+    'easyForm_isActive'
+  ];
   
-  Object.values(FORM_DATA_KEYS).forEach(key => {
+  // Chei pentru Complex Mode
+  const COMPLEX_FORM_KEYS = [
+    'complexForm_selectedStyle',
+    'complexForm_songName',
+    'complexForm_songDetails',
+    'complexForm_wantsDedication',
+    'complexForm_fromName',
+    'complexForm_toName',
+    'complexForm_dedication',
+    'complexForm_wantsDonation',
+    'complexForm_donorName',
+    'complexForm_donationAmount',
+    'complexForm_isActive'
+  ];
+  
+  // Șterge toate cheile pentru ambele moduri
+  [...EASY_FORM_KEYS, ...COMPLEX_FORM_KEYS].forEach(key => {
     localStorage.removeItem(key);
   });
 };
@@ -57,7 +65,11 @@ export const useGlobalSongStatus = () => {
         const songData = docSnap.data();
         
         // Check if song is complete (has title OR streamAudioUrl)
-        if (songData && songData.apiData && (songData.apiData.title || songData.apiData.streamAudioUrl)) {
+        const hasTitle = songData?.apiData?.title;
+        const hasStreamAudioUrl = songData?.apiData?.streamAudioUrl;
+        const isComplete = songData && songData.apiData && (hasTitle || hasStreamAudioUrl);
+        
+        if (isComplete) {
           clearAll();
           // Clear the saved requestId when song is complete
           localStorage.removeItem('activeGenerationRequestId');
@@ -88,7 +100,7 @@ export const useGlobalSongStatus = () => {
     );
 
     activeListeners.current.set(songId, unsubscribe);
-  }, [clearAll, showNotification, navigate, cleanupListeners]);
+  }, [clearAll, showNotification, navigate, cleanupListeners, clearFormData]);
 
   const setupTaskListener = useCallback((taskId, requestId) => {
     const unsubscribe = onSnapshot(
@@ -108,6 +120,9 @@ export const useGlobalSongStatus = () => {
             }
             break;
           case 'partial':
+            // Clear form data when status is partial (user requirement)
+            clearFormData();
+            
             if (data.songId) {
               // Set up song listener even for partial status if we have songId
               setupSongListener(data.songId, requestId, taskId);
@@ -132,6 +147,10 @@ export const useGlobalSongStatus = () => {
             cleanupListeners(requestId, taskId);
             break;
           case 'processing':
+            if (data.songId) {
+              // Set up song listener even for processing status if we have songId
+              setupSongListener(data.songId, requestId, taskId);
+            }
             break;
           default:
             break;
@@ -177,6 +196,7 @@ export const useGlobalSongStatus = () => {
     const checkActiveGenerations = () => {
       // Check for separately saved requestId first
       const savedRequestId = localStorage.getItem('activeGenerationRequestId');
+      
       if (savedRequestId) {
         if (!activeListeners.current.has(savedRequestId)) {
           setupGenerationListener(savedRequestId);
