@@ -1,19 +1,24 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // import UserMenu from '../auth/UserMenu';
 import './Header.css';
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleTarifeClick = () => {
-    navigate('/tarife');
+  const handleNavigation = (route) => {
+    navigate(route);
     setIsMenuOpen(false);
+  };
+
+  const isActive = (route) => {
+    return location.pathname === route;
   };
 
   return (
@@ -29,12 +34,38 @@ export default function Header() {
       
       {/* Desktop menu */}
       <div className="header-right desktop-menu">
-        <button 
-          className="header-tarife-btn"
-          onClick={() => navigate('/tarife')}
-        >
-          <span className="header-tarife-text">Tarife</span>
-        </button>
+        <nav className="desktop-nav">
+          <button 
+            className={`desktop-nav-btn ${isActive('/') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/')}
+          >
+            <span className="desktop-nav-text">ACASA</span>
+          </button>
+          <button 
+            className={`desktop-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/select-style')}
+          >
+            <span className="desktop-nav-text">GENEREAZA</span>
+          </button>
+          <button 
+            className={`desktop-nav-btn ${isActive('/leaderboard') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/leaderboard')}
+          >
+            <span className="desktop-nav-text">TOPUL MANELISTILOR</span>
+          </button>
+          <button 
+            className={`desktop-nav-btn ${isActive('/profile') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/profile')}
+          >
+            <span className="desktop-nav-text">PROFIL</span>
+          </button>
+          <button 
+            className={`desktop-nav-btn ${isActive('/tarife') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/tarife')}
+          >
+            <span className="desktop-nav-text">TARIFE</span>
+          </button>
+        </nav>
       </div>
 
       {/* Mobile hamburger menu */}
@@ -51,10 +82,34 @@ export default function Header() {
         
         <div className={`mobile-dropdown ${isMenuOpen ? 'open' : ''}`}>
           <button 
-            className="mobile-tarife-btn"
-            onClick={handleTarifeClick}
+            className={`mobile-nav-btn ${isActive('/') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/')}
           >
-            <span className="mobile-tarife-text">Tarife</span>
+            <span className="mobile-nav-text">ACASA</span>
+          </button>
+          <button 
+            className={`mobile-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/select-style')}
+          >
+            <span className="mobile-nav-text">GENEREAZA</span>
+          </button>
+          <button 
+            className={`mobile-nav-btn ${isActive('/leaderboard') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/leaderboard')}
+          >
+            <span className="mobile-nav-text">TOPUL MANELISTILOR</span>
+          </button>
+          <button 
+            className={`mobile-nav-btn ${isActive('/profile') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/profile')}
+          >
+            <span className="mobile-nav-text">PROFIL</span>
+          </button>
+          <button 
+            className={`mobile-nav-btn ${isActive('/tarife') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/tarife')}
+          >
+            <span className="mobile-nav-text">TARIFE</span>
           </button>
         </div>
       </div>
