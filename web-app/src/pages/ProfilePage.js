@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import SongItem from '../components/SongItem';
-import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { useSongs } from '../hooks/useSongs';
+import { db } from '../services/firebase';
 import '../styles/ProfilePage.css';
 
 export default function ProfilePage() {
@@ -22,6 +23,64 @@ export default function ProfilePage() {
   const { songs, loading: songsLoading, error: songsError } = useSongs();
   const [activeSong, setActiveSong] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState('all');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [userStats, setUserStats] = useState({
+    creditsBalance: 0,
+    numSongsGenerated: 0,
+    numDedicationsGiven: 0,
+    aruncaCuBaniBalance: 0
+  });
+
+  useEffect(() => {
+    const checkSubscriptionStatus = async () => {
+      if (!user?.uid) {
+        setIsSubscribed(false);
+        setUserStats({
+          creditsBalance: 0,
+          numSongsGenerated: 0,
+          numDedicationsGiven: 0,
+          aruncaCuBaniBalance: 0
+        });
+        return;
+      }
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const subscriptionStatus = userData.subscription?.status;
+          setIsSubscribed(subscriptionStatus === 'active');
+          
+          // Set user statistics
+          setUserStats({
+            creditsBalance: userData.creditsBalance || 0,
+            numSongsGenerated: userData.stats?.numSongsGenerated || 0,
+            numDedicationsGiven: userData.stats?.numDedicationsGiven || 0,
+            aruncaCuBaniBalance: userData.aruncaCuBaniBalance || 0
+          });
+        } else {
+          setIsSubscribed(false);
+          setUserStats({
+            creditsBalance: 0,
+            numSongsGenerated: 0,
+            numDedicationsGiven: 0,
+            aruncaCuBaniBalance: 0
+          });
+        }
+      } catch (err) {
+        console.error('Error checking subscription status:', err);
+        setIsSubscribed(false);
+        setUserStats({
+          creditsBalance: 0,
+          numSongsGenerated: 0,
+          numDedicationsGiven: 0,
+          aruncaCuBaniBalance: 0
+        });
+      }
+    };
+
+    checkSubscriptionStatus();
+  }, [user]);
 
   // Filtrare piese după stil
   const filteredSongs = selectedStyle === 'all'
@@ -117,6 +176,9 @@ export default function ProfilePage() {
     );
   }
 
+  const displayInitial = (userProfile?.displayName || user?.email || 'U').charAt(0).toUpperCase();
+  const displayName = userProfile?.displayName || 'Utilizator';
+
   return (
     <div 
       className="profile-page"
@@ -127,70 +189,70 @@ export default function ProfilePage() {
         backgroundRepeat: 'repeat',
       }}
     >
-      {/* Butonul de Înapoi eliminat */}
       <div className="container">
-        <div className="profile-content">
-          <div className="profile-avatar">
+        {/* Redesigned profile header */}
+        <div className="profile-header">
+          <div className="profile-avatar profile-avatar-large">
             {userProfile?.photoURL ? (
               <img 
                 src={userProfile.photoURL} 
-                alt={userProfile.displayName}
-                className="avatar-image"
+                alt={displayName}
+                className="avatar-image avatar-image-large"
               />
             ) : (
-              <div className="avatar-placeholder">
-                {userProfile?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+              <div className="avatar-placeholder avatar-placeholder-large">
+                {displayInitial}
+              </div>
+            )}
+            {!isSubscribed && (
+              <div className="vip-badge" title="Abonament activ">
+                💎 VIP
               </div>
             )}
           </div>
-          
-          <h2 className="profile-name">
-            {userProfile?.displayName || 'Utilizator'}
-          </h2>
-          
-          <p className="profile-email">{user?.email}</p>
-          
-          <p className="profile-joined">
-            {userProfile?.createdAt?._seconds
-              ? 'Membru din ' + new Date(userProfile.createdAt._seconds * 1000).toLocaleDateString('ro-RO', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })
-              : 'Membru recent'}
-          </p>
 
-          <div className="profile-stats">
+          <div className="profile-info">
+            <div className="profile-user-details">
+              <div className="profile-username gold-text">{displayName}</div>
+              <div className="profile-email-text gold-text">{user?.email}</div>
+              {/* <div className="subscription-status gold-text">
+                {isSubscribed ? 'Manelist VIP' : 'Manelist'}
+              </div> */}
+              <div className="profile-mini-actions">
+                <button className="edit-profile-button" onClick={() => setIsEditing(true)}>
+                  Editează profilul
+                </button>
+                <button className="text-link soft-red-text" onClick={handleLogout}>
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="profile-stats-grid">
             <div className="stat-item">
-              <span className="stat-number">{songs.length}</span>
+              <span className="stat-number gold-text" title="Le poti folosi oricand in aplicatie">
+                {userStats.creditsBalance}
+              </span>
+              <span className="stat-label">Credite piese</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number gold-text">{userStats.numSongsGenerated}</span>
               <span className="stat-label">Piese generate</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number gold-text">{userStats.numDedicationsGiven}</span>
+              <span className="stat-label">Dedicatii</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number gold-text">{userStats.aruncaCuBaniBalance}</span>
+              <span className="stat-label">Bani la lautar</span>
             </div>
           </div>
         </div>
 
         {!isEditing ? (
-          <div className="quick-actions">
-            <button
-              className="action-button hero-btn"
-              onClick={() => setIsEditing(true)}
-            >
-              <span className="hero-btn-text">Editează profilul</span>
-            </button>
-            
-            <button
-              className="action-button hero-btn"
-              onClick={() => navigate('/select-style')}
-            >
-              <span className="hero-btn-text">Generează manea</span>
-            </button>
-
-            <Button
-              className="action-button hero-btn"
-              onClick={handleLogout}
-            >
-              <span className="hero-btn-text">LogOut</span>
-            </Button>
-          </div>
+          <></>
         ) : (
           <div className="profile-actions">
             <form onSubmit={handleSave} className="edit-form">

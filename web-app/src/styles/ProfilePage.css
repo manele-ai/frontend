@@ -38,11 +38,11 @@
   align-items: stretch;
   justify-content: flex-start;
   width: 100%;
-  max-width: 1034px;
+  max-width: 1334px;
   padding: 20px 25px;
   gap: 0;
-  margin-bottom: 40px;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  margin-bottom: 20px;
+  background: #23242b;
   border-radius: 20px 20px 20px 20px;
   min-height: unset;
   position: relative;
@@ -81,8 +81,25 @@
   margin-top: 50px;
 }
 
-.profile-avatar {
-  margin-bottom: 10px;
+.profile-avatar { position: relative; margin-bottom: 10px; }
+
+.vip-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(90deg, #ffeecd 0%, #cfaf6e 100%);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .vip-badge { top: -8px; right: -8px; font-size: 11px; }
 }
 
 .avatar-image {
@@ -97,14 +114,13 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #eab111;
+  background: linear-gradient(90deg, #ffeecd 0%, #cfaf6e 100%);
   color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 32px;
   font-weight: bold;
-  border: 3px solid #eab111;
 }
 
 
@@ -125,7 +141,7 @@
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 00;
   line-height: normal;
   letter-spacing: -0.48px;
   color: #000;
@@ -367,10 +383,31 @@
 }
 
 .quick-actions {
-  display: flex;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   justify-content: center;
-  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* Make buttons fill the grid columns equally */
+.quick-actions .action-button {
+  width: 100%;
+  height: 56px;
+}
+
+/* Subtle visual separation from header */
+.quick-actions { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .quick-actions { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .quick-actions { grid-template-columns: 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
 }
 
 .action-button {
@@ -629,4 +666,196 @@
     background: linear-gradient(to left, #23242b 80%, transparent 100%);
     z-index: 2;
   }
+} 
+
+/* New header layout */
+.profile-header {
+  display: grid;
+  grid-template-columns: 120px 1fr 1.2fr;
+  gap: 24px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 8px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-self: center;
+}
+
+.profile-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 0;
+  align-self: center;
+}
+
+.profile-stats-grid .stat-item {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.profile-stats-grid .stat-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(234, 177, 17, 0.3);
+}
+
+.profile-stats-grid .stat-number {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  cursor: help;
+}
+
+.profile-stats-grid .stat-label {
+  color: #a2a5bd;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gold-text {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.profile-username {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.profile-email-text {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.subscription-status {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* Larger avatar sizing to match name + email height */
+.profile-avatar-large .avatar-image,
+.profile-avatar-large .avatar-placeholder,
+.avatar-image-large,
+.avatar-placeholder-large {
+  width: 120px;
+  height: 120px;
+}
+
+/* Keep existing avatar base styles */
+.avatar-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eab111;
+}
+
+/* .avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #eab111;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  border: 3px solid #eab111;
+} */
+
+/* Make placeholder text scale for large variant */
+.avatar-placeholder-large { font-size: 48px; }
+
+/* Reduce old profile-content spacing since it's removed visually */
+.profile-content { display: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-header { 
+    grid-template-columns: 1fr; 
+    gap: 20px; 
+    text-align: center;
+    align-items: center;
+  }
+
+  .profile-info { align-items: center; }
+  .profile-user-details { align-items: center; }
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 320px;
+    margin-top: 8px;
+    justify-self: center;
+  }
+} 
+
+.profile-mini-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.edit-profile-button {
+  /* distinct from username/email gold gradient */
+  color: #F1D292; /* warm sand/gold, solid */
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
+
+.text-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.soft-red-text {
+  color: #ff7a7a;
+}
+
+.soft-red-text:hover { color: #ff9a9a; }
+
+.divider-dot { color: rgba(255,255,255,0.35); }
+
+@media (max-width: 768px) {
+  .profile-mini-actions { justify-content: center; }
 } 
