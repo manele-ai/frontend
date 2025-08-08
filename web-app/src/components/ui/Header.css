@@ -264,49 +264,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Special styling for Generate button in mobile menu */
-.mobile-nav-btn.generate-btn {
-  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
-  border-color: rgba(255, 224, 161, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
 
-.mobile-nav-btn.generate-btn:hover {
-  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-}
-
-.mobile-nav-btn.generate-btn .mobile-nav-text {
-  background: #1a1a1a;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  font-weight: 700;
-  transition: all 0.3s ease;
-}
-
-.mobile-nav-btn.generate-btn:hover .mobile-nav-text {
-  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-.mobile-nav-btn.generate-btn.active {
-  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
-  border-color: rgba(255, 224, 161, 1);
-}
-
-.mobile-nav-btn.generate-btn.active .mobile-nav-text {
-  background: #1a1a1a;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
 
 .logo-button {
   background: none;
