@@ -19,7 +19,7 @@ export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-  const { setupGenerationListener } = useGlobalSongStatus();
+  const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData } = useGlobalSongStatus();
 
   const mounted = useRef(true);
   
@@ -40,30 +40,27 @@ export default function ResultPage() {
 
   // Reset loading progress when starting a new generation
   useEffect(() => {
-    if (requestId) {
-      const savedRequestId = localStorage.getItem('resultPageRequestId');
-      if (savedRequestId !== requestId) {
-        setLoadingProgress(0);
-        localStorage.setItem('resultPageLoadingProgress', '0');
-        localStorage.setItem('resultPageRequestId', requestId);
-        
-        // Save requestId for global monitoring
-        localStorage.setItem('activeGenerationRequestId', requestId);
-        
-        // Show loading notification for this generation
-        showNotification({
-          type: 'loading',
-          title: 'Se generează maneaua...',
-          message: 'AI-ul compune melodia ta personalizată.',
-          duration: 'manual',
-          requestId: requestId
-        });
-        
-        // Set up global listener for this generation
-        setupGenerationListener(requestId);
-      }
+    if (!requestId) return;
+    const savedRequestId = localStorage.getItem('resultPageRequestId');
+    const isNew = savedRequestId !== requestId;
+    if (isNew) {
+      setLoadingProgress(0);
+      localStorage.setItem('resultPageLoadingProgress', '0');
+      localStorage.setItem('resultPageRequestId', requestId);
+      localStorage.setItem('activeGenerationRequestId', requestId);
+      showNotification({
+        type: 'loading',
+        title: 'Se generează maneaua...',
+        message: 'AI-ul compune melodia ta personalizată.',
+        duration: 'manual',
+        requestId: requestId
+      });
     }
-  }, [requestId, showNotification, setupGenerationListener]);
+    // Setup global listener if not already active for this requestId
+    if (activeRequestId !== requestId) {
+      setupGenerationListener(requestId);
+    }
+  }, [requestId, activeRequestId, showNotification, setupGenerationListener]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
@@ -87,160 +84,62 @@ export default function ResultPage() {
     };
   }, []);
 
-  // ---- Listen to Generation Request if we only have requestId ----
+  // Rely on global generation listener; update local task state when global reveals it
   useEffect(() => {
-    if (!requestId) return;
-
-    let unsubscribe = null;
-
-    const setupListener = async () => {
-      try {
-        unsubscribe = onSnapshot(
-          doc(db, 'generationRequests', requestId),
-          (snap) => {
-            if (!mounted.current) return;
-            
-            if (!snap.exists()) {
-              setError('Cererea de generare nu a fost găsită.');
-              return;
-            }
-            const data = snap.data();
-
-            if (data.paymentStatus === 'failed') {
-              setError('Plata a eșuat. Reîncearcă.');
-              return;
-            }
-
-            if (data.taskId && !taskId) {
-              setTaskId(data.taskId);
-              setStatusMsg('Generarea piesei este în curs...');
-            }
-          },
-          (err) => {
-            console.error('Generation request listener error:', err);
-            if (mounted.current) {
-              setError('Eroare la citirea cererii de generare.');
-            }
-          }
-        );
-      } catch (err) {
-        console.error('Setup generation request listener error:', err);
-        if (mounted.current) {
-          setError('Eroare la inițializarea ascultătorului pentru cererea de generare.');
-        }
-      }
-    };
-
-    setupListener();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [requestId, taskId]);
-
-  // ---- Listen to taskStatus when taskId is available ----
+    if (activeTaskId && !taskId) {
+      setTaskId(activeTaskId);
+      setStatusMsg('Generarea piesei este în curs...');
+    }
+  }, [activeTaskId, taskId]);
+ 
+  // Consume global task data instead of a local listener
   useEffect(() => {
-    if (!taskId) return;
+    if (!latestTaskData) return;
+    if (!mounted.current) return;
 
-    let unsubscribe = null;
+    const data = latestTaskData;
+    console.log('Task status update (global):', data.status, data);
 
-    const setupListener = async () => {
-      try {
-        unsubscribe = onSnapshot(
-          doc(db, 'taskStatuses', taskId),
-          (snap) => {
-            if (!mounted.current) return;
+    if (data.lyrics) {
+      setCurrentSongLyrics(data.lyrics);
+    }
 
-            if (!snap.exists()) return;
-            const data = snap.data();
-
-            console.log('Task status update:', data.status, data);
-            
-            // Extrage versurile dacă există în data
-            if (data.lyrics) {
-              console.log('Lyrics found in task data:', data.lyrics);
-              // Salvează versurile în state
-              setCurrentSongLyrics(data.lyrics);
-            }
-            
-            switch (data.status) {
-              case 'processing':
-                setStatusMsg('AI-ul compune piesa...');
-                break;
-              case 'partial':
-              case 'completed':
-                if (data.songIds && data.songIds.length > 0) {
-                  console.log('Setting songId:', data.songIds[0]);
-                  console.log('Total songs generated:', data.songIds.length);
-                  setSongId(data.songIds[0]);
-                  
-                  // Dacă avem mai multe piese, putem afișa un mesaj informativ
-                  if (data.songIds.length > 1) {
-                    console.log('Multiple songs available:', data.songIds);
-                  }
-                } else {
-                  console.log('No songId in task data');
-                }
-                break;
-              case 'failed':
-                // Verifică dacă toate piesele au eșuat înainte de a arunca eroarea
-                if (data.songIds && data.songIds.length > 0) {
-                  // Dacă avem songIds, înseamnă că cel puțin o piesă s-a generat cu succes
-                  // Nu aruncăm eroare dacă avem cel puțin o piesă disponibilă
-                  console.log('Some songs failed but we have songIds, not showing error');
-                  console.log('Available songs:', data.songIds.length);
-                  setSongId(data.songIds[0]);
-                  
-                  // Opțional: putem afișa un mesaj că doar o parte din piese s-au generat
-                  if (data.songIds.length < 2) {
-                    console.log('Partial success: only', data.songIds.length, 'song(s) generated');
-                  }
-                } else {
-                  // Dacă nu avem songIds deloc, atunci toate piesele au eșuat
-                  console.log('All songs failed, showing error');
-                  setError(data.error || 'Generarea a eșuat pentru toate piesele.');
-                }
-                break;
-              default:
-                break;
-            }
-          },
-          (err) => {
-            console.error('Task status listener error:', err);
-            if (mounted.current) {
-              setError('Eroare la citirea statusului taskului.');
-            }
-          }
-        );
-      } catch (err) {
-        console.error('Setup task status listener error:', err);
-        if (mounted.current) {
-          setError('Eroare la inițializarea ascultătorului pentru status.');
+    switch (data.status) {
+      case 'processing':
+        setStatusMsg('AI-ul compune piesa...');
+        break;
+      case 'partial':
+      case 'completed': {
+        const resolvedSongId = data.songId || (Array.isArray(data.songIds) && data.songIds.length > 0 ? data.songIds[0] : null);
+        if (resolvedSongId) {
+          setSongId(resolvedSongId);
         }
+        break;
       }
-    };
-
-    setupListener();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
+      case 'failed': {
+        if (Array.isArray(data.songIds) && data.songIds.length > 0) {
+          setSongId(data.songIds[0]);
+        } else {
+          setError(data.error || 'Generarea a eșuat pentru toate piesele.');
+        }
+        break;
       }
-    };
-  }, [taskId]);
+      default:
+        break;
+    }
+  }, [latestTaskData]);
 
   // ---- Listen to song document when songId available ----
   useEffect(() => {
-    if (!songId) return;
+    const idToUse = activeSongId || songId;
+    if (!idToUse) return;
 
     let unsubscribe = null;
 
     const setupListener = async () => {
       try {
         unsubscribe = onSnapshot(
-          doc(db, 'songsPublic', songId),
+          doc(db, 'songsPublic', idToUse),
           (docSnap) => {
             if (!mounted.current) return;
             
@@ -279,7 +178,7 @@ export default function ResultPage() {
         unsubscribe();
       }
     };
-  }, [songId]);
+  }, [activeSongId, songId]);
 
   // Add loading progress animation and timeout
   useEffect(() => {
