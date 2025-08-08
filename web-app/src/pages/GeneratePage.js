@@ -1,21 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ComplexModeForm from '../components/ComplexModeForm';
 import EasyModeForm from '../components/EasyModeForm';
+import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 import '../styles/GeneratePage.css';
 
 export default function GeneratePage() {
   const [mode, setMode] = useState('hard');
+  const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isGenerationActive, activeRequestId } = useGlobalSongStatus();
   
   // Get pre-selected style from navigation state
   const preSelectedStyle = location.state?.selectedStyle;
   const fromHomePage = location.state?.fromHomePage;
 
+  // Check for active generation on component mount and redirect if needed
+  useEffect(() => {
+    const checkAndRedirect = () => {
+      if (isGenerationActive()) {
+        // Navigate to result page with the active request ID
+        const savedRequestId = localStorage.getItem('activeGenerationRequestId');
+        const requestIdToUse = activeRequestId || savedRequestId;
+        
+        if (requestIdToUse) {
+          navigate('/result', { 
+            state: { requestId: requestIdToUse },
+            replace: true // Replace current entry in history to prevent back navigation loops
+          });
+          return;
+        }
+      }
+      // If no active generation, allow the component to render
+      setIsChecking(false);
+    };
+
+    // Check immediately
+    checkAndRedirect();
+  }, [isGenerationActive, activeRequestId, navigate]);
+
   const handleBack = () => {
     navigate('/');
   };
+
+  // Show minimal loading div while checking to prevent flash
+  if (isChecking) {
+    return (
+      <div 
+        className="generate-page"
+        style={{
+          backgroundSize: '30%',
+          backgroundPosition: '0 0',
+          backgroundRepeat: 'repeat',
+          minHeight: '100vh'
+        }}
+      >
+      </div>
+    );
+  }
 
   return (
     <div 

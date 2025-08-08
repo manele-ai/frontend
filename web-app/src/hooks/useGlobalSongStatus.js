@@ -46,6 +46,39 @@ export const useGlobalSongStatus = () => {
   const [latestTaskData, setLatestTaskData] = useState(null);
   const [latestGenerationData, setLatestGenerationData] = useState(null);
 
+  // Helper function to determine if there's an active generation
+  const isGenerationActive = () => {
+    // Check if there's an active request ID (from localStorage or state)
+    const savedRequestId = localStorage.getItem('activeGenerationRequestId');
+    const hasActiveRequest = savedRequestId || activeRequestId;
+    
+    if (!hasActiveRequest) {
+      return false;
+    }
+    
+    // If we have task data, check if it's in a pending/processing state
+    if (latestTaskData) {
+      const status = latestTaskData.status;
+      // Consider 'processing' as active/pending, but not 'partial', 'completed', or 'failed'
+      return status === 'processing';
+    }
+    
+    // If we have generation data, check payment status
+    if (latestGenerationData) {
+      // If payment failed, don't consider it active
+      if (latestGenerationData.paymentStatus === 'failed') {
+        return false;
+      }
+      // If we have a taskId but no task data yet, consider it active
+      if (latestGenerationData.taskId) {
+        return true;
+      }
+    }
+    
+    // If we have an active request but no task data yet, consider it active
+    return true;
+  };
+
   const cleanupListeners = useCallback((requestId, taskId, songId) => {
     if (requestId && activeListeners.current.has(requestId)) {
       activeListeners.current.get(requestId)();
@@ -277,6 +310,8 @@ export const useGlobalSongStatus = () => {
     activeTaskId,
     activeSongId,
     latestTaskData,
-    latestGenerationData
+    latestGenerationData,
+    // Helper function
+    isGenerationActive
   };
 }; 
