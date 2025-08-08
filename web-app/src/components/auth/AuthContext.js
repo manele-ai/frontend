@@ -52,7 +52,6 @@ export function AuthProvider({ children }) {
    * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
    */
   const waitForUserDocCreation = (timeoutMs = 10000) => {
-    console.log('Oh yeah this is the real one')
     return new Promise((resolve) => {
       // Check if already settled
       if (isUserDocCreated !== null) {
@@ -85,7 +84,7 @@ export function AuthProvider({ children }) {
 
     try {
       // Force refresh token
-      await firebaseUser.getIdToken(true);
+      await firebaseUser.reload();
       // Fetch profile if exists, otherwise creates and returns it
       const { profile } = await createUserIfNotExists({
           displayName: firebaseUser.displayName,
@@ -152,8 +151,8 @@ export function AuthProvider({ children }) {
     
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      // Update display name in Firebase Auth
-      await updateProfile(auth.currentUser, {
+      // Update display name in Firebase Auth and wait for it to complete
+      await updateProfile(user, {
         displayName,
       });
       await fetchOrCreateUserProfile(user);
@@ -315,10 +314,7 @@ export function AuthProvider({ children }) {
         await updateProfile(user, {
           displayName,
         });
-        // Get fresh user object after update
-        await user.reload();
       }
-      
       await fetchOrCreateUserProfile(user);
     } catch (error) {
       console.error('Phone verification error:', error);
@@ -346,13 +342,7 @@ export function AuthProvider({ children }) {
       
       // Logged in
       setUser(user);
-      try {
-        await fetchOrCreateUserProfile(user);
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
     });
     return () => unsub && unsub();
   }, []);
