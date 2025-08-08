@@ -71,7 +71,7 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
         updatedAt: FieldValue.serverTimestamp(),
         // Update all-time stats using dot notation to avoid overwriting
         'stats.numSongsGenerated': FieldValue.increment(1),
-        'stats.sumDonationsTotal': FieldValue.increment(songData.userGenerationInput.wantsDonation ? 1 : 0),
+        'stats.sumDonationsTotal': FieldValue.increment(songData.userGenerationInput.wantsDonation ? (songData.userGenerationInput.donationAmount || 0) : 0),
         'stats.numDedicationsGiven': FieldValue.increment(songData.userGenerationInput.wantsDedication ? 1 : 0)
       });
 
@@ -95,7 +95,7 @@ export const updateLeaderboardOnSongCreated = onDocumentCreated(
         donations: {
           name: 'donationValue',
           shouldUpdate: songData.userGenerationInput.wantsDonation,
-          value: 1
+          value: songData.userGenerationInput.donationAmount || 0
         }
       };
 

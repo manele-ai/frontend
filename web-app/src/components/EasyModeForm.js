@@ -14,13 +14,13 @@ const EASY_FORM_DATA_KEYS = {
   IS_ACTIVE: 'easyForm_isActive'
 };
 
-export default function EasyModeForm({ onBack }) {
+export default function EasyModeForm({ onBack, preSelectedStyle }) {
   const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   // State pentru Easy Mode
-  const [selectedStyle, setSelectedStyle] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState(preSelectedStyle || null);
   const [songName, setSongName] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);

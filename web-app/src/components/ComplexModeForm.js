@@ -4,6 +4,7 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
+import AudioPlayer from './AudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 
@@ -22,13 +23,35 @@ const COMPLEX_FORM_DATA_KEYS = {
   IS_ACTIVE: 'complexForm_isActive'
 };
 
-export default function ComplexModeForm({ onBack }) {
+// Exemple de piese pentru serviciile de dedicație și donație
+const EXAMPLE_SONGS = {
+  dedication: {
+    id: 'dedication-example',
+    apiData: {
+      title: 'Dedicație pentru Maria',
+      imageUrl: '/photos/Petrecere.jpeg',
+      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+    },
+    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+  },
+  donation: {
+    id: 'donation-example',
+    apiData: {
+      title: 'Aruncat cu 100 RON',
+      imageUrl: '/photos/Comerciale.jpeg',
+      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+    },
+    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+  }
+};
+
+export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   // State pentru Complex Mode
-  const [selectedStyle, setSelectedStyle] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState(preSelectedStyle || null);
   const [songName, setSongName] = useState('');
   const [songDetails, setSongDetails] = useState('');
   const [wantsDedication, setWantsDedication] = useState(false);
@@ -53,6 +76,10 @@ export default function ComplexModeForm({ onBack }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
+  
+  // State pentru player-ele de exemplu
+  const [activeDedicationPlayer, setActiveDedicationPlayer] = useState(false);
+  const [activeDonationPlayer, setActiveDonationPlayer] = useState(false);
 
   // Funcții pentru persistența formularului
   const saveFormData = useCallback(() => {
@@ -510,6 +537,39 @@ export default function ComplexModeForm({ onBack }) {
       {/* Dedication Fields */}
       {wantsDedication && (
         <>
+
+        {/* From Name */}{/* Example Player for Dedication */}
+          <div className="example-player-container">
+            <div className="example-player-header">
+              <span className="example-player-label">Exemplu</span>
+            </div>
+            <div className="example-player-content">
+              <div className="example-song-info">
+                <img
+                  className="example-song-cover"
+                  src={EXAMPLE_SONGS.dedication.apiData.imageUrl}
+                  alt="cover"
+                  width={48}
+                  height={48}
+                />
+                <div className="example-song-details">
+                  <span className="example-song-title">{EXAMPLE_SONGS.dedication.apiData.title}</span>
+                  <span className="example-song-subtitle">Dedicație personalizată</span>
+                </div>
+              </div>
+              <div className="example-player-controls">
+                <AudioPlayer
+                  audioUrl={EXAMPLE_SONGS.dedication.storage.url}
+                  isPlaying={activeDedicationPlayer}
+                  onPlayPause={() => {
+                    setActiveDedicationPlayer(!activeDedicationPlayer);
+                    setActiveDonationPlayer(false); // Pause other player
+                  }}
+                  onError={() => {}}
+                />
+              </div>
+            </div>
+          </div>
           <div className="input-group">
             <label className="input-label">De la cine?</label>
             <input
@@ -543,7 +603,7 @@ export default function ComplexModeForm({ onBack }) {
             <input
               className={`input ${fieldErrors.dedication ? 'error' : ''}`}
               type="text"
-              placeholder="Dedicatie (opțional)"
+              placeholder="Dedicatie (ex: pentru tine, pentru mama, pentru baiatul meu)"
               value={dedication}
               onChange={(e) => {
                 setDedication(e.target.value);
@@ -552,6 +612,8 @@ export default function ComplexModeForm({ onBack }) {
             />
             {fieldErrors.dedication && <div className="field-error">{fieldErrors.dedication}</div>}
           </div>
+          
+          
         </>
       )}
 
@@ -592,6 +654,38 @@ export default function ComplexModeForm({ onBack }) {
       {/* Donation Fields */}
       {wantsDonation && (
         <>
+        {/* Example Player for Donation */}{/* Example Player for Donation */}
+          <div className="example-player-container">
+            <div className="example-player-header">
+              <span className="example-player-label">Exemplu</span>
+            </div>
+            <div className="example-player-content">
+              <div className="example-song-info">
+                <img
+                  className="example-song-cover"
+                  src={EXAMPLE_SONGS.donation.apiData.imageUrl}
+                  alt="cover"
+                  width={48}
+                  height={48}
+                />
+                <div className="example-song-details">
+                  <span className="example-song-title">{EXAMPLE_SONGS.donation.apiData.title}</span>
+                  <span className="example-song-subtitle">Aruncat cu bani personalizat</span>
+                </div>
+              </div>
+              <div className="example-player-controls">
+                <AudioPlayer
+                  audioUrl={EXAMPLE_SONGS.donation.storage.url}
+                  isPlaying={activeDonationPlayer}
+                  onPlayPause={() => {
+                    setActiveDonationPlayer(!activeDonationPlayer);
+                    setActiveDedicationPlayer(false); // Pause other player
+                  }}
+                  onError={() => {}}
+                />
+              </div>
+            </div>
+          </div>
           <div className="input-group">
             <label className="input-label">Numele celui care aruncă cu bani</label>
             <input
@@ -622,6 +716,8 @@ export default function ComplexModeForm({ onBack }) {
             />
             {fieldErrors.donationAmount && <div className="field-error">{fieldErrors.donationAmount}</div>}
           </div>
+          
+          
         </>
       )}
 
