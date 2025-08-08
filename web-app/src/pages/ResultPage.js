@@ -52,7 +52,7 @@ export default function ResultPage() {
         type: 'loading',
         title: 'Se generează maneaua...',
         message: 'AI-ul compune melodia ta personalizată.',
-        duration: 'manual',
+        duration: 20000,
         requestId: requestId
       });
     }

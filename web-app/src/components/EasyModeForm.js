@@ -214,7 +214,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
           type: 'loading',
           title: 'Se generează maneaua...',
           message: 'AI-ul compune melodia ta personalizată.',
-          duration: 'manual',
+          duration: 20000,
           requestId: response.requestId
         });
         console.log('[NOTIF-DEBUG] EasyMode: Notificare loading creată cu id:', notificationId);
