@@ -96,7 +96,8 @@ export async function createGenerationRequestTransaction(
         wantsDedication: data.wantsDedication,
         wantsDonation: data.wantsDonation,
         donationAmount: data.donationAmount
-      }
+      },
+      generationStarted: false,
     };
     transaction.set(generationRequestRef, generationRequest);
 

@@ -21,6 +21,21 @@ function loadStylePrompt(style: string) {
   return stylePrompt;
 }
 
+async function tryAcquireGenerationLock(requestId: string): Promise<boolean> {
+  return await db.runTransaction(async (transaction) => {
+    const requestRef = db.collection(COLLECTIONS.GENERATION_REQUESTS).doc(requestId);
+    const requestDoc = await transaction.get(requestRef);
+    if (requestDoc.exists && requestDoc.data()?.generationStarted) {
+      return false; // Already started
+    }
+    transaction.update(requestRef, {
+      generationStarted: true,
+      generationStartedAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+    });
+    return true; // We are first to start
+  });
+}
+
 export const generateSongTask = onTaskDispatched({
   retryConfig: {
     maxAttempts: 1, // No retries
@@ -42,6 +57,12 @@ export const generateSongTask = onTaskDispatched({
   let errorMessage: string | null = null;
 
   try {
+    const alreadyStarted = await tryAcquireGenerationLock(requestId);
+    if (!alreadyStarted) {
+      logger.log(`Generation lock for request ${requestId} already acquired, skipping duplicate execution`);
+      return;
+    }
+
     // Verify that the user exists in the database
     const userDoc = await db.collection(COLLECTIONS.USERS).doc(userId).get();
     if (!userDoc.exists) {
@@ -64,6 +85,7 @@ export const generateSongTask = onTaskDispatched({
       throw new HttpsError('internal', 'Received invalid response from music API');
     }
     const externalTaskId = musicApiResponse.data.taskId;
+    logger.log(`Created task ${externalTaskId} for generation request ${requestId}`);
 
     const batch = db.batch();
     // Write new task and its mirrored task status

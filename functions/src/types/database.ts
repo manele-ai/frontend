@@ -77,6 +77,8 @@ export namespace Database {
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     userGenerationInput: UserGenerationInput;
+    generationStarted?: boolean;
+    generationStartedAt?: admin.firestore.Timestamp;
   }
   
   export interface User {

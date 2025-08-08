@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import { db } from '../services/firebase';
@@ -31,6 +31,13 @@ export const useGlobalSongStatus = () => {
   const navigate = useNavigate();
   const activeListeners = useRef(new Map());
 
+  // Reactive state to expose to consumers
+  const [activeRequestId, setActiveRequestId] = useState(null);
+  const [activeTaskId, setActiveTaskId] = useState(null);
+  const [activeSongId, setActiveSongId] = useState(null);
+  const [latestTaskData, setLatestTaskData] = useState(null);
+  const [latestGenerationData, setLatestGenerationData] = useState(null);
+
   const cleanupListeners = useCallback((requestId, taskId, songId) => {
     if (requestId && activeListeners.current.has(requestId)) {
       activeListeners.current.get(requestId)();
@@ -56,6 +63,9 @@ export const useGlobalSongStatus = () => {
         
         const songData = docSnap.data();
         
+        // Expose active songId when we first attach
+        setActiveSongId(songId);
+
         // Check if song is complete (has title OR streamAudioUrl)
         if (songData && songData.apiData && (songData.apiData.title || songData.apiData.streamAudioUrl)) {
           clearAll();
@@ -99,20 +109,28 @@ export const useGlobalSongStatus = () => {
         }
         
         const data = snap.data();
+
+        // Expose latest task data and active ids
+        setActiveTaskId(taskId);
+        setLatestTaskData(data);
         
         switch (data.status) {
-          case 'completed':
-            if (data.songId) {
+          case 'completed': {
+            const resolvedSongId = data.songId || (Array.isArray(data.songIds) && data.songIds.length > 0 ? data.songIds[0] : null);
+            if (resolvedSongId) {
               // Set up song listener
-              setupSongListener(data.songId, requestId, taskId);
+              setupSongListener(resolvedSongId, requestId, taskId);
             }
             break;
-          case 'partial':
-            if (data.songId) {
+          }
+          case 'partial': {
+            const resolvedSongId = data.songId || (Array.isArray(data.songIds) && data.songIds.length > 0 ? data.songIds[0] : null);
+            if (resolvedSongId) {
               // Set up song listener even for partial status if we have songId
-              setupSongListener(data.songId, requestId, taskId);
+              setupSongListener(resolvedSongId, requestId, taskId);
             }
             break;
+          }
           case 'failed':
             // Clear loading notifications and show error
             clearAll();
@@ -158,7 +176,25 @@ export const useGlobalSongStatus = () => {
         }
         
         const data = snap.data();
+        setLatestGenerationData(data);
+
+        // Expose active request id
+        setActiveRequestId(requestId);
         
+        // Handle payment failure early
+        if (data.paymentStatus === 'failed') {
+          clearAll();
+          localStorage.removeItem('activeGenerationRequestId');
+          showNotification({
+            type: 'error',
+            title: 'Plata a eșuat',
+            message: 'Reîncearcă plata pentru a continua generarea.',
+            duration: 30000
+          });
+          cleanupListeners(requestId);
+          return;
+        }
+
         if (data.taskId && !activeListeners.current.has(data.taskId)) {
           // Set up task status listener
           setupTaskListener(data.taskId, requestId);
@@ -216,6 +252,12 @@ export const useGlobalSongStatus = () => {
 
   return {
     setupGenerationListener,
-    cleanupListeners
+    cleanupListeners,
+    // Exposed reactive state
+    activeRequestId,
+    activeTaskId,
+    activeSongId,
+    latestTaskData,
+    latestGenerationData
   };
 }; 

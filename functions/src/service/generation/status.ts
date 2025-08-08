@@ -114,8 +114,6 @@ async function addSongDataInDB({
     userGenerationInput: Database.UserGenerationInput,
 }) {
   const taskData = taskDoc.data() as Database.GenerateSongTask;
-  const songApiData = songData[0];
-  const filteredSongApiData = dropUndefined(songApiData);
 
   await db.runTransaction(async (transaction) => {
     const songQueries = songData.map((s) => 
@@ -129,16 +127,17 @@ async function addSongDataInDB({
     );
 
     const songIdsDB: string[] = [];
-    existingSongSnapshots.forEach((snapshot) => {
+    existingSongSnapshots.forEach((snapshot, index) => {
       let songId: string;
+      const songApiData = dropUndefined(songData[index]);
       if (!snapshot.empty) {
         // Song already exists in db, update with new data
         const existingSongDoc = snapshot.docs[0];
         songId = existingSongDoc.id;
         transaction.update(existingSongDoc.ref, {
           updatedAt: FieldValue.serverTimestamp(),
-          apiData: filteredSongApiData, // Overwrite entire map with new data
-        });
+          apiData: songApiData, // Overwrite entire map with new data
+        } as Partial<Database.SongData>);
       } else {
         // First time creating this song in db
         const newSongRef = db.collection(COLLECTIONS.SONGS).doc();
@@ -151,8 +150,8 @@ async function addSongDataInDB({
           createdAt: FieldValue.serverTimestamp(),
           updatedAt: FieldValue.serverTimestamp(),
           userGenerationInput,
-          apiData: filteredSongApiData,
-        } as Database.SongData);
+          apiData: songApiData,
+        } as Database.SongData); // TODO: { merge: true }
       }
       songIdsDB.push(songId);
     });
