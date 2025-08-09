@@ -276,13 +276,11 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     // Validare specială pentru suma donației
     if (wantsDonation && donationAmount.trim()) {
       const amount = parseInt(donationAmount);
-      if (amount < 10) {
-        newErrors.donationAmount = 'Suma trebuie să fie cel puțin 10 RON.';
-      } else if (amount % 10 !== 0) {
-        newErrors.donationAmount = 'Suma trebuie să fie multiplu de 10 (ex: 10, 20, 30, etc.).';
+      if (amount < 0) {
+        newErrors.donationAmount = 'Suma trebuie să fie mai mare de 0 RON';
       }
     } else if (wantsDonation && !donationAmount.trim()) {
-      newErrors.donationAmount = 'Te rugăm să introduci suma donației.';
+      newErrors.donationAmount = 'Introdu câți bani vrei să dai la dedicație.';
     }
 
     setFieldErrors(newErrors);
@@ -397,7 +395,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     const donationValidation = wantsDonation && (
       !donorName.trim() || 
       !donationAmount.trim() || 
-      (donationAmount.trim() && (parseInt(donationAmount) % 10 !== 0 || parseInt(donationAmount) < 10))
+      (donationAmount.trim() && parseInt(donationAmount) <= 0)
     );
 
     const hasValidationErrors = basicValidation || dedicationValidation || donationValidation;
@@ -692,8 +690,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                   height={48}
                 />
                 <div className="example-song-details">
-                  <span className="example-song-title">{EXAMPLE_SONGS.donation.apiData.title}</span>
-                  <span className="example-song-subtitle">Aruncat cu bani personalizat</span>
+                  <span className="example-song-title">Aruncat cu 10 RON</span>
+                  <span className="example-song-subtitle">Aruncat cu bani personalizat (10 RON va fi 100 RON in piesa)</span>
                 </div>
               </div>
               <div className="example-player-controls">
@@ -728,7 +726,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <input
               className={`input ${fieldErrors.donationAmount ? 'error' : ''}`}
               type="number"
-              placeholder="Ex: 100 RON (doar multipli de 10)"
+              placeholder="Ex: 10 RON (va fi 100 RON in piesa)"
               value={donationAmount}
               onChange={(e) => {
                 handleDonationAmountChange(e);
