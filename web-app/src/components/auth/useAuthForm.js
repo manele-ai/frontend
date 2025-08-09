@@ -332,11 +332,10 @@ export function useAuthForm({ onSuccess, onClose } = {}) {
     setLoading(true);
     try {
       await signInWithGoogle();
-      if (onClose) onClose();
-      if (onSuccess) onSuccess();
+      // Redirect will occur; no further actions here. Result handled on page load.
+      return;
     } catch (error) {
       setFormError(error.message);
-    } finally {
       setLoading(false);
     }
   };

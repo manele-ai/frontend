@@ -1,12 +1,13 @@
 import {
   createUserWithEmailAndPassword,
+  getRedirectResult,
   GoogleAuthProvider,
   onAuthStateChanged,
   RecaptchaVerifier,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   updateProfile
 } from 'firebase/auth';
@@ -189,14 +190,14 @@ export function AuthProvider({ children }) {
     
     try {
       const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
-      await fetchOrCreateUserProfile(user);
+      auth.languageCode = 'ro';
+      await signInWithRedirect(auth, provider);
+      // After this call, the page will redirect. Processing continues in the redirect handler effect.
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
-      throw new Error(errorMessage);
-    } finally {
       setLoading(false);
+      throw new Error(errorMessage);
     }
   };
 
@@ -326,6 +327,32 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Handle Google redirect result
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (isMounted && result && result.user) {
+          await fetchOrCreateUserProfile(result.user);
+        }
+      } catch (error) {
+        // Ignore benign no-event errors; surface others
+        const ignorable = ['auth/no-auth-event', 'auth/redirect-cancelled-by-user'];
+        if (!ignorable.includes(error?.code)) {
+          console.error('Google redirect result error:', error);
+          const errorMessage = getAuthErrorMessage(error.code);
+          setError(errorMessage);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+
+    return () => { isMounted = false; };
+  }, []);
+
   // Auth state listener
   useEffect(() => {
     let unsub = null;
@@ -342,7 +369,13 @@ export function AuthProvider({ children }) {
       
       // Logged in
       setUser(user);
-      setLoading(false);
+      try {
+        await fetchOrCreateUserProfile(user);
+      } catch (e) {
+        // Profile fetch/create failure is surfaced via error state elsewhere
+      } finally {
+        setLoading(false);
+      }
     });
     return () => unsub && unsub();
   }, []);

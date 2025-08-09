@@ -41,20 +41,32 @@ export async function initiateMusicGeneration({
       callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
     const { data } = await apiClient.post<MusicApi.Response<MusicApi.GenerateResponseData>>("/generate", requestBody);
+
+    // In-case the API returns HTTP 200 but embeds an error code in the body
+    if (typeof data?.code === "number" && data.code !== 200) {
+      logger.error("[MUSIC][initiateMusicGeneration] Music generationAPI body error", {
+        code: data.code,
+        msg: data.msg,
+        responseData: data,
+      });
+      throw new Error(`[MUSIC][initiateMusicGeneration] Music generation API error: ${data.msg || data.code}`);
+    }
+
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      logger.error("[MUSIC][initiateMusicGeneration] Axios error calling music generation API", {
+      logger.error("[MUSIC][initiateMusicGeneration] Error calling music generation API", {
         message: error.message,
+        code: error.code,
         response: error.response?.data,
         status: error.response?.status,
         headers: error.response?.headers,
         config: error.config,
       });
-      throw new Error("[MUSIC][initiateMusicGeneration] Axios error calling music generation API");
+      throw new Error("[MUSIC][initiateMusicGeneration] Error calling music generation API");
     }
-    logger.error("[MUSIC][initiateMusicGeneration] Non-Axios error calling music generation API", { error });
-    throw new Error("[MUSIC][initiateMusicGeneration] Non-Axios error calling music generation API");
+    logger.error("[MUSIC][initiateMusicGeneration] Error calling music generation API", { error });
+    throw new Error("[MUSIC][initiateMusicGeneration] Error calling music generation API");
   }
 }
 
