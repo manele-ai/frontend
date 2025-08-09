@@ -8,7 +8,7 @@ export { updateUserProfile } from './handlers/updateUserProfile';
 export { onGenerationRequestPaymentSuccess } from "./handlers/triggers/onGenerationRequestPaymentSuccess";
 export { mirrorSongsPublic } from './handlers/triggers/song/mirrorSongsPublic';
 export { onSongAudioUrlCreated } from './handlers/triggers/song/onSongAudioUrlCreated';
-export { updateLeaderboardOnSongCreated } from './handlers/triggers/song/updateLeaderboardOnSongCreated';
+export { updateStatsAndLeaderboardOnTaskSuccess } from './handlers/triggers/updateStatsAndLeaderboardOnTaskSuccess';
 export { mirrorUsersPublic } from './handlers/triggers/user/mirrorUsersPublic';
 export { onSubPeriodStartChange } from './handlers/triggers/user/onSubPeriodStartChange';
 

@@ -343,15 +343,15 @@ export default function ProfilePage() {
               <span className="stat-label">Credite piese</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.numSongsGenerated || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.numSongsGenerated || 0}</span>
               <span className="stat-label">Piese generate</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.numDedicationsGiven || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.numDedicationsGiven || 0}</span>
               <span className="stat-label">Dedicatii</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.aruncaCuBaniBalance * 10 || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.sumDonationsTotal || 0} RON</span>
               <span className="stat-label">Bani la lautar</span>
             </div>
           </div>
