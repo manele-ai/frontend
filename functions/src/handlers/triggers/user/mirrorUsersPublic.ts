@@ -38,9 +38,9 @@ export const mirrorUsersPublic = onDocumentWritten(
           sumDonationsTotal: afterData.stats.sumDonationsTotal,
         },
         isSubscribed: afterData.subscription?.status === 'active',
-        creditsBalance: afterData.creditsBalance,
-        dedicationBalance: afterData.dedicationBalance,
-        aruncaCuBaniBalance: afterData.aruncaCuBaniBalance,
+        creditsBalance: afterData.creditsBalance || 0,
+        dedicationBalance: afterData.dedicationBalance || 0,
+        aruncaCuBaniBalance: afterData.aruncaCuBaniBalance || 0,
       };
 
       await event.data?.after.ref.firestore

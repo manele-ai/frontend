@@ -45,6 +45,7 @@ export namespace Database {
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     lyrics?: string;
+    statsAlreadyUpdated?: boolean;
   }
 
   export interface GenerationRequest {

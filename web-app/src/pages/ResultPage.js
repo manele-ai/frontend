@@ -19,7 +19,7 @@ export default function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-  const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData, hasTimedOut } = useGlobalSongStatus();
+  const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData, latestGenerationData, hasTimedOut } = useGlobalSongStatus();
 
   const mounted = useRef(true);
   
@@ -116,6 +116,8 @@ export default function ResultPage() {
         break;
       }
       case 'failed': {
+        // Clear saved request id when task fails so user can start over
+        localStorage.removeItem('activeGenerationRequestId');
         if (Array.isArray(data.songIds) && data.songIds.length > 0) {
           setSongId(data.songIds[0]);
         } else {
@@ -212,8 +214,20 @@ export default function ResultPage() {
       setError('Generarea a durat prea mult. Te rugăm să încerci din nou.');
       // Clear loading progress on timeout
       localStorage.removeItem('resultPageLoadingProgress');
+      // Clear active request id on timeout so user can start over
+      localStorage.removeItem('activeGenerationRequestId');
     }
   }, [hasTimedOut, error]);
+
+  // Handle early generation failure (no task created, refunded/error at request level)
+  useEffect(() => {
+    if (!latestGenerationData) return;
+    if (latestGenerationData.refundedAsCredit === true || latestGenerationData.error) {
+      localStorage.removeItem('activeGenerationRequestId');
+      localStorage.removeItem('resultPageLoadingProgress');
+      setError(latestGenerationData.error || 'Generarea a eșuat. Te rugăm să încerci din nou.');
+    }
+  }, [latestGenerationData]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);

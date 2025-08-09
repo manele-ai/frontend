@@ -66,6 +66,15 @@ export default function ProfilePage() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isEditing]);
 
+  useEffect(() => {
+    if (userData) {
+      setFormData(prevState => ({
+        ...prevState,
+        displayName: userData.displayName || prevState.displayName
+      }));
+    }
+  }, [userData]);
+
   // Filtrare piese după stil
   const filteredSongs = selectedStyle === 'all'
     ? songs
@@ -221,6 +230,12 @@ export default function ProfilePage() {
         photoURL: photoURLToSave,
       });
       setIsEditing(false);
+
+      // Update locally to dislay new name if all went well
+      setUserData(prevState => ({
+        ...prevState,
+        displayName: formData.displayName
+      }));
     } catch (err) {
       setError(err.message || 'Eroare la salvarea profilului');
     } finally {
@@ -343,15 +358,15 @@ export default function ProfilePage() {
               <span className="stat-label">Credite piese</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.numSongsGenerated || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.numSongsGenerated || 0}</span>
               <span className="stat-label">Piese generate</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.numDedicationsGiven || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.numDedicationsGiven || 0}</span>
               <span className="stat-label">Dedicatii</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userData?.aruncaCuBaniBalance * 10 || 0}</span>
+              <span className="stat-number gold-text">{userData?.stats?.sumDonationsTotal || 0} RON</span>
               <span className="stat-label">Bani la lautar</span>
             </div>
           </div>

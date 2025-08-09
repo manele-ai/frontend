@@ -57,6 +57,7 @@ export const generateSongTask = onTaskDispatched({
   let errorMessage: string | null = null;
 
   try {
+    // Acquiring without releasing is fine because we only try the task once anyway
     const alreadyStarted = await tryAcquireGenerationLock(requestId);
     if (!alreadyStarted) {
       logger.log(`Generation lock for request ${requestId} already acquired, skipping duplicate execution`);

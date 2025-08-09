@@ -49,6 +49,7 @@ function parseResponseText(responseText: string): string {
 export async function generateLyrics(data : Requests.GenerateSong): Promise<{ lyrics: string }> {
   try {
     const { userPrompt, systemPrompt } = buildLyricsPrompts(data);
+    logger.info("[OPENAI][generateLyrics] Built lyrics prompt for style " + data.style);
 
     const chatgptResponse = await apiClient.post<ChatCompletionResponse>("/chat/completions", {
       model: OPENAI_MODEL,
@@ -58,24 +59,25 @@ export async function generateLyrics(data : Requests.GenerateSong): Promise<{ ly
       ],
       temperature: 1.0, // >1 e mai creative, <1 e mai consistent
     });
-
-    logger.info("[OPENAI][FULL RESPONSE] ", JSON.stringify(chatgptResponse.data, null, 2));
+    logger.info("[OPENAI][generateLyrics] Got response from OpenAI API");
 
     // Extract the response text safely
     const responseText = findTextContentInResponse(chatgptResponse.data);
-    logger.info("[OPENAI][LYRICS RESPONSE] ", responseText);
+    logger.info("[OPENAI][generateLyrics] Found response text from OpenAI API");
     
     // Parse and validate the response format
-    const lyrics = parseResponseText(responseText);
+    const lyrics = parseResponseText(responseText); 
+    logger.info("[OPENAI][generateLyrics] Parsed response text from OpenAI API");
+    
     return {
       lyrics,
     };
 
   } catch (error) {
-    logger.error("Error calling OpenAI API:", error);
+    logger.error("[OPENAI][generateLyrics] Error generating lyrics:", error);
     if (axios.isAxiosError(error)) {
-      throw new Error(`OpenAI API error: ${error.message}`);
+      throw new Error(`Error generating lyrics: ${error.message}`);
     }
-    throw new Error("Failed to generate lyrics with OpenAI API.");
+    throw new Error("Error generating lyrics");
   }
 } 
