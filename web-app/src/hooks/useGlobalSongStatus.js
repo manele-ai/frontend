@@ -91,10 +91,14 @@ export const useGlobalSongStatus = () => {
       return status === 'processing';
     }
     
-    // If we have generation data, check payment status
+    // If we have generation data, check statuses
     if (latestGenerationData) {
-      // If payment failed, don't consider it active
-      if (latestGenerationData.paymentStatus === 'failed') {
+      // If payment failed or request was marked as refunded/error, don't consider it active
+      if (
+        latestGenerationData.paymentStatus === 'failed' ||
+        latestGenerationData.refundedAsCredit === true ||
+        !!latestGenerationData.error
+      ) {
         return false;
       }
       // If we have a taskId but no task data yet, consider it active
@@ -329,6 +333,20 @@ export const useGlobalSongStatus = () => {
           return;
         }
 
+        // Handle early generation failure (before task creation)
+        if (data.refundedAsCredit === true || data.error) {
+          clearAll();
+          localStorage.removeItem('activeGenerationRequestId');
+          showNotification({
+            type: 'error',
+            title: 'Eroare la generare',
+            message: data.error || 'Generarea a eșuat. Te rugăm să încerci din nou.',
+            duration: 30000
+          });
+          cleanupListeners(requestId);
+          return;
+        }
+
         if (data.taskId && !activeListeners.current.has(data.taskId)) {
           // Set up task status listener
           setupTaskListener(data.taskId, requestId);
@@ -340,7 +358,7 @@ export const useGlobalSongStatus = () => {
     );
 
     activeListeners.current.set(requestId, unsubscribe);
-  }, [setupTaskListener, resetTimeoutState]);
+  }, [setupTaskListener, resetTimeoutState, clearAll, showNotification, cleanupListeners]);
 
   // Check for active generations in localStorage
   useEffect(() => {
