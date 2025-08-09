@@ -81,7 +81,7 @@
   margin-top: 50px;
 }
 
-.profile-avatar { position: relative; margin-bottom: 10px; }
+.profile-avatar { position: relative; margin-bottom: 2px; }
 
 .profile-page .vip-badge {
   position: absolute;
@@ -1076,4 +1076,110 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   padding: 8px 10px;
   font-size: 13px;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  /* Ensure items stack and center on mobile */
+  .profile-page .profile-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .profile-page .profile-avatar {
+    justify-self: center;
+  }
+
+  .profile-page .profile-info {
+    align-items: center;
+  }
+
+  .profile-page .profile-user-details {
+    align-items: center;
+  }
+
+  /* Keep actions on the same row and centered */
+  .profile-page .profile-mini-actions {
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .profile-page .profile-mini-actions .edit-profile-button,
+  .profile-page .profile-mini-actions .text-link {
+    white-space: nowrap;
+  }
+}
+
+/* Extra-small devices tweaks */
+@media (max-width: 380px) {
+  .profile-page .profile-mini-actions .edit-profile-button,
+  .profile-page .profile-mini-actions .text-link {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Center all header items */
+  .profile-page .container { align-items: center; }
+  .profile-page .profile-header { grid-template-columns: 1fr; justify-items: center; }
+  .profile-page .profile-info { align-items: center; }
+  .profile-page .profile-user-details { align-items: center; }
+  .profile-page .profile-mini-actions { justify-content: center; gap: 10px; flex-wrap: nowrap; }
+
+  /* Stats as rows: label + value on one line, each stat on its own row */
+  .profile-page .profile-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 560px;            /* center the whole stats block */
+    margin: 0 auto;              /* horizontally center on mobile */
+    justify-self: stretch;
+    justify-items: center;       /* center each row container */
+  }
+  .profile-page .profile-stats-grid .stat-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;                 /* row fills the centered grid width */
+    margin: 0;                   /* no extra margins; grid handles centering */
+    padding: 12px 16px;
+    text-align: left;
+  }
+  /* Ensure label comes before value visually */
+  .profile-page .profile-stats-grid .stat-label { order: 1; font-size: 14px; }
+  .profile-page .profile-stats-grid .stat-number { order: 2; font-size: 20px; margin: 0; text-align: right; }
+}
+
+@media (max-width: 380px) {
+  .profile-page .profile-stats-grid { max-width: 320px; }
+  .profile-page .profile-stats-grid .stat-item { width: 100%; padding: 10px 12px; }
+  .profile-page .profile-stats-grid .stat-number { font-size: 18px; }
+}
+
+/* Tablet/iPad layout: place stats as a single row below the header */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .profile-page .profile-header {
+    grid-template-columns: 120px 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 16px;
+  }
+  .profile-page .profile-stats-grid {
+    grid-column: 1 / -1; /* span full width under header */
+    grid-row: 2;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: center;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Tighter spacing between avatar and name */
+  .profile-page .profile-header { gap: 10px; padding-top: 4px; }
+  .profile-page .profile-avatar { margin-bottom: 0; }
+  .profile-page .profile-username { margin-top: 0; }
+
+  /* Raise the header on mobile by reducing page top padding */
+  .profile-page { padding-top: 30px; }
 }
