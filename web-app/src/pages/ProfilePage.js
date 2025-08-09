@@ -66,6 +66,15 @@ export default function ProfilePage() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isEditing]);
 
+  useEffect(() => {
+    if (userData) {
+      setFormData(prevState => ({
+        ...prevState,
+        displayName: userData.displayName || prevState.displayName
+      }));
+    }
+  }, [userData]);
+
   // Filtrare piese după stil
   const filteredSongs = selectedStyle === 'all'
     ? songs
@@ -221,6 +230,12 @@ export default function ProfilePage() {
         photoURL: photoURLToSave,
       });
       setIsEditing(false);
+
+      // Update locally to dislay new name if all went well
+      setUserData(prevState => ({
+        ...prevState,
+        displayName: formData.displayName
+      }));
     } catch (err) {
       setError(err.message || 'Eroare la salvarea profilului');
     } finally {
