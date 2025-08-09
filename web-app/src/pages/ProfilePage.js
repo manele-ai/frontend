@@ -227,7 +227,7 @@ export default function ProfilePage() {
 
       await updateUserProfile({
         displayName: formData.displayName,
-        photoURL: photoURLToSave,
+        ...(photoURLToSave ? { photoURL: photoURLToSave } : {}),
       });
       setIsEditing(false);
 

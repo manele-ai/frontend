@@ -301,6 +301,19 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     }
   };
 
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      const errorElements = document.querySelectorAll('.field-error');
+      for (let i = 0; i < errorElements.length; i++) {
+        const el = errorElements[i];
+        if (el && el.textContent && el.textContent.trim()) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          break;
+        }
+      }
+    }, 50);
+  };
+  
   const handleDonationAmountChange = (e) => {
     const value = e.target.value;
     
@@ -401,6 +414,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     const hasValidationErrors = basicValidation || dedicationValidation || donationValidation;
 
     if (hasValidationErrors) {
+      scrollToFirstError();
       return;
     }
 
