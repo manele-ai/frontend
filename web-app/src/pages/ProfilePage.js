@@ -303,7 +303,7 @@ export default function ProfilePage() {
             {userData?.photoURL ? (
               <img 
                 src={avatarPreview || userData.photoURL} 
-                alt={displayName}
+                alt=""
                 className="avatar-image avatar-image-large"
               />
             ) : (
@@ -316,7 +316,7 @@ export default function ProfilePage() {
                   />
                 ) : (
                   <div className="avatar-placeholder avatar-placeholder-large">
-                    {displayInitial}
+                    {(user?.displayName || user?.email || '?').charAt(0).toUpperCase()}
                   </div>
                 )}
               </>
@@ -334,11 +334,8 @@ export default function ProfilePage() {
 
           <div className="profile-info">
             <div className="profile-user-details">
-              <div className="profile-username gold-text">{displayName}</div>
-              <div className="profile-email-text gold-text">{user?.email}</div>
-              {/* <div className="subscription-status gold-text">
-                {isSubscribed ? 'Manelist VIP' : 'Manelist'}
-              </div> */}
+              <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
+              <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
               <div className="profile-mini-actions">
                 <button className="edit-profile-button" onClick={() => setIsEditing(true)}>
                   Editeaza profilul
