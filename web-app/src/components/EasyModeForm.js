@@ -184,6 +184,19 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
     }
   };
 
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      const errorElements = document.querySelectorAll('.field-error');
+      for (let i = 0; i < errorElements.length; i++) {
+        const el = errorElements[i];
+        if (el && el.textContent && el.textContent.trim()) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          break;
+        }
+      }
+    }, 50);
+  };
+  
   const sendGenerationRequest = async () => {
     setIsProcessing(true);
     setError(null);
@@ -267,6 +280,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
     const basicValidation = !selectedStyle || !songName.trim();
 
     if (basicValidation) {
+      scrollToFirstError();
       return;
     }
 
