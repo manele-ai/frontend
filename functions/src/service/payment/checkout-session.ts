@@ -45,7 +45,7 @@ export const createSongCheckoutSession = async ({
         price_data: {
           currency: 'RON',
           product_data: { name: `Arunca cu bani - ${aruncaCuBaniAmountToPay} RON` },
-          unit_amount: aruncaCuBaniAmountToPay * 100,
+          unit_amount: aruncaCuBaniAmountToPay * 100, // unit_amount is in cents, don't modify this
         },
         quantity: 1,
       });

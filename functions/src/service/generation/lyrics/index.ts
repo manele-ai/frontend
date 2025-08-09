@@ -72,7 +72,8 @@ function fillInUserRequests(data: Requests.GenerateSong) {
         __dirname, '..', '..', '..', 'data', 'prompts', 'ARUNCA_CU_BANI.md'),
         'utf8'
       );
-    const suma = formatMoneyRON(Math.floor(data.donationAmount));
+    // We multiply by 10 for extra barosaneala
+    const suma = formatMoneyRON(Math.floor(data.donationAmount * 10));
     let arunca_cu_bani_instruction = arunca_cu_bani_template
       .replace(/\[NUME\]/g, data.from)
       .replace(/\[SUMA\]/g, suma);
