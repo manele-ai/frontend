@@ -116,6 +116,10 @@ export namespace Database {
     displayName: string;
     createdAt: admin.firestore.Timestamp;
     photoURL?: string;
+    creditsBalance?: number;
+    dedicationBalance?: number;
+    aruncaCuBaniBalance?: number;
+    isSubscribed?: boolean;
     stats: {
       numSongsGenerated: number;
       numDedicationsGiven: number;

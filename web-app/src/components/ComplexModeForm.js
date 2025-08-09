@@ -213,7 +213,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     if (user && isAuthenticated) {
       import('firebase/firestore').then(({ getDoc, doc }) => {
         import('../services/firebase').then(({ db }) => {
-          getDoc(doc(db, "usersPublic", user.uid)).then(userDoc => {
+          // Align with ProfilePage: read from 'users' for up-to-date credits
+          getDoc(doc(db, "users", user.uid)).then(userDoc => {
             setUserCredits(userDoc.data()?.creditsBalance ?? 0);
           });
         });

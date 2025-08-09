@@ -12,13 +12,11 @@ import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
 
 import AuthPage from './pages/AuthPage';
+import ExemplePage from './pages/ExemplePage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
-import LoadingPage from './pages/LoadingPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
-// import PaymentPage from './pages/PaymentPage'; // Eliminat Stripe
-import ExemplePage from './pages/ExemplePage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import TarifePage from './pages/TarifePage';
@@ -56,11 +54,6 @@ function AppContent() {
         <Route path="/tarife" element={<TarifePage />} />
         
         {/* Protected routes */}
-        <Route path="/loading" element={
-          <ProtectedRoute>
-            <LoadingPage />
-          </ProtectedRoute>
-        } />
         <Route path="/result" element={
           <ProtectedRoute>
             <ResultPage />
