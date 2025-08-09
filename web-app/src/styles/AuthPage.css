@@ -288,8 +288,7 @@
 .field-error {
   color: #ff4d4f;
   font-size: 0.8rem;
-  margin-top: 4px;
-  margin-bottom: -8px;
+  margin-bottom: 8px;
 }
 
 .auth-toggle-method {
