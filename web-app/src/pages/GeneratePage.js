@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/auth/AuthContext';
 import ComplexModeForm from '../components/ComplexModeForm';
 import EasyModeForm from '../components/EasyModeForm';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
@@ -11,6 +12,8 @@ export default function GeneratePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isGenerationActive, activeRequestId, hasTimedOut } = useGlobalSongStatus();
+  const { user, isAuthenticated } = useAuth();
+  const [userCredits, setUserCredits] = useState(0);
   
   // Get pre-selected style from navigation state
   const preSelectedStyle = location.state?.selectedStyle;
@@ -45,6 +48,24 @@ export default function GeneratePage() {
     // Check immediately
     checkAndRedirect();
   }, [isGenerationActive, activeRequestId, hasTimedOut, navigate]);
+
+  // Load user credits for display in Generate page header
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      import('firebase/firestore').then(({ getDoc, doc }) => {
+        import('../services/firebase').then(({ db }) => {
+          // Align with ProfilePage: read from 'users' for authoritative, up-to-date data
+          getDoc(doc(db, 'users', user.uid))
+            .then((userDoc) => {
+              setUserCredits(userDoc.data()?.creditsBalance ?? 0);
+            })
+            .catch(() => setUserCredits(0));
+        });
+      });
+    } else {
+      setUserCredits(0);
+    }
+  }, [user, isAuthenticated]);
 
   const handleBack = () => {
     navigate('/');
@@ -88,6 +109,13 @@ export default function GeneratePage() {
 
       {/* Main Content Container */}
       <div className="main-content-container">
+        {/* Credits badge above mode selector */}
+        <div className="credits-badge-container">
+          <div className="credits-badge" title="Le poti folosi oricand in aplicatie">
+            <span className="credits-badge-label">Credite piese:</span>
+            <span className="credits-badge-value">{userCredits}</span>
+          </div>
+        </div>
         {/* Mode Slider */}
         <div className="mode-slider-container">
           <div className="mode-slider">

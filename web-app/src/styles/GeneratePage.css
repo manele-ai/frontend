@@ -92,6 +92,44 @@
   margin-bottom: 20px;
 }
 
+/* Credits badge within GeneratePage hero */
+.generate-page .credits-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+.generate-page .credits-badge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 12px 0;
+}
+
+.generate-page .credits-badge-label {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #a2a5bd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.generate-page .credits-badge-value {
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 800;
+  font-size: 16px;
+}
+
 .generate-page .hero-card-img {
   width: 60%;
   height: 300px;
