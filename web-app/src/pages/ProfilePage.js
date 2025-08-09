@@ -1,11 +1,12 @@
 import { doc, getDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { getDownloadURL, ref as storageRef, uploadString } from 'firebase/storage';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import SongItem from '../components/SongItem';
 import { styles } from '../data/stylesData';
 import { useSongs } from '../hooks/useSongs';
-import { db } from '../services/firebase';
+import { db, storage } from '../services/firebase';
 import '../styles/ProfilePage.css';
 
 export default function ProfilePage() {
@@ -19,68 +20,51 @@ export default function ProfilePage() {
   });
   const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState('');
+  const [avatarError, setAvatarError] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarWebpDataUrl, setAvatarWebpDataUrl] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { songs, loading: songsLoading, error: songsError } = useSongs();
   const [activeSong, setActiveSong] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState('all');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [userStats, setUserStats] = useState({
-    creditsBalance: 0,
-    numSongsGenerated: 0,
-    numDedicationsGiven: 0,
-    aruncaCuBaniBalance: 0
-  });
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
       if (!user?.uid) {
-        setIsSubscribed(false);
-        setUserStats({
-          creditsBalance: 0,
-          numSongsGenerated: 0,
-          numDedicationsGiven: 0,
-          aruncaCuBaniBalance: 0
-        });
+        setUserData(null);
         return;
       }
       try {
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, 'usersPublic', user.uid);
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          const subscriptionStatus = userData.subscription?.status;
-          setIsSubscribed(subscriptionStatus === 'active');
-          
-          // Set user statistics
-          setUserStats({
-            creditsBalance: userData.creditsBalance || 0,
-            numSongsGenerated: userData.stats?.numSongsGenerated || 0,
-            numDedicationsGiven: userData.stats?.numDedicationsGiven || 0,
-            aruncaCuBaniBalance: userData.aruncaCuBaniBalance || 0
-          });
+          setUserData(userData);
         } else {
-          setIsSubscribed(false);
-          setUserStats({
-            creditsBalance: 0,
-            numSongsGenerated: 0,
-            numDedicationsGiven: 0,
-            aruncaCuBaniBalance: 0
-          });
+          setUserData(null);
         }
       } catch (err) {
         console.error('Error checking subscription status:', err);
-        setIsSubscribed(false);
-        setUserStats({
-          creditsBalance: 0,
-          numSongsGenerated: 0,
-          numDedicationsGiven: 0,
-          aruncaCuBaniBalance: 0
-        });
       }
     };
 
     checkSubscriptionStatus();
   }, [user]);
+
+  // Close edit modal on Escape key
+  useEffect(() => {
+    if (!isEditing) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleCancel();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isEditing]);
 
   // Filtrare piese după stil
   const filteredSongs = selectedStyle === 'all'
@@ -122,14 +106,119 @@ export default function ProfilePage() {
     setError('');
   };
 
+  const MAX_AVATAR_BYTES = 300 * 1024; // 300 KB limit
+  const MAX_DIMENSION = 512; // resize to fit within 512x512
+  const WEBP_QUALITY = 0.8; // 80% quality for good balance
+
+  const processImageToWebp = async (file) => {
+    // Validate type
+    if (!file.type.startsWith('image/')) {
+      throw new Error('Te rugăm să alegi un fișier imagine.');
+    }
+
+    // Load into Image
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Nu s-a putut citi fișierul.'));
+      reader.readAsDataURL(file);
+    });
+
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Nu s-a putut încărca imaginea.'));
+      image.src = dataUrl;
+    });
+
+    // Compute target size while preserving aspect ratio
+    const { width, height } = img;
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
+    const targetW = Math.round(width * scale);
+    const targetH = Math.round(height * scale);
+
+    // Draw to canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    // Export as WebP with target quality, possibly try reducing quality to pass size cap
+    let quality = WEBP_QUALITY;
+    let webpDataUrl = canvas.toDataURL('image/webp', quality);
+
+    const dataUrlToBytes = (du) => {
+      const base64 = (du.split(',')[1] || '');
+      const padding = (base64.match(/=+$/) || [''])[0].length;
+      return Math.ceil((base64.length * 3) / 4) - padding;
+    };
+
+    // If bigger than limit, iteratively reduce quality
+    let attempts = 0;
+    while (dataUrlToBytes(webpDataUrl) > MAX_AVATAR_BYTES && attempts < 5) {
+      quality = Math.max(0.4, quality - 0.1);
+      webpDataUrl = canvas.toDataURL('image/webp', quality);
+      attempts += 1;
+    }
+
+    if (dataUrlToBytes(webpDataUrl) > MAX_AVATAR_BYTES) {
+      throw new Error('Imaginea este prea mare după compresie. Te rugăm să alegi o imagine mai mică.');
+    }
+
+    return webpDataUrl;
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError('');
+    setAvatarError('');
+
+    try {
+      const webpDataUrl = await processImageToWebp(file);
+      setAvatarWebpDataUrl(webpDataUrl);
+      setAvatarPreview(webpDataUrl);
+    } catch (err) {
+      console.error(err);
+      setAvatarError(err.message || 'Eroare la procesarea imaginii.');
+      setAvatarWebpDataUrl(null);
+      setAvatarPreview(null);
+    }
+  };
+
+  const uploadAvatarAndGetUrl = async (dataUrl) => {
+    if (!user?.uid) throw new Error('Neautentificat');
+    const path = `avatars/${user.uid}.webp`;
+    const avatarRef = storageRef(storage, path);
+    // Upload as data_url so contentType is preserved
+    await uploadString(avatarRef, dataUrl, 'data_url');
+    const url = await getDownloadURL(avatarRef);
+    return url;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaveLoading(true);
     setError('');
+    setAvatarError('');
 
     try {
+      let photoURLToSave = undefined;
+      if (avatarWebpDataUrl) {
+        try {
+          photoURLToSave = await uploadAvatarAndGetUrl(avatarWebpDataUrl);
+        } catch (uploadErr) {
+          console.error(uploadErr);
+          setAvatarError(uploadErr.message || 'Eroare la încărcarea imaginii.');
+          setSaveLoading(false);
+          return; // stop saving if avatar upload failed
+        }
+      }
+
       await updateUserProfile({
-        displayName: formData.displayName
+        displayName: formData.displayName,
+        photoURL: photoURLToSave,
       });
       setIsEditing(false);
     } catch (err) {
@@ -144,6 +233,9 @@ export default function ProfilePage() {
       displayName: userProfile?.displayName || '',
       email: user?.email || ''
     });
+    setAvatarWebpDataUrl(null);
+    setAvatarPreview(null);
+    setAvatarError('');
     setIsEditing(false);
     setError('');
   };
@@ -177,7 +269,7 @@ export default function ProfilePage() {
   }
 
   const displayInitial = (userProfile?.displayName || user?.email || 'U').charAt(0).toUpperCase();
-  const displayName = userProfile?.displayName || 'Utilizator';
+  const displayName = userData?.displayName || 'Utilizator';
 
   return (
     <div 
@@ -193,20 +285,34 @@ export default function ProfilePage() {
         {/* Redesigned profile header */}
         <div className="profile-header">
           <div className="profile-avatar profile-avatar-large">
-            {userProfile?.photoURL ? (
+            {userData?.photoURL ? (
               <img 
-                src={userProfile.photoURL} 
+                src={avatarPreview || userData.photoURL} 
                 alt={displayName}
                 className="avatar-image avatar-image-large"
               />
             ) : (
-              <div className="avatar-placeholder avatar-placeholder-large">
-                {displayInitial}
-              </div>
+              <>
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt={displayName}
+                    className="avatar-image avatar-image-large"
+                  />
+                ) : (
+                  <div className="avatar-placeholder avatar-placeholder-large">
+                    {displayInitial}
+                  </div>
+                )}
+              </>
             )}
-            {!isSubscribed && (
+            {userData?.subscription?.status === 'active' ? (
               <div className="vip-badge" title="Abonament activ">
                 💎 VIP
+              </div>
+            ) : (
+              <div className="unsubscribed-badge" title="Abonament inactiv">
+                👑
               </div>
             )}
           </div>
@@ -220,7 +326,7 @@ export default function ProfilePage() {
               </div> */}
               <div className="profile-mini-actions">
                 <button className="edit-profile-button" onClick={() => setIsEditing(true)}>
-                  Editează profilul
+                  Editeaza profilul
                 </button>
                 <button className="text-link soft-red-text" onClick={handleLogout}>
                   Log Out
@@ -232,77 +338,24 @@ export default function ProfilePage() {
           <div className="profile-stats-grid">
             <div className="stat-item">
               <span className="stat-number gold-text" title="Le poti folosi oricand in aplicatie">
-                {userStats.creditsBalance}
+                {userData?.creditsBalance || 0}
               </span>
               <span className="stat-label">Credite piese</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userStats.numSongsGenerated}</span>
+              <span className="stat-number gold-text">{userData?.numSongsGenerated || 0}</span>
               <span className="stat-label">Piese generate</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userStats.numDedicationsGiven}</span>
+              <span className="stat-number gold-text">{userData?.numDedicationsGiven || 0}</span>
               <span className="stat-label">Dedicatii</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userStats.aruncaCuBaniBalance * 10}</span>
+              <span className="stat-number gold-text">{userStats.aruncaCuBaniBalance * 10 || 0}</span>
               <span className="stat-label">Bani la lautar</span>
             </div>
           </div>
         </div>
-
-        {!isEditing ? (
-          <></>
-        ) : (
-          <div className="profile-actions">
-            <form onSubmit={handleSave} className="edit-form">
-              <div className="form-group">
-                <label htmlFor="displayName">Nume afișat</label>
-                <input
-                  type="text"
-                  id="displayName"
-                  name="displayName"
-                  value={formData.displayName}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  disabled
-                  className="form-input disabled"
-                />
-                <small>Email-ul nu poate fi modificat</small>
-              </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="cancel-button hero-btn"
-                  disabled={saveLoading}
-                >
-                  <span className="hero-btn-text">Anulează</span>
-                </button>
-                <button
-                  type="submit"
-                  className="save-button hero-btn"
-                  disabled={saveLoading}
-                >
-                  <span className="hero-btn-text">{saveLoading ? 'Se salvează...' : 'Salvează'}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
         {error && (
           <div className="error-message">
             {error}
@@ -366,6 +419,90 @@ export default function ProfilePage() {
               <span className="hero-btn-text">Generează manea</span>
             </button>
       </div>
+
+      {isEditing && (
+        <div className="modal-overlay" onClick={handleCancel} role="dialog" aria-modal="true">
+            <div className="profile-actions" onClick={(e) => e.stopPropagation()}>
+              <form onSubmit={handleSave} className="edit-form">
+                <button
+                  type="button"
+                  aria-label="Închide"
+                  className="modal-close-btn"
+                  onClick={handleCancel}
+                >
+                  ×
+                </button>
+
+                <div className="form-group">
+                  <label htmlFor="displayName">Nume</label>
+                  <input
+                    type="text"
+                    id="displayName"
+                    name="displayName"
+                    value={formData.displayName}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                {/* Avatar uploader (drag & drop) */}
+                <div className="form-group">
+                  <label>Poză profil</label>
+                  <div
+                    className={`avatar-dropzone${isDragging ? ' active' : ''}`}
+                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleAvatarChange({ target: { files: [f] } }); }}
+                    onClick={() => fileInputRef.current?.click()}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                  >
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Previzualizare avatar" className="avatar-image avatar-image-large" />
+                    ) : (
+                      <div className="dropzone-desc">
+                        <span>Trage și plasează aici imaginea</span>
+                        <small>Sau folosește butonul de mai jos</small>
+                      </div>
+                    )}
+                  </div>
+                  {avatarError && (
+                    <div className="upload-error">{avatarError}</div>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="dropzone-actions">
+                    <button
+                      type="button"
+                      className="edit-profile-button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={saveLoading}
+                    >
+                      Alege un fișier
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-actions single">
+                  <button
+                    type="submit"
+                    className="save-button"
+                    disabled={saveLoading}
+                  >
+                    {saveLoading ? 'Se salvează...' : 'Salvează'}
+                  </button>
+                </div>
+              </form>
+            </div>
+        </div>
+      )}
     </div>
   );
 } 
