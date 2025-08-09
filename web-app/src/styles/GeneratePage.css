@@ -1187,6 +1187,13 @@
     padding: 12px;
     margin-top: 12px;
   }
+
+  .example-player-controls{
+    width: 100%;
+    background-color: transparent;
+    border-radius: 0px;
+    padding: 0px;
+  }
   
   .example-song-cover {
     width: 40px;
@@ -1206,6 +1213,13 @@
   .example-player-container {
     padding: 10px;
     margin-top: 10px;
+  }
+
+  .example-player-controls{
+    width: 100%;
+    background-color: transparent;
+    border-radius: 0px;
+    padding: 0px;
   }
   
   .example-song-cover {
