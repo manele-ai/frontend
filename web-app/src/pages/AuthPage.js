@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/auth/AuthContext';
 import { LoginForm } from '../components/auth/LoginForm';
 import { ResetPasswordForm } from '../components/auth/ResetPasswordForm';
 import { SignupForm } from '../components/auth/SignupForm';
@@ -9,6 +11,15 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const infoMessage = location.state?.message;
+  const { isAuthenticated, loading: authLoading } = useAuth();
+
+  // If already authenticated (e.g., after Google redirect), send the user away from /auth
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      const redirectTo = location.state?.from?.pathname || '/';
+      navigate(redirectTo, { replace: true });
+    }
+  }, [authLoading, isAuthenticated, navigate, location.state]);
 
   const {
     isLogin,
