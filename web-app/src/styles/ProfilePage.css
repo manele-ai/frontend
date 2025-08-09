@@ -83,7 +83,7 @@
 
 .profile-avatar { position: relative; margin-bottom: 10px; }
 
-.vip-badge {
+.profile-page .vip-badge {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -96,6 +96,13 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   border: 1px solid rgba(0,0,0,0.5);
   white-space: nowrap;
+}
+
+.profile-page .unsubscribed-badge {
+  position: absolute;
+  top: -6px;
+  right: 8px;
+  font-size: 26px;
 }
 
 @media (max-width: 768px) {
@@ -167,12 +174,12 @@
   max-width: 200px;
 }
 
-.stat-item {
+.profile-stats-grid .stat-item {
   text-align: center;
   flex: 1;
 }
 
-.stat-number {
+.profile-stats-grid .stat-number {
   display: block;
   font-size: 28px;
   font-weight: bold;
@@ -181,7 +188,7 @@
   border-color: var(--gold-gradient-end);
 }
 
-.stat-label {
+.profile-stats-grid .stat-label {
   color: #a2a5bd;
   font-size: 14px;
 }
@@ -189,12 +196,14 @@
 .profile-actions {
   margin-top: 30px;
   width: 100%;
-  max-width: 448px;
   margin-left: auto;
   margin-right: auto;
+  border: 0;
+  max-width: 520px;
+  padding: 20px;
 }
 
-.edit-button {
+.profile-actions .edit-button {
   box-sizing: border-box;
   width: 190.8px;
   height: 51.675px;
@@ -215,33 +224,32 @@
   letter-spacing: inherit;
 }
 
-.edit-button:hover {
+.profile-actions .edit-button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.edit-button:active {
+.profile-actions .edit-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
 
-
-
-.edit-form {
-  background-color: #2B2B2B;
-  padding: 20px 15px;
+.profile-actions .edit-form {
+  background-color: #23242b;
+  padding: 40px 15px 20px 15px;
   border-radius: 20px;
   width: 100%;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
 }
 
-.form-group {
+.profile-actions .form-group {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
-.form-group label {
+.profile-actions .form-group label {
   display: block;
   color: #F1D292;
   text-align: center;
@@ -250,15 +258,15 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   letter-spacing: 0.5px;
 }
 
-.form-input {
+.profile-actions .form-input {
   width: 100%;
   height: 50px;
   background: rgba(59, 59, 59, 0.68);
-  color: #fff;
+  color: #fffcec;
   border: 1.5px solid #333;
   border-radius: 8px;
   padding: 10px 15px;
@@ -274,29 +282,36 @@
   box-sizing: border-box;
 }
 
-.form-input::placeholder {
+.profile-actions .form-input::placeholder {
   color: #aaa;
 }
 
-.form-input.disabled {
+.profile-actions .form-input:focus {
+  outline: none;
+  border-color: rgba(255, 187, 1, 0.394);
+  border-width: 1px;
+  box-shadow: 0 0 0 2px rgba(234, 177, 17, 0.3);
+}
+
+.profile-actions .form-input.disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.form-group small {
+.profile-actions .form-group small {
   color: #666;
   font-size: 12px;
   margin-top: 5px;
   display: block;
 }
 
-.form-actions {
+.profile-actions .form-actions {
   display: flex;
   gap: 15px;
   justify-content: flex-end;
 }
 
-.cancel-button {
+.edit-form .cancel-button {
   box-sizing: border-box;
   width: 120px;
   height: 45px;
@@ -317,18 +332,18 @@
   letter-spacing: inherit;
 }
 
-.cancel-button:hover:not(:disabled) {
+.edit-form .cancel-button:hover:not(:disabled) {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.cancel-button:active {
+.edit-form .cancel-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
 
-.save-button {
+.edit-form .save-button {
   box-sizing: border-box;
   width: 120px;
   height: 45px;
@@ -349,30 +364,30 @@
   letter-spacing: inherit;
 }
 
-.save-button:hover:not(:disabled) {
+.edit-form .save-button:hover:not(:disabled) {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.save-button:active {
+.edit-form .save-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
 
-.save-button:hover:not(:disabled) {
+.edit-form .save-button:hover:not(:disabled) {
   background-color: #eab111;
   transform: translateY(-1px);
 }
 
-.cancel-button:disabled,
-.save-button:disabled {
+.edit-form .cancel-button:disabled,
+.edit-form .save-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
 
-.error-message {
+.profile-page .error-message {
   background-color: #ff3b30;
   color: #fff;
   border-radius: 8px;
@@ -382,7 +397,7 @@
   border: 1px solid #ff6b6b;
 }
 
-.quick-actions {
+.profile-page .quick-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
@@ -393,24 +408,24 @@
 }
 
 /* Make buttons fill the grid columns equally */
-.quick-actions .action-button {
+.profile-page .quick-actions .action-button {
   width: 100%;
   height: 56px;
 }
 
 /* Subtle visual separation from header */
-.quick-actions { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+.profile-page .quick-actions { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .quick-actions { grid-template-columns: repeat(3, 1fr); }
+  .profile-page .quick-actions { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
-  .quick-actions { grid-template-columns: 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+  .profile-page .quick-actions { grid-template-columns: 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
 }
 
-.action-button {
+.profile-page .action-button {
   box-sizing: border-box;
   width: 300px;
   height: 51.675px;
@@ -430,20 +445,18 @@
   letter-spacing: inherit;
 }
 
-.action-button:hover {
+.profile-page .action-button:hover {
   background: #2a2a2a;
   transform: translateY(-1px);
   box-shadow: -1px 3px 2px 0px #000;
 }
 
-.action-button:active {
+.profile-page .action-button:active {
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
 
-
-
-.action-icon {
+.profile-page .action-icon {
   font-size: 20px;
   display: flex;
   align-items: center;
@@ -451,7 +464,21 @@
   flex-shrink: 0;
 }
 
-.back-button {
+.profile-page .action-button .hero-btn-text {
+background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.profile-page .back-button {
   position: absolute;
   top: 80px; /* Adjusted for header */
   left: 20px;
@@ -471,7 +498,7 @@
 }
 
 
-.loading-container {
+.profile-page .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -480,7 +507,7 @@
   gap: 20px;
 }
 
-.spinner {
+.profile-page .spinner {
   width: 40px;
   height: 40px;
   border: 4px solid #23242b;
@@ -494,12 +521,12 @@
   100% { transform: rotate(360deg); }
 }
 
-.loading-container p {
+.profile-page .loading-container p {
   color: #a2a5bd;
   font-size: 16px;
 }
 
-.profile-songs-card {
+.profile-page .profile-songs-card {
   background: #23242b;
   border-radius: 18px;
   box-shadow: none;
@@ -512,14 +539,14 @@
   flex-direction: column;
   align-items: stretch;
 }
-.profile-song-list {
+.profile-page .profile-song-list {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.profile-song-card {
+.profile-page .profile-song-card {
   display: flex;
   padding: 10px;
   align-items: center;
@@ -532,21 +559,21 @@
   transition: all 0.3s ease;
 }
 
-.profile-song-card:hover {
+.profile-page .profile-song-card:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(234, 177, 17, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.song-styles-filter {
+.profile-page .song-styles-filter {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
-.style-filter-btn {
+.profile-page .style-filter-btn {
   background: #23242b;
   color: #e9d7b7;
   border: none;
@@ -559,7 +586,7 @@
   outline: none;
 }
 
-.style-filter-btn.active {
+.profile-page .style-filter-btn.active {
   background: linear-gradient(90deg, #ffeecd 0%, #cfaf6e 100%);
   color: #23242b;
   font-weight: 600;
@@ -590,26 +617,26 @@
     gap: 20px;
   }
   
-  .form-actions {
+  .profile-actions .form-actions {
     flex-direction: column;
   }
   
-  .profile-song-card {
+  .profile-page .profile-song-card {
     padding: 8px;
     gap: 12px;
   }
   
-  .quick-actions {
+  .profile-page .quick-actions {
     flex-direction: column;
     align-items: center;
   }
   
-  .action-button {
+  .profile-page .action-button {
     width: 100%;
     max-width: 350px;
   }
   
-  .back-button {
+  .profile-page .back-button {
     top: 70px; /* Adjusted for smaller header */
     left: 15px;
     padding: 8px 12px;
@@ -618,7 +645,7 @@
 } 
 
 @media (max-width: 600px) {
-  .song-styles-filter {
+  .profile-page .song-styles-filter {
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 8px;
@@ -629,21 +656,21 @@
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE 10+ */
   }
-  .song-styles-filter::-webkit-scrollbar {
+  .profile-page .song-styles-filter::-webkit-scrollbar {
     display: none;
   }
-  .profile-song-card {
+  .profile-page .profile-song-card {
     padding: 6px;
     gap: 10px;
   }
   
-  .style-filter-btn {
+  .profile-page .style-filter-btn {
     flex: 0 0 auto;
     padding: 7px 12px;
     font-size: 14px;
   }
   /* Fade effect left */
-  .song-styles-filter::before {
+  .profile-page .song-styles-filter::before {
     content: '';
     position: absolute;
     left: 0;
@@ -655,7 +682,7 @@
     z-index: 2;
   }
   /* Fade effect right */
-  .song-styles-filter::after {
+  .profile-page .song-styles-filter::after {
     content: '';
     position: absolute;
     right: 0;
@@ -669,7 +696,7 @@
 } 
 
 /* New header layout */
-.profile-header {
+.profile-page .profile-header {
   display: grid;
   grid-template-columns: 120px 1fr 1.2fr;
   gap: 24px;
@@ -678,20 +705,20 @@
   padding: 12px 8px;
 }
 
-.profile-info {
+.profile-page .profile-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-self: center;
 }
 
-.profile-user-details {
+.profile-page .profile-user-details {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.profile-stats-grid {
+.profile-page .profile-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
@@ -699,7 +726,7 @@
   align-self: center;
 }
 
-.profile-stats-grid .stat-item {
+.profile-page .profile-stats-grid .stat-item {
   text-align: center;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -708,7 +735,7 @@
   transition: all 0.2s ease;
 }
 
-.profile-stats-grid .stat-item:hover {
+.profile-page .profile-stats-grid .stat-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(234, 177, 17, 0.3);
 }
@@ -771,22 +798,8 @@
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #eab111;
+  border: 3px solid #e4bf5c;
 }
-
-/* .avatar-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: #eab111;
-  color: #1a1a1a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: bold;
-  border: 3px solid #eab111;
-} */
 
 /* Make placeholder text scale for large variant */
 .avatar-placeholder-large { font-size: 48px; }
@@ -821,7 +834,7 @@
   margin-top: 6px;
 }
 
-.edit-profile-button {
+.profile-page .edit-profile-button {
   /* distinct from username/email gold gradient */
   color: #F1D292; /* warm sand/gold, solid */
   border: none;
@@ -837,9 +850,9 @@
   text-decoration: none;
 }
 
-.edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
+.profile-page .edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
 
-.text-link {
+.profile-page .text-link {
   background: transparent;
   border: none;
   padding: 0;
@@ -848,14 +861,219 @@
   font-weight: 600;
 }
 
-.soft-red-text {
+.profile-page .soft-red-text {
   color: #ff7a7a;
 }
 
-.soft-red-text:hover { color: #ff9a9a; }
+.profile-page .soft-red-text:hover { color: #ff9a9a; }
 
-.divider-dot { color: rgba(255,255,255,0.35); }
+.profile-page .divider-dot { color: rgba(255,255,255,0.35); }
 
 @media (max-width: 768px) {
-  .profile-mini-actions { justify-content: center; }
+  .profile-page .profile-mini-actions { justify-content: center; }
 } 
+
+/* Modal styles */
+.profile-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999; /* ensure above all */
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 768px) {
+  .profile-page .profile-actions {
+    margin: 0 16px;
+    padding: 16px;
+    max-width: 95vw;
+  }
+} 
+
+/* New styles for avatar uploader preview */
+.profile-page .edit-form .avatar-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.profile-page .edit-form .avatar-preview img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid #eab111;
+  object-fit: cover;
+} 
+
+/* Drag & drop avatar uploader */
+.profile-page .avatar-dropzone {
+  border: 1.5px dashed rgba(235, 197, 95, 0.4);
+  background: rgba(59, 59, 59, 0.4);
+  border-radius: 12px;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.profile-page .avatar-dropzone:hover,
+.profile-page .avatar-dropzone.active {
+  border-color: rgba(234, 177, 17, 0.7);
+  background: rgba(59, 59, 59, 0.55);
+  box-shadow: 0 0 0 2px rgba(234, 177, 17, 0.18) inset;
+}
+
+.profile-page .avatar-dropzone .dropzone-desc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #e9d7b7;
+  font-size: 14px;
+}
+
+.profile-page .dropzone-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.profile-page .dropzone-browse-btn:active {
+  /* distinct from username/email gold gradient */
+  color: #F1D292; /* warm sand/gold, solid */
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.profile-page .dropzone-browse-btn:hover:not(:disabled) { text-decoration: underline; color: #ffe7aa; }
+
+/* Edit modal close button (X) */
+.profile-page .modal-close-btn {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gold-gradient);
+  color: #1a1a1a;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: -1px 2px 0px 0px #000;
+  z-index: 5;
+}
+
+.profile-page .modal-close-btn:hover { transform: translateY(-1px); box-shadow: -1px 3px 2px 0px #000; }
+.profile-page .modal-close-btn:active { transform: translateY(0); box-shadow: -1px 1px 0px 0px #000; }
+
+/* Use text-link-like style for the browse button, matching edit-profile-button */
+.profile-page .dropzone-actions .edit-profile-button {
+  color: #F1D292;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.profile-page .dropzone-actions .edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
+
+/* Save button in gold with dark text */
+.profile-page .save-button {
+  min-width: 140px;
+  height: 45px;
+  border-radius: 4150.876px;
+  border: none;
+  background: var(--gold-gradient);
+  color: #1a1a1a;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: -1px 2px 0px 0px #000;
+}
+
+.profile-page .save-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.profile-page .save-button:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
+
+/* Align single button to right */
+.profile-page .form-actions.single {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Center the single Save button */
+.profile-page .form-actions.single {
+  display: flex;
+  justify-content: center;
+}
+
+/* Ensure the close button positions relative to the modal card */
+.profile-page .edit-form { position: relative; }
+
+/* Close button positioned at top-left of the modal panel */
+.profile-page .modal-close-btn {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gold-gradient);
+  color: #1a1a1a;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: -1px 2px 0px 0px #000;
+  z-index: 5;
+}
+
+/* Inline upload error styling */
+.profile-page .upload-error {
+  margin-top: 8px;
+  background-color: rgba(255, 59, 48, 0.12);
+  color: #ff9a9a;
+  border: 1px solid rgba(255, 59, 48, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  text-align: center;
+}
