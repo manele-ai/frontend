@@ -351,7 +351,7 @@ export default function ProfilePage() {
               <span className="stat-label">Dedicatii</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gold-text">{userStats.aruncaCuBaniBalance * 10 || 0}</span>
+              <span className="stat-number gold-text">{userData?.aruncaCuBaniBalance * 10 || 0}</span>
               <span className="stat-label">Bani la lautar</span>
             </div>
           </div>
