@@ -23,19 +23,19 @@ const ExampleSongsList = () => {
   };
 
   return (
-    <div className="example-songs-container">
-      <h2 className="example-songs-title">Piese generate</h2>
-      <div className="example-song-list">
+    <div className="exlist-container">
+      <h2 className="exlist-title">Piese generate</h2>
+      <div className="exlist-list">
         {EXAMPLE_SONGS.map((song) => (
-          <div key={song.id} className="example-song-card">
-            <div className="example-song-left">
-              {/* <div className="example-song-cover" /> */}
-              <div className="example-song-info">
-                <div className="example-song-artist">{song.artist}</div>
-                <div className="example-song-name">{song.title}</div>
+          <div key={song.id} className="exlist-card">
+            <div className="exlist-left">
+              {/* <div className="exlist-cover" /> */}
+              <div className="exlist-info">
+                <div className="exlist-artist">{song.artist}</div>
+                <div className="exlist-name">{song.title}</div>
               </div>
             </div>
-            <div className="example-song-right">
+            <div className="exlist-right">
               <AudioPlayer
                 audioUrl={song.audioUrl}
                 isPlaying={currentPlayingId === song.id}

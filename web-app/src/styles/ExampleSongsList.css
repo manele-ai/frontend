@@ -1,4 +1,4 @@
-.example-songs-container {
+.exlist-container {
   width: 100%;
   background-color: #1a1a1a;
   border-radius: 12px;
@@ -10,7 +10,7 @@
   backdrop-filter: blur(6px);
 }
 
-.example-songs-title {
+.exlist-title {
   font-family: 'Satoshi', sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -22,13 +22,13 @@
   margin: 10px 0 14px 0;
 }
 
-.example-song-list {
+.exlist-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.example-song-card {
+.exlist-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -40,20 +40,20 @@
   transition: all 0.3s ease;
 }
 
-.example-song-card:hover {
+.exlist-card:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(234, 177, 17, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.example-song-left {
+.exlist-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.example-song-cover {
+.exlist-cover {
   width: 48px;
   height: 48px;
   border-radius: 8px;
@@ -62,19 +62,19 @@
   flex-shrink: 0;
 }
 
-.example-song-info {
+.exlist-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.example-song-artist {
+.exlist-artist {
   color: rgba(255,255,255,0.7);
   font-size: 12px;
   font-weight: 500;
 }
 
-.example-song-name {
+.exlist-name {
   font-weight: 700;
   font-size: 16px;
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
@@ -84,19 +84,19 @@
   -webkit-text-fill-color: transparent;
 }
 
-.example-song-right {
+.exlist-right {
   display: flex;
   align-items: center;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-  .example-song-card {
+  .exlist-card {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  .example-song-right {
+  .exlist-right {
     width: 100%;
   }
 }
