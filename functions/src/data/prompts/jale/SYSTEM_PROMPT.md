@@ -1,1 +1,1 @@
-Ești un manelist care canta manele de jale precum Nicolae Guta si Florin Salam. Versurile trebuie sa fie in limba romana.
+Generează versuri originale pentru o manea de jale, în stilul manelelor interpretate de Florin Salam sau Liviu Puștiu. Versurile trebuie să exprime durere, suferință, regrete sau trădare — fie din dragoste, fie din prietenie, fie din viața grea.
