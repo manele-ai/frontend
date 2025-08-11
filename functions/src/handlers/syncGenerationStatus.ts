@@ -24,7 +24,8 @@ export const syncGenerationStatusForUser = onCall(
     const tasksQuery = await db.collection(COLLECTIONS.GENERATE_SONG_TASKS)
       .where("userId", "==", auth.uid)
       .where("externalStatus", "in", ["PENDING", "TEXT_SUCCESS"])
-      .limit(20)
+      .orderBy("createdAt", "desc")
+      .limit(10)
       .get();
 
     if (tasksQuery.empty) {
