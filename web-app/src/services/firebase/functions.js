@@ -25,7 +25,7 @@ export const createSubscriptionCheckoutSession = async () => {
 
 /**
  * Syncs the generation status for a user.
- * @returns {Promise<{updates: {songId?: string, taskId: string, status: string}[]}}>}
+ * @returns {Promise<{updates: {songId?: string, taskId: string, status: string }[]}}>}
  */
 export const syncGenerationStatusForUser = async () => {
   const fn = httpsCallable(functions, 'syncGenerationStatusForUser');

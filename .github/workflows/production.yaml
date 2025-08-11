@@ -1,10 +1,7 @@
-name: Vercel Production Deployment
+name: Production Deployment
 
 on:
     push:
-        branches:
-            - main
-    pull_request:
         branches:
             - main
 
@@ -17,15 +14,16 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           # These are public, don't worry
           FIREBASE_REGION: europe-central2
-          FIREBASE_PROJECT_ID: manele-io-testing
-          REACT_APP_STRIPE_PUBLISHABLE_KEY: pk_test_51RoNSY52PGkk7WNvAXBljO2IYGljmOW5dLgiJ1cdnEHRcgkCtHDsuD3v93bvpE9mNpXNGUU0fq38banmvAP0rRwB00newRAyiz
-          REACT_APP_FIREBASE_API_KEY: AIzaSyDO8Q9uHEFrPcS2ep-JABAN4eI0v1gQFww
-          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-testing.firebaseapp.com
-          REACT_APP_FIREBASE_PROJECT_ID: manele-io-testing
-          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io-testing.firebasestorage.app
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 555349769112
-          REACT_APP_FIREBASE_APP_ID: 1:555349769112:web:ebefecc513ed5b98e209ed
-          REACT_APP_FIREBASE_MEASUREMENT_ID: G-7Z71ZS98GC
+          FIREBASE_PROJECT_ID: manele-io
+          REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          REACT_APP_FIREBASE_API_KEY: AIzaSyBfbDzK4D03fHO8oK5jjQ4R5G22gbjFXzU
+          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io.firebaseapp.com
+          REACT_APP_FIREBASE_PROJECT_ID: manele-io
+          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io.firebasestorage.app
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 330997102731
+          REACT_APP_FIREBASE_APP_ID: 1:330997102731:web:757a264affa21f8b463c8e
+          REACT_APP_FIREBASE_MEASUREMENT_ID: G-V86K4FCXT3
+          REACT_APP_RECAPTCHA_SITE_KEY: 6Lc2G6MrAAAAAH_z1XT4gKUZy8LOKC6mQQNQWRuJ
         steps:
             - uses: actions/checkout@v3
             - name: Install Node.js
@@ -46,29 +44,24 @@ jobs:
             - name: Deploy Project Artifacts
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
-            # Deploy backend to Firebase
-            - name: Authenticate to Google Cloud
-              uses: google-github-actions/auth@v1
-              with:
-                credentials_json: ${{ secrets.GCP_SA_KEY }}
-
             - name: Install Firebase CLI
-              run: npm install -g firebase-tools@latest 
+              run: npm install -g firebase-tools@13.18.0
 
             - name: Generate .env file for Functions
               run: |
                 mkdir -p functions
-                cat <<EOF > functions/.env.${{ secrets.FIREBASE_PROJECT_ID }}
+                cat <<EOF > functions/.env
                 THIRD_PARTY_API_BASE_URL=${{ secrets.THIRD_PARTY_API_BASE_URL }}
                 THIRD_PARTY_API_KEY=${{ secrets.THIRD_PARTY_API_KEY }}
-                MP3_STORAGE_BUCKET=${{ secrets.MP3_STORAGE_BUCKET }}
+                MP3_STORAGE_BUCKET=manele-io.firebasestorage.app
                 OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
                 STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
                 STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
                 STRIPE_PRICE_ID_SONG=${{ secrets.STRIPE_PRICE_ID_SONG }}
+                STRIPE_PRICE_ID_DEDICATION=${{ secrets.STRIPE_PRICE_ID_DEDICATION }}
                 STRIPE_PRICE_ID_SUBSCRIPTION=${{ secrets.STRIPE_PRICE_ID_SUBSCRIPTION }}
                 STRIPE_COUPON_ID_SUBSCRIBED_SONG=${{ secrets.STRIPE_COUPON_ID_SUBSCRIBED_SONG }}
-                FRONTEND_BASE_URL=https://staging-9bha86vbc1980bca71.manele.io
+                FRONTEND_BASE_URL=https://manele.io
                 EOF
 
             - name: Build Firebase functions
@@ -81,4 +74,6 @@ jobs:
               run: |
                 firebase deploy \
                   --only functions,firestore,storage \
-                  --project "$FIREBASE_PROJECT_ID"
+                  --project "$FIREBASE_PROJECT_ID" \
+                  --token "${{ secrets.FIREBASE_SECRET_TOKEN }}" \
+                  --force

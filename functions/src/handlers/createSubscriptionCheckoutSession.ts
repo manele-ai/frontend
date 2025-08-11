@@ -11,7 +11,10 @@ import { createCustomer, getCustomerIdByUserId } from "../service/payment/custom
  * @throws HttpsError if the user is not authenticated or if the generation request cannot be created.
  */
 export const createSubscriptionCheckoutSession = onCall(
-  { region: REGION },
+  { 
+    region: REGION,
+    enforceAppCheck: true,
+  },
   async (request) => {
     if (!stripe) {
       throw new HttpsError('internal', 'Stripe not initialized');

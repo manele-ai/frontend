@@ -1,4 +1,4 @@
-name: Vercel Staging Deployment
+name: Staging Deployment
 
 on:
     push:
@@ -23,6 +23,7 @@ jobs:
           REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 473723194717
           REACT_APP_FIREBASE_APP_ID: 1:473723194717:web:b1e1e9d2cdb7c7964d2cb4
           REACT_APP_FIREBASE_MEASUREMENT_ID: G-W7YVXY1W5T
+          REACT_APP_RECAPTCHA_SITE_KEY: 6Lc2G6MrAAAAAH_z1XT4gKUZy8LOKC6mQQNQWRuJ
         steps:
             - uses: actions/checkout@v3
             - name: Install Node.js
