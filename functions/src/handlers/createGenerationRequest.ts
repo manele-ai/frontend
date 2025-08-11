@@ -24,7 +24,6 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
   { 
     region: REGION,
     enforceAppCheck: true,
-    consumeAppCheckToken: true,
   },
   async (request) => {
     if (!stripe) {

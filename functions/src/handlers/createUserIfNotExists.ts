@@ -13,7 +13,6 @@ export const createUserIfNotExists = onCall(
   { 
     region: REGION,
     enforceAppCheck: true,
-    consumeAppCheckToken: true,
   },
   async (request) => {
   if (!request.auth) {

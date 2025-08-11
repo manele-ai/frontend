@@ -6,7 +6,6 @@ import { Database } from "../types";
 export const updateUserProfile = onCall({ 
   region: REGION,
   enforceAppCheck: true,
-  consumeAppCheckToken: true,
 }, async (request) => {
   const { displayName, photoURL } = request.data;
 

@@ -23,6 +23,9 @@ export const firebaseConfig = {
   appId: !useEmulators ? process.env.REACT_APP_FIREBASE_APP_ID : dummyFirebaseConfig.appId,
 };
 
+export const appCheckSiteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+// export const appCheckDebugToken = process.env.REACT_APP_APPCHECK_DEBUG_TOKEN;
+
 // App configuration
 export const appConfig = {
   name: 'Manele IO',

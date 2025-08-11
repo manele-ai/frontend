@@ -14,7 +14,6 @@ export const createSubscriptionCheckoutSession = onCall(
   { 
     region: REGION,
     enforceAppCheck: true,
-    consumeAppCheckToken: true,
   },
   async (request) => {
     if (!stripe) {

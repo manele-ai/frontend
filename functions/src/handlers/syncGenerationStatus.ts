@@ -9,7 +9,6 @@ export const syncGenerationStatusForUser = onCall(
   { 
     region: REGION,
     enforceAppCheck: true,
-    consumeAppCheckToken: true,
   },
   async (request): Promise<{
     updates: {
