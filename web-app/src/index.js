@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -49,6 +50,7 @@ root.render(
     <PostHogProvider apiKey={process.env.REACT_APP_POSTHOG_KEY} options={options}>
       <PostHogErrorBoundary fallback={ErrorFallback}>
         <App />
+        <Analytics />
       </PostHogErrorBoundary>
     </PostHogProvider>
   </React.StrictMode>
