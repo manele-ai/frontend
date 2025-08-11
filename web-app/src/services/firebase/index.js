@@ -15,7 +15,7 @@ export const storage = getStorage(app);
 
 if (useEmulators) {
   // @ts-ignore
-  window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckSiteKey;
 }
 
 export const appCheck = initializeAppCheck(app, {
