@@ -24,7 +24,8 @@ export function LoginForm({
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    // Focus on email input when component mounts or when switching to email mode
+    if (!isPhoneAuth && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isPhoneAuth]);

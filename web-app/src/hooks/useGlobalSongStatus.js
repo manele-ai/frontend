@@ -61,6 +61,11 @@ export const useGlobalSongStatus = () => {
       timeoutRef.current = null;
     }
     setTimeoutStartTime(null);
+    
+    // Clear timeout-related localStorage items
+    localStorage.removeItem('generationTimeoutStart');
+    localStorage.removeItem('generationTimeoutRequestId');
+    localStorage.removeItem('generationTimeoutTaskId');
   }, []);
 
   // Function to reset timeout state (useful when starting a new generation)
@@ -131,8 +136,14 @@ export const useGlobalSongStatus = () => {
     // Clear any existing timeout first
     clearGenerationTimeout();
     
-    setTimeoutStartTime(Date.now());
+    const startTime = Date.now();
+    setTimeoutStartTime(startTime);
     setHasTimedOut(false);
+    
+    // Save start time to localStorage for persistence across page refreshes
+    localStorage.setItem('generationTimeoutStart', startTime.toString());
+    localStorage.setItem('generationTimeoutRequestId', requestId);
+    localStorage.setItem('generationTimeoutTaskId', taskId || '');
     
     timeoutRef.current = setTimeout(() => {
       console.log('Generation timeout reached for:', { requestId, taskId });
@@ -145,6 +156,11 @@ export const useGlobalSongStatus = () => {
       
       // Clear the saved requestId when timeout occurs
       localStorage.removeItem('activeGenerationRequestId');
+      
+      // Clear timeout-related localStorage items
+      localStorage.removeItem('generationTimeoutStart');
+      localStorage.removeItem('generationTimeoutRequestId');
+      localStorage.removeItem('generationTimeoutTaskId');
       
       // Show timeout notification
       showNotification({
@@ -189,6 +205,9 @@ export const useGlobalSongStatus = () => {
           // Clear the saved requestId when song is complete
           localStorage.removeItem('activeGenerationRequestId');
           
+          // Clear timeout when song is complete
+          clearGenerationTimeout();
+          
           // Șterge datele formularului când piesa este generată cu succes
           clearFormData();
           
@@ -215,7 +234,7 @@ export const useGlobalSongStatus = () => {
     );
 
     activeListeners.current.set(songId, unsubscribe);
-  }, [clearAll, showNotification, navigate, cleanupListeners, clearFormData]);
+  }, [clearAll, showNotification, navigate, cleanupListeners, clearFormData, clearGenerationTimeout]);
 
   const setupTaskListener = useCallback((taskId, requestId) => {
     const unsubscribe = onSnapshot(
@@ -360,6 +379,77 @@ export const useGlobalSongStatus = () => {
     activeListeners.current.set(requestId, unsubscribe);
   }, [setupTaskListener, resetTimeoutState, clearAll, showNotification, cleanupListeners]);
 
+  // Function to check and restore timeout on page refresh
+  const checkAndRestoreTimeout = useCallback(() => {
+    const savedStartTime = localStorage.getItem('generationTimeoutStart');
+    const savedRequestId = localStorage.getItem('generationTimeoutRequestId');
+    const savedTaskId = localStorage.getItem('generationTimeoutTaskId');
+    
+    if (savedStartTime && savedRequestId) {
+      const startTime = parseInt(savedStartTime);
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = TIMEOUT_DURATION - elapsedTime;
+      
+      console.log('Restoring timeout:', { 
+        startTime, 
+        elapsedTime, 
+        remainingTime, 
+        requestId: savedRequestId,
+        taskId: savedTaskId 
+      });
+      
+      // If timeout has already expired
+      if (remainingTime <= 0) {
+        console.log('Timeout already expired, clearing state');
+        setHasTimedOut(true);
+        clearAll();
+        localStorage.removeItem('activeGenerationRequestId');
+        localStorage.removeItem('generationTimeoutStart');
+        localStorage.removeItem('generationTimeoutRequestId');
+        localStorage.removeItem('generationTimeoutTaskId');
+        
+        showNotification({
+          type: 'error',
+          title: 'Generarea a durat prea mult',
+          message: 'Generarea a depășit timpul maxim permis. Te rugăm să încerci din nou.',
+          duration: 30000
+        });
+        return;
+      }
+      
+      // Restore timeout state
+      setTimeoutStartTime(startTime);
+      setHasTimedOut(false);
+      
+      // Set up timeout with remaining time
+      timeoutRef.current = setTimeout(() => {
+        console.log('Restored timeout reached for:', { requestId: savedRequestId, taskId: savedTaskId });
+        
+        setHasTimedOut(true);
+        clearAll();
+        localStorage.removeItem('activeGenerationRequestId');
+        localStorage.removeItem('generationTimeoutStart');
+        localStorage.removeItem('generationTimeoutRequestId');
+        localStorage.removeItem('generationTimeoutTaskId');
+        
+        showNotification({
+          type: 'error',
+          title: 'Generarea a durat prea mult',
+          message: 'Generarea a depășit timpul maxim permis. Te rugăm să încerci din nou.',
+          duration: 30000
+        });
+        
+        cleanupListeners(savedRequestId, savedTaskId);
+        
+        setActiveRequestId(null);
+        setActiveTaskId(null);
+        setActiveSongId(null);
+        setLatestTaskData(null);
+        setLatestGenerationData(null);
+      }, remainingTime);
+    }
+  }, [clearAll, showNotification, cleanupListeners, TIMEOUT_DURATION]);
+
   // Check for active generations in localStorage
   useEffect(() => {
     const checkActiveGenerations = () => {
@@ -390,10 +480,13 @@ export const useGlobalSongStatus = () => {
           console.error('Eroare la citirea notificărilor active:', error);
         }
       }
+
+      // Check and restore timeout on page refresh
+      checkAndRestoreTimeout();
     };
     
     checkActiveGenerations();
-  }, [setupGenerationListener]);
+  }, [setupGenerationListener, checkAndRestoreTimeout]);
 
   // Cleanup on unmount
   useEffect(() => {

@@ -340,14 +340,25 @@ export default function ResultPage() {
         }}
       >
         <div className="container">
-          <h1 className="title">Error</h1>
-          <p className="error-message">{error}</p>
-          <button 
-            className="back-button"
-            onClick={() => navigate('/')}
-          >
-            <span className="hero-btn-text">← Înapoi</span>
-          </button>
+          <h1 className="title">Oops! A apărut o problemă</h1>
+          <div className="error-content">
+            <p className="error-message">{error}</p>
+            <div className="error-reassurance">
+              <p className="reassurance-text">
+                <strong>Nu te îngrijora!</strong> Nu ți-ai pierdut creditele. 
+                Poți încerca din nou să generezi maneaua fără să plătești nimic.
+              </p>
+            </div>
+            <div className="error-actions">
+              <button 
+                className="hero-btn"
+                onClick={() => navigate('/generate')}
+                style={{ marginBottom: '10px' }}
+              >
+                <span className="hero-btn-text">Încearcă din nou</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
