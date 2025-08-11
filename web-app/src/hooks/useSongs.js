@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../components/auth/AuthContext';
 import { db } from '../services/firebase';
@@ -24,7 +24,12 @@ export function useSongs() {
         syncGenerationStatusForUser().catch(console.error);
 
         const songsRef = collection(db, 'songsPublic');
-        const q = query(songsRef, where('userId', '==', user.uid));
+        const q = query(
+          songsRef,
+          where('userId', '==', user.uid),
+          orderBy('createdAt', 'desc'),
+          limit(20)
+        );
         const querySnapshot = await getDocs(q);
         
         const fetchedSongs = querySnapshot.docs.map(doc => ({
