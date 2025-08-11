@@ -20,6 +20,14 @@ export const createUserIfNotExists = onCall(async (request) => {
   const { uid } = request.auth;
   const { displayName = "", photoURL = "" } = request.data || {};
 
+  // If displayName has more than 40 characters, throw error
+  if (displayName && displayName.length > 40) {
+    throw new HttpsError(
+      'invalid-argument',
+      'Display name cannot be longer than 40 characters'
+    );
+  }
+
   try {
     return await db.runTransaction(async (tx) => {
       const userRef = db.collection(COLLECTIONS.USERS).doc(uid);

@@ -71,7 +71,7 @@ export default function HomePage() {
     const checkSubscriptionStatus = async () => {
       if (user) {
         try {
-          const userRef = doc(db, 'users', user.uid);
+          const userRef = doc(db, 'usersPublic', user.uid);
           const userDoc = await getDoc(userRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();

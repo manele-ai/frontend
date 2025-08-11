@@ -2,37 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ---------- Helper ------------
-    function isAdmin() {
-      // Grant if user token carries the custom claim admin=true.
-      return request.auth != null &&
-             'admin' in request.auth.token &&
-             request.auth.token.admin == true;
-    }
-
-    // ---------- Global admin/cloud‑function access ------------
-    match /{document=**} {
-      allow read, write: if isAdmin();
-    }
-
     // ---------- /users collection ------------
-    //   • No client may read or write.
+    // - NO client may READ or WRITE.
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if false;
     }
 
     // ---------- /songs collection ------------
-    //   • Client can READ their own songs.
-    //   • No client writes allowed.
+    // - No client may READ or WRITE.
     match /songs/{songId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false;
+      allow read, write: if false;
     }
 
     // ---------- /songsPublic collection ------------
-    //   • Client can READ their own songs.
-    //   • No client writes allowed.
+    // - Client can READ their own songs.
+    // - NO client WRITES allowed.
     match /songsPublic/{songId} {
       allow read: if request.auth != null && 
                     (resource == null || 
@@ -41,8 +25,8 @@ service cloud.firestore {
     }
 
     // ---------- /taskStatuses collection ------------
-    //   • Client can READ their own task statuses.
-    //   • No client writes allowed.
+    // - Client can READ their own task statuses.
+    // - NO client WRITES allowed.
     match /taskStatuses/{taskId} {
       allow read: if request.auth != null && 
                     request.auth.uid == resource.data.userId;
@@ -50,8 +34,8 @@ service cloud.firestore {
     }
 
     // ---------- /generationRequests collection ------------
-    //   • Client can READ their own requests.
-    //   • No client writes allowed.
+    // - Client can READ their own requests.
+    // - NO client WRITES allowed.
     match /generationRequests/{taskId} {
       allow read: if request.auth != null && 
                     request.auth.uid == resource.data.userId;
@@ -59,19 +43,22 @@ service cloud.firestore {
     }
 
     // ---------- /tasks collection ------------
-    //   • Completely blocked to clients.
+    // - NO client READ or WRITE.
     match /tasks/{taskId} {
       allow read, write: if false;
     }
 
     // ---------- /usersPublic collection ------------
-    //   • Read‑only for everyone (including unauthenticated users).
+    // - ALL clients may READ.
+    // - NO client may WRITE.
     match /usersPublic/{publicUserId} {
       allow read: if true;
       allow write: if false;
     }
 
     // ---------- /stats collection ------------
+    // - ALL clients may READ.
+    // - NO client may WRITE.
     match /stats/{path=**} {
       allow read: if true;
       allow write: if false;

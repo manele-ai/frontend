@@ -31,7 +31,7 @@ export default function PaymentSuccessPage() {
         for (let i = 0; i < 5; i++) {
           const userId = auth.currentUser?.uid;
           if (!userId) break;
-          const userRef = doc(db, 'users', userId);
+          const userRef = doc(db, 'usersPublic', userId);
           const userSnap = await getDoc(userRef);
           const credits = userSnap.data()?.credits || 0;
           if (credits > 0) {

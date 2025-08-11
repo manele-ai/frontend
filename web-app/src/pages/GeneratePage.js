@@ -54,8 +54,8 @@ export default function GeneratePage() {
     if (user && isAuthenticated) {
       import('firebase/firestore').then(({ getDoc, doc }) => {
         import('../services/firebase').then(({ db }) => {
-          // Align with ProfilePage: read from 'users' for authoritative, up-to-date data
-          getDoc(doc(db, 'users', user.uid))
+          // Align with ProfilePage: read from 'usersPublic' for authoritative, up-to-date data
+          getDoc(doc(db, 'usersPublic', user.uid))
             .then((userDoc) => {
               setUserCredits(userDoc.data()?.creditsBalance ?? 0);
             })
