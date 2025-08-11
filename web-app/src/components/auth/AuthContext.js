@@ -14,6 +14,7 @@ import {
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { auth } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
+import { usePostHogTracking } from '../../utils/posthog';
 
 // User context structure
 const AuthContext = createContext({
@@ -46,6 +47,9 @@ export function AuthProvider({ children }) {
   const recaptchaContainerRef = useRef(null);
   // Resolver ref
   const readyResolvers = useRef([]);
+  
+  // Initialize PostHog tracking
+  const { trackAuth } = usePostHogTracking();
 
   /**
    * Wait until auth + user doc creation finishes, or timeout expires.
@@ -157,9 +161,11 @@ export function AuthProvider({ children }) {
         displayName,
       });
       await fetchOrCreateUserProfile(user);
+      trackAuth('email_signup', true);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('email_signup', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -174,9 +180,11 @@ export function AuthProvider({ children }) {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       await fetchOrCreateUserProfile(user);
+      trackAuth('email_signin', true);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('email_signin', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -192,10 +200,12 @@ export function AuthProvider({ children }) {
       const provider = new GoogleAuthProvider();
       auth.languageCode = 'ro';
       await signInWithRedirect(auth, provider);
+      trackAuth('google_signin', true);
       // After this call, the page will redirect. Processing continues in the redirect handler effect.
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('google_signin', false);
       setLoading(false);
       throw new Error(errorMessage);
     }

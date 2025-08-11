@@ -23,7 +23,8 @@ export function SignupForm({
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    // Focus on display name input when component mounts or when switching to email mode
+    if (!isPhoneAuth && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isPhoneAuth]);

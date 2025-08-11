@@ -431,18 +431,83 @@
 }
 
 .error-box {
-  background: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
-  border-radius: 12px;
-  padding: 30px;
-  text-align: center;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
 }
 
 .error-text {
-  color: #ff6b6b;
-  font-family: 'Satoshi', sans-serif;
+  color: #dc3545;
   font-size: 16px;
   margin: 0;
+}
+
+/* Error content styling */
+.error-content {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 18px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.error-reassurance {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+
+.reassurance-text {
+  color: #ffc107;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 400;
+}
+
+.reassurance-text strong {
+  color: #ffdb4d;
+  font-weight: 600;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.error-actions .hero-btn {
+  width: 190.8px;
+  height: 51.675px;
+  border-radius: 4150.876px;
+  border: 0.5px solid #F4F1E4;
+  background: #1F1F1F;
+  box-shadow: -1px 2px 0px 0px #000;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.error-actions .back-button {
+  min-width: 200px;
 }
 
 .player-box {
@@ -815,34 +880,35 @@
 
 @media (max-width: 768px) {
   .result-page {
-    padding: 15px;
-    padding-top: 60px;
+    padding: 16px;
+    padding-top: 80px;
+    padding-bottom: 150px;
   }
 
   .result-page .container {
-    padding: 15px;
+    padding: 20px;
   }
 
   .result-page .loading-container {
-    padding: 15px;
+    padding: 20px;
   }
 
   .result-page .result-container {
-    padding: 15px;
+    padding: 20px;
   }
 
   .loading-gif-container {
-    max-width: 500px;
+    max-width: 100%;
   }
 
   .loading-gif-overlay .title {
-    font-size: 20px;
-    color: #000;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 24px;
+    margin-bottom: 12px;
   }
 
   .loading-gif-overlay .subtitle {
-    font-size: 14px;
+    font-size: 16px;
+    margin-bottom: 16px;
   }
 
   .title {
@@ -850,15 +916,15 @@
   }
 
   .subtitle {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .result-page .hero-btn.button {
-    width: 240px;
+    padding: 12px 24px;
   }
 
   .result-page .hero-btn-text {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .modern-play-button {
@@ -867,50 +933,43 @@
   }
 
   .play-icon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
 
   .waveform {
-    height: 50px;
+    height: 40px;
   }
 
   .player-song-title {
     font-size: 20px;
-    margin: 0 0 16px 0;
   }
 
   .song-artwork {
-    width: 150px;
-    height: 150px;
+    width: 80px;
+    height: 80px;
   }
 
   .back-button {
-    position: relative;
-    top: auto;
-    left: auto;
-    margin: 0 auto 20px;
+    padding: 12px 24px;
+    font-size: 16px;
   }
 
   .back-button .hero-btn-text {
     font-size: 16px;
   }
 
-  /* Song Style and Lyrics responsive */
   .song-style-section,
   .song-lyrics-section {
-    margin: 16px 0;
     padding: 16px;
   }
 
   .song-style-inline {
-    margin-top: 20px;
-    padding-top: 20px;
+    padding: 16px;
   }
 
   .song-style-inline .song-style-card {
     padding: 12px;
-    gap: 12px;
   }
 
   .song-style-inline .song-style-image {
@@ -927,8 +986,7 @@
   }
 
   .song-lyrics-inline {
-    margin-top: 16px;
-    padding-top: 16px;
+    padding: 16px;
   }
 
   .song-lyrics-inline .song-lyrics-content {
@@ -936,21 +994,19 @@
   }
 
   .song-lyrics-inline .song-lyrics-text {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .song-lyrics-standalone-content {
-    max-height: 100px;
-    padding: 12px;
+    padding: 16px;
   }
 
   .song-lyrics-standalone-text {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .song-dedication-inline {
-    margin-top: 12px;
-    padding-top: 12px;
+    padding: 16px;
   }
 
   .song-dedication-inline .song-dedication-content {
@@ -958,12 +1014,11 @@
   }
 
   .song-dedication-inline .song-dedication-text {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .song-donation-inline {
-    margin-top: 12px;
-    padding-top: 12px;
+    padding: 16px;
   }
 
   .song-donation-inline .song-donation-content {
@@ -971,7 +1026,33 @@
   }
 
   .song-donation-inline .song-donation-text {
-    font-size: 12px;
+    font-size: 14px;
+  }
+
+  /* Error styling responsive */
+  .error-content {
+    padding: 0 16px;
+  }
+
+  .error-message {
+    font-size: 16px;
+  }
+
+  .error-reassurance {
+    padding: 16px;
+  }
+
+  .reassurance-text {
+    font-size: 14px;
+  }
+
+  .error-actions {
+    gap: 10px;
+  }
+
+  .error-actions .hero-btn,
+  .error-actions .back-button {
+    min-width: 180px;
   }
 }
 

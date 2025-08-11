@@ -1,5 +1,6 @@
 
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import NotificationSystem from './components/NotificationSystem';
@@ -10,6 +11,8 @@ import Marquee from './components/ui/Marquee';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
+import { usePostHogTracking, setupGlobalErrorHandling } from './utils/posthog';
+import { usePostHog } from 'posthog-js/react';
 
 import AuthPage from './pages/AuthPage';
 import ExemplePage from './pages/ExemplePage';
@@ -37,6 +40,24 @@ function App() {
 function AppContent() {
   // Initialize global song status monitoring
   useGlobalSongStatus();
+  
+  // Initialize PostHog tracking
+  const { trackPageView } = usePostHogTracking();
+  const posthog = usePostHog();
+  const location = useLocation();
+  
+  // Setup global error handling
+  useEffect(() => {
+    if (posthog) {
+      setupGlobalErrorHandling(posthog);
+    }
+  }, [posthog]);
+  
+  // Track page views when location changes
+  useEffect(() => {
+    const pageName = location.pathname === '/' ? 'home' : location.pathname.replace('/', '');
+    trackPageView(pageName);
+  }, [location.pathname, trackPageView]);
 
   return (
     <div className="App">
