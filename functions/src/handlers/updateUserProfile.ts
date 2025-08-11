@@ -3,7 +3,11 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { db, REGION } from "../config";
 import { Database } from "../types";
 
-export const updateUserProfile = onCall({ region: REGION }, async (request) => {
+export const updateUserProfile = onCall({ 
+  region: REGION,
+  enforceAppCheck: true,
+  consumeAppCheckToken: true,
+}, async (request) => {
   const { displayName, photoURL } = request.data;
 
   // Validate that at least one field is present

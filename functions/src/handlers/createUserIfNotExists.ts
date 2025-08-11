@@ -1,7 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { db } from "../config";
+import { db, REGION } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { Database } from "../types";
 
@@ -9,7 +9,13 @@ import { Database } from "../types";
  * Callable function that creates a user document in Firestore if it doesn't already exist.
  * This is called by the client when they detect no user document exists for their uid.
  */
-export const createUserIfNotExists = onCall(async (request) => {
+export const createUserIfNotExists = onCall(
+  { 
+    region: REGION,
+    enforceAppCheck: true,
+    consumeAppCheckToken: true,
+  },
+  async (request) => {
   if (!request.auth) {
     throw new HttpsError(
       'unauthenticated',

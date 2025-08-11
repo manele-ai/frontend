@@ -6,7 +6,11 @@ import { getGenerationStatus } from "../service/generation/status";
 import { Database } from "../types";
 
 export const syncGenerationStatusForUser = onCall(
-  { region: REGION },
+  { 
+    region: REGION,
+    enforceAppCheck: true,
+    consumeAppCheckToken: true,
+  },
   async (request): Promise<{
     updates: {
       songId?: string;

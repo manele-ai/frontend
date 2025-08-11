@@ -21,7 +21,11 @@ import { Requests } from "../types";
  * @throws HttpsError if the user is not authenticated or if the generation request cannot be created.
  */
 export const createGenerationRequest = onCall<Requests.GenerateSong>(
-  { region: REGION },
+  { 
+    region: REGION,
+    enforceAppCheck: true,
+    consumeAppCheckToken: true,
+  },
   async (request) => {
     if (!stripe) {
       throw new HttpsError('internal', 'Stripe not initialized');
