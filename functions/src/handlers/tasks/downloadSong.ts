@@ -31,7 +31,7 @@ export const downloadSongTask = onTaskDispatched(
       maxDoublings: 10,
     },
     rateLimits: { maxConcurrentDispatches: 5 }, // 5 tasks per second = 300 tasks per minute = 18,000 tasks per hour
-    memory: "128MiB",
+    memory: "256MiB",
   },
   async (req) => {
     const { songId } = req.data || {};

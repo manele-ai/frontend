@@ -24,6 +24,7 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
   { 
     region: REGION,
     enforceAppCheck: true,
+    memory: "256MiB",
   },
   async (request) => {
     if (!stripe) {
