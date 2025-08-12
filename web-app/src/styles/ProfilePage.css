@@ -1183,3 +1183,62 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   /* Raise the header on mobile by reducing page top padding */
   .profile-page { padding-top: 30px; }
 }
+
+.profile-page .profile-song-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.profile-page .profile-song-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0;
+  margin-left: 12px;
+}
+
+.profile-page .download-button {
+  min-width: 120px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 177, 17, 0.3);
+  background: transparent;
+  color: #e9d7b7;
+  font-weight: 600;
+  font-size: 13px; /* smaller text, keep color */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 16px;
+  box-shadow: none; /* no glow */
+}
+
+.profile-page .download-button:hover {
+  border-color: rgba(234, 177, 17, 0.6);
+}
+
+.profile-page .download-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .profile-page .profile-song-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0px;
+  }
+
+  .profile-page .profile-song-actions {
+    justify-content: center;
+    margin-top: 0px;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .profile-page .download-button {
+    width: 100%;
+    max-width: 360px;
+  }
+}
