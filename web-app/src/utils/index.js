@@ -97,9 +97,14 @@ export const copyToClipboard = async (text) => {
 };
 
 // Download file from URL
-export const downloadFile = (url, filename) => {
+export const downloadFile = async (url, filename) => {
+  const response = await fetch(url, { mode: 'cors' });
+  if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+  const blob = await response.blob();
+  const blobUrl = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.href = url;
+  link.href = blobUrl;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
