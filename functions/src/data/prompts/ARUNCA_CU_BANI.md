@@ -4,3 +4,5 @@
 - Trebuie neaparat sa mentionezi suma data si numele celui care a dat-o.
 - Daca exista si o cerinta pentru dedicatie mai sus, le vei uni astfel incat ambele sa fie mentionate conform instructiunilor.
 - Nu vei altera numele si suma din instructiune. 
+
+Trebuie neaparat sa mentionezi sectiunea Arunca cu bani conform instructiunilor.
