@@ -16,7 +16,7 @@ export const pollGenerationStatusTask = onTaskDispatched({
       maxConcurrentDispatches: 1000, // don't matter?
       maxDispatchesPerSecond: 50, // 50 tasks per second = 3,000 tasks per minute = 180,000 tasks per hour
     },
-    memory: "128MiB",
+    memory: "256MiB",
   },
   async (req) => {
     const { taskId } = req.data || {};

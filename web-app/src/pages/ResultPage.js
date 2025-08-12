@@ -243,7 +243,7 @@ export default function ResultPage() {
 
     setIsDownloading(true);
     try {
-      downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
+      await downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
       setError("Failed to download song. Please try again.");
     } finally {

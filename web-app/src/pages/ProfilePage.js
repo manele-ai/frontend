@@ -2,6 +2,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref as storageRef, uploadString } from 'firebase/storage';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { downloadFile } from 'utils';
 import { useAuth } from '../components/auth/AuthContext';
 import SongItem from '../components/SongItem';
 import { styles } from '../data/stylesData';
@@ -84,6 +85,7 @@ export default function ProfilePage() {
     if (activeSong?.id === song.id) {
       setActiveSong(null);
     } else {
+
       setActiveSong(song);
     }
   };
@@ -94,12 +96,7 @@ export default function ProfilePage() {
       if (!downloadUrl) {
         throw new Error('No download URL available');
       }
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = `${song.apiData?.title || 'manea'}.mp3`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await downloadFile(downloadUrl, `${song.apiData?.title || 'manea'}.mp3`);
     } catch (err) {
       console.error('Error downloading song:', err);
       alert('Eroare la descărcarea melodiei');
@@ -406,13 +403,25 @@ export default function ProfilePage() {
             {filteredSongs.length > 0 ? (
               filteredSongs.map((song) => (
                 <div className="profile-song-card" key={song.id}>
-                  <SongItem
-                    song={song}
-                    isActive={activeSong?.id === song.id}
-                    onPlayPause={handlePlayPause}
-                    onDownload={handleDownload}
-                    styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
-                  />
+                  <div className="profile-song-content">
+                    <SongItem
+                      song={song}
+                      isActive={activeSong?.id === song.id}
+                      onPlayPause={handlePlayPause}
+                      onDownload={handleDownload}
+                      styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
+                    />
+                    <div className="profile-song-actions">
+                      <button
+                        type="button"
+                        className="download-button"
+                        onClick={() => handleDownload(song)}
+                        aria-label="Descarcă melodia"
+                      >
+                        Descarcă
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
