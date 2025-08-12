@@ -9,17 +9,16 @@ export default function Header() {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(location.pathname);
-
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleNavigation = (route) => {
-    if (route === currentPage) {
+    if (route === location.pathname) {
+      setIsMenuOpen(false);
       return;
     }
-    setCurrentPage(route);
     navigate(route);
     setIsMenuOpen(false);
   };
@@ -33,7 +32,7 @@ export default function Header() {
 
   return (
     <header className="header">
-      <div className="header-left" onClick={() => navigate('/')}
+      <div className="header-left" onClick={() => handleNavigation('/')}
         style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
         <img
           src="/_LOGO_MANELEIO.svg"
