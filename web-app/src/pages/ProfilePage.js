@@ -92,11 +92,18 @@ export default function ProfilePage() {
 
   const handleDownload = async (song) => {
     try {
-      const downloadUrl = song.storage?.url || song.apiData?.audioUrl;
-      if (!downloadUrl) {
+      const rawUrl = song.storage?.url || song.apiData?.audioUrl || song.apiData?.streamAudioUrl;
+      if (!rawUrl) {
         throw new Error('No download URL available');
       }
-      await downloadFile(downloadUrl, `${song.apiData?.title || 'manea'}.mp3`);
+
+      let resolvedUrl = rawUrl;
+      if (resolvedUrl.startsWith('gs://')) {
+        const ref = storageRef(storage, resolvedUrl);
+        resolvedUrl = await getDownloadURL(ref);
+      }
+
+      await downloadFile(resolvedUrl, `${song.apiData?.title || 'manea'}.mp3`);
     } catch (err) {
       console.error('Error downloading song:', err);
       alert('Eroare la descărcarea melodiei');
@@ -412,6 +419,7 @@ export default function ProfilePage() {
                       styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
                     />
                     <div className="profile-song-actions">
+                      {!song.storage?.url || !song.apiData?.audioUrl ? (
                       <button
                         type="button"
                         className="download-button"
@@ -420,6 +428,11 @@ export default function ProfilePage() {
                       >
                         Descarcă
                       </button>
+                      ) : (
+                        <div className="download-button-disabled" aria-label="Piesa este în curs de generare">
+                          <span className="inline-spinner-gold" aria-hidden="true"></span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
