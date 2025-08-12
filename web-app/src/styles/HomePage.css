@@ -740,6 +740,13 @@
   .style-example-generate-button {
     margin-top: 12px;
   }
+
+  .style-example-card-content-inner {
+    display: flex;
+    align-items: center;
+    min-height: 15px;
+    max-height: 15px;
+  }
 }
 
 @media (max-width: 480px) {

@@ -39,8 +39,9 @@ function ReusableCard({ background, title, subtitle, styleValue }) {
     >
       <div className="style-example-card-overlay"></div>
       <div className="style-example-card-content">
-        <h2 className="style-example-title">{title}</h2>
-        <p className="style-example-subtitle">{subtitle}</p>
+        <div className="style-example-card-content-inner">
+          <h2 className="style-example-title">{title}</h2>
+        </div>
         <div className="style-example-audio-player">
           <AudioPlayer 
             audioUrl={audioUrl}

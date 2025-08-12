@@ -21,7 +21,6 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
   };
 
   const audioUrl = getAudioUrl();
-  const canDownload = song.storage?.url || song.apiData?.audioUrl;
 
   return (
     <div className="song-item song-row-layout">
