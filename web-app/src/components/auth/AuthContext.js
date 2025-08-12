@@ -343,7 +343,9 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        const result = await getRedirectResult(auth);
+        const result = await getRedirectResult(auth).catch(err => {
+          console.error('[Auth redirect error]', { code: err?.code, message: err?.message });
+        });
         if (isMounted && result && result.user) {
           await fetchOrCreateUserProfile(result.user);
         }
