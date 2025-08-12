@@ -8,6 +8,39 @@ import { createSongCheckoutSession } from "../service/payment/checkout-session";
 import { createCustomer, getCustomerIdByUserId } from "../service/payment/customer";
 import { Requests } from "../types";
 
+const validateUserInput = (data: Requests.GenerateSong) => {
+  if (!data.title) {
+    throw new HttpsError('invalid-argument', 'Title is required');
+  }
+  if (!data.style) {
+    throw new HttpsError('invalid-argument', 'Style is required');
+  }
+  // Validate title
+  if (data.title.length > 100) {
+    throw new HttpsError('invalid-argument', 'Title must be no longer than 100 characters');
+  }
+  // Validate lyrics details
+  if (data.lyricsDetails && data.lyricsDetails.length > 300) {
+    throw new HttpsError('invalid-argument', 'Lyrics must be no longer than 300 characters');
+  }
+  // Validate dedication data
+  if (data.wantsDedication) {
+    if (data.from && data.from.length > 50) {
+      throw new HttpsError('invalid-argument', 'From must be no longer than 50 characters');
+    }
+    if (data.to && data.to.length > 50) {
+      throw new HttpsError('invalid-argument', 'To must be no longer than 50 characters');
+    }
+    if (data.dedication && data.dedication.length > 100) {
+      throw new HttpsError('invalid-argument', 'Dedication must be no longer than 100 characters');
+    }
+  }
+  if (data.wantsDonation) {
+    if (data.donationAmount && data.donationAmount < 0) {
+      throw new HttpsError('invalid-argument', 'Donation amount must be greater than 0');
+    }
+  }
+}
 /**
  * Creates a generation request and handles checkout url creation.
  * - checks if user has credits
@@ -36,6 +69,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
     if (!auth || !auth.uid) {
       throw new HttpsError('unauthenticated', 'Not authenticated.');
     }
+
+    validateUserInput(data);
 
     let customerId = await getCustomerIdByUserId(auth.uid);
     if (!customerId) {
