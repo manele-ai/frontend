@@ -54,13 +54,13 @@ export const downloadSongTask = onTaskDispatched(
         logger.info(`downloadSong: File already downloaded for songId ${songId}`);
         return;
     }
-    const { apiData } = songSnap.data() as Database.SongData;
+    const { apiData, userId } = songSnap.data() as Database.SongData;
     if (!apiData.audioUrl) {
         logger.error("downloadSong: Missing audioUrl", { songId });
         return;
     }
     const fileName = `${songId}.mp3`;
-    const destination = `songs/${fileName}`;
+    const destination = `songs/${userId}/${fileName}`;
     const file = songsBucket.file(destination);
     logger.info(`downloadSong: Starting download ${apiData.audioUrl} → gs://${songsBucket.name}/${destination}`);
 
@@ -86,7 +86,7 @@ export const downloadSongTask = onTaskDispatched(
     await songDocRef.update({
         updatedAt: FieldValue.serverTimestamp(),
         storage: {
-            url: file.publicUrl(),
+            url: `gs://${songsBucket.name}/${destination}`,
             path: destination,
             sizeBytes: file.metadata.size,
             contentType: file.metadata.contentType,

@@ -7,8 +7,9 @@ import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 
+import { getDownloadURL, ref } from 'firebase/storage';
 import { styles } from '../data/stylesData';
-import { db } from '../services/firebase';
+import { db, storage } from '../services/firebase';
 import '../styles/ResultPage.css';
 import { downloadFile } from '../utils';
 
@@ -234,15 +235,23 @@ export default function ResultPage() {
 
   const handleDownload = async () => {
     // Verifică toate URL-urile posibile pentru download
-    const downloadUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
-    
-    if (!downloadUrl) {
+    const rawUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
+
+    if (!rawUrl) {
       return;
     }
 
     setIsDownloading(true);
     try {
-      await downloadFile(downloadUrl, `${songData.apiData.title || 'manea'}.mp3`);
+      let resolvedUrl = rawUrl;
+
+      // Dacă este un URL de tip gs://, obține un URL temporar de descărcare
+      if (resolvedUrl.startsWith('gs://')) {
+        const storageRef = ref(storage, resolvedUrl);
+        resolvedUrl = await getDownloadURL(storageRef);
+      }
+
+      await downloadFile(resolvedUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
       setError("Failed to download song. Please try again.");
     } finally {
@@ -294,11 +303,25 @@ export default function ResultPage() {
       } else if (songData?.storage?.url) {
         audioUrl = songData.storage.url;
       }
-      
+
       if (audioUrl) {
-        // Only set stable URL once - keep the first URL we get
-        setStableAudioUrl(audioUrl);
-        setHasStableUrl(true);
+        const maybeResolve = async () => {
+          try {
+            if (audioUrl.startsWith('gs://')) {
+              const storageRef = ref(storage, audioUrl);
+              const httpsUrl = await getDownloadURL(storageRef);
+              setStableAudioUrl(httpsUrl);
+            } else {
+              setStableAudioUrl(audioUrl);
+            }
+            setHasStableUrl(true);
+          } catch (e) {
+            // fallback: keep original url if resolution fails
+            setStableAudioUrl(audioUrl);
+            setHasStableUrl(true);
+          }
+        };
+        maybeResolve();
       }
     }
   }, [songData, hasStableUrl]);
@@ -402,7 +425,7 @@ export default function ResultPage() {
     );
   }
 
-  const canDownload = songData.storage?.url || songData.apiData?.audioUrl || songData.apiData?.streamAudioUrl;
+  const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
   
   // Debug log pentru a vedea ce URL-uri sunt disponibile
   
@@ -451,7 +474,7 @@ export default function ResultPage() {
               
               {/* Spațiu între versuri și butoane */}
               <div style={{ marginBottom: 16 }} />
-              {canDownload && (
+              {canDownload ? (
                 <Button
                   className="hero-btn"
                   onClick={handleDownload}
@@ -460,6 +483,12 @@ export default function ResultPage() {
                 >
                   <span className="hero-btn-text">{isDownloading ? 'Se descarcă...' : 'Descarcă piesa'}</span>
                 </Button>
+              ) : (
+                <div>
+                  <p className="song-lyrics-standalone-text">
+                    Vei putea downloada piesa în curând! Mai așteaptă puțin...
+                  </p>
+                </div>
               )}
               <Button
                 className="hero-btn"

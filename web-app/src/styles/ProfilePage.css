@@ -1223,6 +1223,34 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   box-shadow: none;
 }
 
+/* Disabled download placeholder with golden spinner */
+.profile-page .download-button-disabled {
+  min-width: 80px;
+  height: 18px;
+  color: #e9d7b7;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px;
+  opacity: 0.8;
+}
+
+.profile-page .download-button-disabled p {
+  margin: 0;
+}
+
+.profile-page .inline-spinner-gold {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(234, 177, 17, 0.25);
+  border-top: 2px solid #eab111;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
 @media (max-width: 768px) {
   .profile-page .profile-song-content {
     flex-direction: column;
