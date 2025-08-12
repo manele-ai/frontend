@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-const NotificationContext = createContext();
+const NotificationContext = createContext(null);
 
 export const useNotification = () => {
   const context = useContext(NotificationContext);
@@ -45,7 +45,16 @@ export const NotificationProvider = ({ children }) => {
 
   const showNotification = useCallback((notification) => {
     setNotifications(prev => {
-      const newNotifications = [...prev, { ...notification, id: Date.now() }];
+      // Dedupe: avoid adding duplicate 'loading' notifications for the same requestId
+      if (
+        notification?.type === 'loading' &&
+        notification?.requestId &&
+        prev.some(n => n.type === 'loading' && n.requestId === notification.requestId)
+      ) {
+        return prev;
+      }
+
+      const newNotifications = [...prev, { ...notification, id: Date.now(), createdAt: Date.now() }];
       
       // Save to localStorage for persistence
       try {
