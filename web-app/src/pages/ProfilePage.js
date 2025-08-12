@@ -419,7 +419,7 @@ export default function ProfilePage() {
                       styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
                     />
                     <div className="profile-song-actions">
-                      {!song.storage?.url || !song.apiData?.audioUrl ? (
+                      {song.storage?.url || song.apiData?.audioUrl ? (
                       <button
                         type="button"
                         className="download-button"
