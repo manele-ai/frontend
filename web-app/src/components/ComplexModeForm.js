@@ -515,11 +515,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           type="text"
           placeholder="Nume piesă"
           value={songName}
+          maxLength={100}
           onChange={(e) => {
             setSongName(e.target.value);
             resetErrors();
           }}
         />
+        <div className="char-counter">{songName.length}/100</div>
         {fieldErrors.songName && <div className="field-error">{fieldErrors.songName}</div>}
       </div>
 
@@ -531,8 +533,10 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           type="text"
           placeholder="Detalii versuri (ex: temă, atmosferă, poveste)"
           value={songDetails}
+          maxLength={300}
           onChange={(e) => setSongDetails(e.target.value)}
         />
+        <div className="char-counter">{songDetails.length}/300</div>
       </div>
 
       {/* Dedication Section */}
@@ -612,11 +616,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               type="text"
               placeholder="De la cine?"
               value={fromName}
+              maxLength={50}
               onChange={(e) => {
                 setFromName(e.target.value);
                 resetErrors();
               }}
             />
+            <div className="char-counter">{fromName.length}/50</div>
             {fieldErrors.fromName && <div className="field-error">{fieldErrors.fromName}</div>}
           </div>
           <div className="input-group">
@@ -626,11 +632,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               type="text"
               placeholder="Pentru cine?"
               value={toName}
+              maxLength={50}
               onChange={(e) => {
                 setToName(e.target.value);
                 resetErrors();
               }}
             />
+            <div className="char-counter">{toName.length}/50</div>
             {fieldErrors.toName && <div className="field-error">{fieldErrors.toName}</div>}
           </div>
           <div className="input-group">
@@ -640,11 +648,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               type="text"
               placeholder="Dedicatie (ex: pentru tine, pentru mama, pentru baiatul meu)"
               value={dedication}
+              maxLength={100}
               onChange={(e) => {
                 setDedication(e.target.value);
                 resetErrors();
               }}
             />
+            <div className="char-counter">{dedication.length}/100</div>
             {fieldErrors.dedication && <div className="field-error">{fieldErrors.dedication}</div>}
           </div>
           
@@ -728,11 +738,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               type="text"
               placeholder="Ex: Ion Popescu"
               value={donorName}
+              maxLength={50}
               onChange={(e) => {
                 setDonorName(e.target.value);
                 resetErrors();
               }}
             />
+            <div className="char-counter">{donorName.length}/50</div>
             {fieldErrors.donorName && <div className="field-error">{fieldErrors.donorName}</div>}
           </div>
           <div className="input-group">
