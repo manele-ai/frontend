@@ -17,6 +17,7 @@
   align-items: center;
   justify-content: flex-end;
   padding-right: 80px;
+  padding-left: 80px;
   color: var(--gold-gradient-end);
 }
 
@@ -399,7 +400,7 @@
 
 .header-logo {
   position: absolute;
-  left: 20px;
+  left: 50px;
   top: 50%;
   transform: translateY(-50%);
   height: 40px;
