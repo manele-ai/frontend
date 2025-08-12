@@ -369,11 +369,13 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
           type="text"
           placeholder="Nume piesă"
           value={songName}
+          maxLength={100}
           onChange={(e) => {
             setSongName(e.target.value);
             resetErrors();
           }}
         />
+        <div className="char-counter">{songName.length}/100</div>
         {fieldErrors.songName && <div className="field-error">{fieldErrors.songName}</div>}
       </div>
 

@@ -391,6 +391,18 @@
   background-color: rgba(255, 224, 161, 0.05);
 }
 
+/* Character counter styles */
+.generate-page .char-counter {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
+  text-align: right;
+  align-self: flex-end;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
 /* Checkbox styles - specific pentru GeneratePage */
 .generate-page .checkbox-group {
   display: flex;
