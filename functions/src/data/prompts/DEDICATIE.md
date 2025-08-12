@@ -21,3 +21,6 @@
     - Fii creativ aici si integreaza dedicatia in versurile din refren.
 	- Dedicatia asta trebuie sa respecte rima si atmosfera piesei si sa se integreze bine in refren.
 - Nu vei altera numele celor implicati si mesajul dedicatiei.
+
+
+Trebuie neaparat sa mentionezi sectiunea Dedicatie conform instructiunilor.
