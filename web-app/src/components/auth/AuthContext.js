@@ -197,12 +197,33 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
+      console.log('[Auth] Starting Google sign-in process...');
       const provider = new GoogleAuthProvider();
+      // Set language to Romanian for better UX
       auth.languageCode = 'ro';
+      
+      // Add additional scopes if needed
+      provider.addScope('email');
+      provider.addScope('profile');
+      
+      console.log('[Auth] Auth config:', {
+        authDomain: auth.config.authDomain,
+        currentDomain: window.location.hostname,
+        currentURL: window.location.href
+      });
+      
       await signInWithRedirect(auth, provider);
       trackAuth('google_signin', true);
+      console.log('[Auth] Redirect initiated successfully');
       // After this call, the page will redirect. Processing continues in the redirect handler effect.
     } catch (error) {
+      console.error('[Auth] Google sign-in error:', {
+        code: error?.code,
+        message: error?.message,
+        stack: error?.stack,
+        authDomain: auth.config.authDomain,
+        currentDomain: window.location.hostname
+      });
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
       trackAuth('google_signin', false);
@@ -354,26 +375,46 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
+        console.log('[Auth] Checking for redirect result...');
         const result = await getRedirectResult(auth);
         console.log('[Auth] Got redirect result:', { 
           hasResult: !!result,
           hasUser: result?.user ? true : false,
           operationType: result?.operationType,
-          providerId: result?.providerId
+          providerId: result?.providerId,
+          userEmail: result?.user?.email,
+          userDisplayName: result?.user?.displayName,
+          currentDomain: window.location.hostname,
+          currentURL: window.location.href
         });
         if (isMounted && result && result.user) {
+          console.log('[Auth] Processing redirect user profile creation...');
           await fetchOrCreateUserProfile(result.user);
+          console.log('[Auth] Redirect user profile created successfully');
+        } else if (isMounted && result === null) {
+          console.log('[Auth] No redirect result found - user likely navigated directly to page');
         }
       } catch (error) {
         // Ignore benign no-event errors; surface others
         const ignorable = ['auth/no-auth-event', 'auth/redirect-cancelled-by-user'];
         if (!ignorable.includes(error?.code)) {
-          console.error('Google redirect result error:', error);
+          console.error('Google redirect result error:', {
+            code: error?.code,
+            message: error?.message,
+            stack: error?.stack,
+            currentDomain: window.location.hostname,
+            currentURL: window.location.href
+          });
           const errorMessage = getAuthErrorMessage(error.code);
           setError(errorMessage);
+        } else {
+          console.log('[Auth] Ignoring benign redirect error:', error?.code);
         }
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          console.log('[Auth] Setting loading to false after redirect check');
+          setLoading(false);
+        }
       }
     })();
 
@@ -473,7 +514,23 @@ function getAuthErrorMessage(errorCode) {
       return 'Te rugăm să introduci codul de verificare.';
     case 'auth/quota-exceeded':
       return 'Am întâmpinat o eroare. Te rugăm să încerci din nou mai târziu.';
+    // Google-specific errors
+    case 'auth/account-exists-with-different-credential':
+      return 'Există deja un cont cu această adresă de email folosind o metodă diferită de autentificare.';
+    case 'auth/auth-domain-config-required':
+      return 'Configurația domeniului de autentificare este necesară pentru această operațiune.';
+    case 'auth/credential-already-in-use':
+      return 'Această credențială este deja asociată cu un cont diferit.';
+    case 'auth/operation-not-allowed':
+      return 'Această operațiune nu este permisă. Contactează administratorul.';
+    case 'auth/requires-recent-login':
+      return 'Această operațiune necesită o autentificare recentă. Te rugăm să te autentifici din nou.';
+    case 'auth/redirect-cancelled-by-user':
+      return 'Autentificarea Google a fost anulată.';
+    case 'auth/redirect-operation-pending':
+      return 'O operațiune de redirecționare este deja în desfășurare.';
     default:
+      console.error('Unknown auth error code:', errorCode);
       return 'A apărut o eroare. Încearcă din nou.';
   }
 } 

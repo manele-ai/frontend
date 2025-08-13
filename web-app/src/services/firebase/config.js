@@ -1,8 +1,8 @@
 
 // Environment settings
 export const isDevelopment = process.env.NODE_ENV === 'development';
-export const useEmulators = process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true' || 
-                           window.location.hostname === 'localhost';
+export const useEmulators = (process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true' && 
+                           (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
 
 // Firebase configuration
 const dummyFirebaseConfig = {

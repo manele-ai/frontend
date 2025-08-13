@@ -29,15 +29,30 @@ export const appCheck = initializeAppCheck(app, {
 // Connect to emulators if in development
 if (useEmulators) {
   console.log('🔧 Using Firebase Emulators');
+  console.log('Environment details:', {
+    NODE_ENV: process.env.NODE_ENV,
+    hostname: window.location.hostname,
+    REACT_APP_USE_FIREBASE_EMULATOR: process.env.REACT_APP_USE_FIREBASE_EMULATOR
+  });
   try {
     connectAuthEmulator(auth, 'http://localhost:9099');
     connectFirestoreEmulator(db, 'localhost', 8081);
     connectFunctionsEmulator(functions, 'localhost', 5001);
     connectStorageEmulator(storage, 'localhost', 9199);
+    console.log('✅ All emulators connected successfully');
   } catch (error) {
-    console.log('Emulators already connected or not available');
+    console.log('⚠️ Emulators already connected or not available:', error.message);
   }
+} else {
+  console.log('🚀 Using Firebase Production Services');
+  console.log('Production config:', {
+    projectId: firebaseConfig.projectId,
+    authDomain: firebaseConfig.authDomain,
+    NODE_ENV: process.env.NODE_ENV,
+    hostname: window.location.hostname
+  });
 }
 
 console.log('Firebase initialized with project:', firebaseConfig.projectId);
-console.log('Using emulators:', useEmulators); 
+console.log('Using emulators:', useEmulators);
+console.log('Auth domain:', firebaseConfig.authDomain); 
