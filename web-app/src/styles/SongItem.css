@@ -167,6 +167,39 @@
   color: #ef4444;
   font-size: 0.9em;
   margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loading-message {
+  color: #9ca3af;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #eab111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .status-message {
@@ -278,6 +311,8 @@
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .song-playback-inline input[type="range"] {
