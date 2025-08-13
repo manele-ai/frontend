@@ -1,13 +1,12 @@
 import {
   createUserWithEmailAndPassword,
-  getRedirectResult,
   GoogleAuthProvider,
   onAuthStateChanged,
   RecaptchaVerifier,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
   updateProfile
 } from 'firebase/auth';
@@ -197,38 +196,21 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      console.log('[Auth] Starting Google sign-in process...');
-      const provider = new GoogleAuthProvider();
-      // Set language to Romanian for better UX
-      auth.languageCode = 'ro';
-      
-      // Add additional scopes if needed
-      provider.addScope('email');
-      provider.addScope('profile');
-      
-      console.log('[Auth] Auth config:', {
-        authDomain: auth.config.authDomain,
-        currentDomain: window.location.hostname,
-        currentURL: window.location.href
+      const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
+      // Update display name in Firebase Auth and wait for it to complete
+      await updateProfile(user, {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
       });
-      
-      await signInWithRedirect(auth, provider);
+      await fetchOrCreateUserProfile(user);
       trackAuth('google_signin', true);
-      console.log('[Auth] Redirect initiated successfully');
-      // After this call, the page will redirect. Processing continues in the redirect handler effect.
     } catch (error) {
-      console.error('[Auth] Google sign-in error:', {
-        code: error?.code,
-        message: error?.message,
-        stack: error?.stack,
-        authDomain: auth.config.authDomain,
-        currentDomain: window.location.hostname
-      });
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
       trackAuth('google_signin', false);
-      setLoading(false);
       throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -368,58 +350,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
-
-  // Handle Google redirect result
-  useEffect(() => {
-    let isMounted = true;
-
-    (async () => {
-      try {
-        console.log('[Auth] Checking for redirect result...');
-        const result = await getRedirectResult(auth);
-        console.log('[Auth] Got redirect result:', { 
-          hasResult: !!result,
-          hasUser: result?.user ? true : false,
-          operationType: result?.operationType,
-          providerId: result?.providerId,
-          userEmail: result?.user?.email,
-          userDisplayName: result?.user?.displayName,
-          currentDomain: window.location.hostname,
-          currentURL: window.location.href
-        });
-        if (isMounted && result && result.user) {
-          console.log('[Auth] Processing redirect user profile creation...');
-          await fetchOrCreateUserProfile(result.user);
-          console.log('[Auth] Redirect user profile created successfully');
-        } else if (isMounted && result === null) {
-          console.log('[Auth] No redirect result found - user likely navigated directly to page');
-        }
-      } catch (error) {
-        // Ignore benign no-event errors; surface others
-        const ignorable = ['auth/no-auth-event', 'auth/redirect-cancelled-by-user'];
-        if (!ignorable.includes(error?.code)) {
-          console.error('Google redirect result error:', {
-            code: error?.code,
-            message: error?.message,
-            stack: error?.stack,
-            currentDomain: window.location.hostname,
-            currentURL: window.location.href
-          });
-          const errorMessage = getAuthErrorMessage(error.code);
-          setError(errorMessage);
-        } else {
-          console.log('[Auth] Ignoring benign redirect error:', error?.code);
-        }
-      } finally {
-        if (isMounted) {
-          console.log('[Auth] Setting loading to false after redirect check');
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => { isMounted = false; };
-  }, []);
 
   // Auth state listener
   useEffect(() => {
