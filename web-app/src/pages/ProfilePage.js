@@ -333,7 +333,7 @@ export default function ProfilePage() {
                 )}
               </>
             )}
-            {userData?.subscription?.status === 'active' ? (
+            {userData?.isSubscribed ? (
               <div className="vip-badge" title="Abonament activ">
                 💎 VIP
               </div>
