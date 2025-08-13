@@ -3,18 +3,20 @@ import { useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import CookieConsent from './components/CookieConsent';
 import NotificationSystem from './components/NotificationSystem';
 import BottomMenu from './components/ui/BottomMenu';
 import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
 // import Marquee from './components/ui/Marquee';
+import { usePostHog } from 'posthog-js/react';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
-import { usePostHogTracking, setupGlobalErrorHandling } from './utils/posthog';
-import { usePostHog } from 'posthog-js/react';
+import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 import AuthPage from './pages/AuthPage';
+import CookiePolicy from './pages/CookiePolicy';
 import ExemplePage from './pages/ExemplePage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
@@ -64,6 +66,7 @@ function AppContent() {
       <Header />
       {/* <Marquee /> */}
       <NotificationSystem />
+      <CookieConsent />
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<AuthPage />} />
@@ -73,6 +76,7 @@ function AppContent() {
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/tarife" element={<TarifePage />} />
+        <Route path="/privacy-policy" element={<CookiePolicy />} />
         
         {/* Protected routes */}
         <Route path="/result" element={
