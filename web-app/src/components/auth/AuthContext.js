@@ -286,10 +286,21 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      // Always recreate RecaptchaVerifier for a fresh session
+      // Clean up any existing reCAPTCHA verifier and container
       if (recaptchaVerifier.current) {
         recaptchaVerifier.current.clear();
+        recaptchaVerifier.current = null;
       }
+      
+      // Remove and recreate the container element
+      if (recaptchaContainerRef.current) {
+        document.body.removeChild(recaptchaContainerRef.current);
+      }
+      recaptchaContainerRef.current = document.createElement('div');
+      recaptchaContainerRef.current.id = 'recaptcha-container';
+      document.body.appendChild(recaptchaContainerRef.current);
+
+      // Create new RecaptchaVerifier instance
       recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
         size: 'invisible',
         callback: () => {},
@@ -343,8 +354,12 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        const result = await getRedirectResult(auth).catch(err => {
-          console.error('[Auth redirect error]', { code: err?.code, message: err?.message });
+        const result = await getRedirectResult(auth);
+        console.log('[Auth] Got redirect result:', { 
+          hasResult: !!result,
+          hasUser: result?.user ? true : false,
+          operationType: result?.operationType,
+          providerId: result?.providerId
         });
         if (isMounted && result && result.user) {
           await fetchOrCreateUserProfile(result.user);
