@@ -345,17 +345,20 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-info">
-            <div className="profile-user-details">
-              <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
-              <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
-              <div className="profile-mini-actions">
-                <button className="edit-profile-button" onClick={onEditProfileClick}>
-                  Editeaza profilul
-                </button>
-                <button className="text-link soft-red-text" onClick={handleLogout}>
-                  Log Out
-                </button>
-              </div>
+                          <div className="profile-user-details">
+                <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
+                <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
+                <div className="profile-mini-actions">
+                  <div className="action-wrapper">
+                    <a className="edit-profile-button" href="https://billing.stripe.com/p/login/9B6dR9cOp84R5xRfmK6oo00" target="_blank" rel="noopener noreferrer">Abonamentul meu</a>
+                  </div>
+                  <div className="action-wrapper">
+                    <button className="edit-profile-button" onClick={onEditProfileClick}>Editeaza profilul</button>
+                  </div>
+                  <div className="action-wrapper">
+                    <button className="text-link soft-red-text" onClick={handleLogout}>Log Out</button>
+                  </div>
+                </div>
             </div>
           </div>
 

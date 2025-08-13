@@ -834,6 +834,43 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   margin-top: 6px;
 }
 
+.profile-mini-actions .action-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.profile-mini-actions .action-wrapper:not(:last-child) {
+  padding-right: 12px;
+  margin-right: 12px;
+}
+
+.profile-mini-actions .action-wrapper:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.profile-mini-actions .action-wrapper > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  line-height: 24px;
+  padding: 0;
+}
+
+/* Specific adjustment for the anchor to match button alignment */
+.profile-mini-actions .action-wrapper > a.edit-profile-button {
+  position: relative;
+  top: 1px;
+}
+
 .profile-page .edit-profile-button {
   /* distinct from username/email gold gradient */
   color: #F1D292; /* warm sand/gold, solid */
@@ -846,8 +883,13 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   -webkit-appearance: none;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 100%;
 }
 
 .profile-page .edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
@@ -859,6 +901,13 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 100%;
 }
 
 .profile-page .soft-red-text {
@@ -1212,6 +1261,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   transition: all 0.2s ease;
   padding: 0 16px;
   box-shadow: none; /* no glow */
+}
+
+.profile-edit-subscription-button {
+  border: none;
 }
 
 .profile-page .download-button:hover {
