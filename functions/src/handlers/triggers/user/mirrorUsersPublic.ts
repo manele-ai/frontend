@@ -29,7 +29,7 @@ export const mirrorUsersPublic = onDocumentWritten(
       // Create/update public user document with only the public fields
       const publicUserData: Database.UserPublic = {
         uid: afterData.uid,
-        displayName: afterData.displayName || 'Anonymous User',
+        displayName: afterData.displayName,
         createdAt: afterData.createdAt,
         photoURL: afterData.photoURL,
         stats: {

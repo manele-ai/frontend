@@ -16,7 +16,7 @@ export default function ProfilePage() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: userProfile?.displayName || '',
+    displayName: userProfile?.displayName || user?.providerData?.[0]?.displayName || user?.displayName || '',
     email: user?.email || ''
   });
   const [saveLoading, setSaveLoading] = useState(false);
@@ -71,7 +71,7 @@ export default function ProfilePage() {
     if (userData) {
       setFormData(prevState => ({
         ...prevState,
-        displayName: userData.displayName || prevState.displayName
+        displayName: userData.displayName || userProfile?.displayName || user?.displayName || user?.providerData?.[0]?.displayName || prevState.displayName
       }));
     }
   }, [userData]);
@@ -247,9 +247,17 @@ export default function ProfilePage() {
     }
   };
 
+  const onEditProfileClick = () => {
+    setIsEditing(true);
+    setFormData(prevState => ({
+      ...prevState,
+      displayName: userData?.displayName || userProfile?.displayName || user?.displayName || user?.providerData?.[0]?.displayName || ''
+    }));
+  };
+
   const handleCancel = () => {
     setFormData({
-      displayName: userProfile?.displayName || '',
+      displayName: userData?.displayName || userProfile?.displayName || user?.displayName || user?.providerData?.[0]?.displayName || '',
       email: user?.email || ''
     });
     setAvatarWebpDataUrl(null);
@@ -341,7 +349,7 @@ export default function ProfilePage() {
               <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
               <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
               <div className="profile-mini-actions">
-                <button className="edit-profile-button" onClick={() => setIsEditing(true)}>
+                <button className="edit-profile-button" onClick={onEditProfileClick}>
                   Editeaza profilul
                 </button>
                 <button className="text-link soft-red-text" onClick={handleLogout}>
