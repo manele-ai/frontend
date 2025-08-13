@@ -333,7 +333,15 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   };
 
   const calculatePrice = () => {
-    return 29.99; // Preț fix pentru Easy Mode
+    let basePrice = 24.99; // Preț fix pentru Easy Mode
+    
+    // Apply subscription discount of 10 RON if user has active subscription
+    if (userCredits > 0 && userCredits < 999) {
+      // This indicates user has subscription (credits but not unlimited)
+      basePrice = Math.max(0, basePrice - 10.00);
+    }
+    
+    return basePrice;
   };
 
   return (
@@ -391,8 +399,14 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
             <div className="price-breakdown">
               <div className="price-item">
                 <span className="price-item-label">Preț de bază:</span>
-                <span className="price-item-value">29.99 RON</span>
+                <span className="price-item-value">24.99 RON</span>
               </div>
+              {userCredits > 0 && userCredits < 999 && (
+                <div className="price-item discount">
+                  <span className="price-item-label">Reducere abonament:</span>
+                  <span className="price-item-value">-10.00 RON</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

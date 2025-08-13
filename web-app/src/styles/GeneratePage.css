@@ -699,6 +699,16 @@
   color: #080A0B;
 }
 
+.generate-page .price-item.discount .price-item-value {
+  color: #27ae60;
+  font-weight: 700;
+}
+
+.generate-page .price-item.discount .price-item-label {
+  color: #27ae60;
+  font-weight: 600;
+}
+
 /* Style Selection */
 .style-selection-container {
   margin-bottom: 30px;

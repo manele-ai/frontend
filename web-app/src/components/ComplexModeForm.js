@@ -467,16 +467,22 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   };
 
   const calculatePrice = () => {
-    let basePrice = 29.99;
+    let basePrice = 24.99;
     
-    // If dedication is checked, add 30 RON
+    // If dedication is checked, add 10 RON
     if (wantsDedication) {
-      basePrice += 30;
+      basePrice += 10.00;
     }
     
     // If donation is checked, add the donation amount
     if (wantsDonation && donationAmount) {
       basePrice += parseFloat(donationAmount) || 0;
+    }
+    
+    // Apply subscription discount of 10 RON if user has active subscription
+    if (userCredits > 0 && userCredits < 999) {
+      // This indicates user has subscription (credits but not unlimited)
+      basePrice = Math.max(0, basePrice - 10.00);
     }
     
     return basePrice;
@@ -780,18 +786,24 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <div className="price-breakdown">
               <div className="price-item">
                 <span className="price-item-label">Preț de bază:</span>
-                <span className="price-item-value">29.99 RON</span>
+                <span className="price-item-value">24.99 RON</span>
               </div>
               {wantsDedication && (
                 <div className="price-item">
                   <span className="price-item-label">Dedicație:</span>
-                  <span className="price-item-value">+30.00 RON</span>
+                  <span className="price-item-value">+10.00 RON</span>
                 </div>
               )}
               {wantsDonation && donationAmount && (
                 <div className="price-item">
                   <span className="price-item-label">Aruncat cu bani:</span>
                   <span className="price-item-value">+{parseFloat(donationAmount) || 0} RON</span>
+                </div>
+              )}
+              {userCredits > 0 && userCredits < 999 && (
+                <div className="price-item discount">
+                  <span className="price-item-label">Reducere abonament:</span>
+                  <span className="price-item-value">-10.00 RON</span>
                 </div>
               )}
             </div>
