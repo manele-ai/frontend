@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
@@ -36,7 +36,8 @@ export default function ResultPage() {
 
   const [requestId] = useState(requestIdState || requestIdParam || null);
   const [taskId, setTaskId] = useState(null);
-  const [songId, setSongId] = useState(songIdState || null);
+  const [songIds, setSongIds] = useState(songIdState ? [songIdState] : []);
+  const [songId, setSongId] = useState(songIdState || null); // Keep for backward compatibility
 
   // Reset loading progress when starting a new generation
   useEffect(() => {
@@ -62,17 +63,15 @@ export default function ResultPage() {
     }
   }, [requestId, activeRequestId, showNotification, setupGenerationListener]);
 
-  const [isPlaying, setIsPlaying] = useState(false);
   const [songData, setSongData] = useState(null);
+  const [songsData, setSongsData] = useState([]);
+  const [playingSongId, setPlayingSongId] = useState(null);
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Timeout state now comes from useGlobalSongStatus hook
 
-  // Use a stable audio URL to prevent player reload
-  const [stableAudioUrl, setStableAudioUrl] = useState(null);
-  const [hasStableUrl, setHasStableUrl] = useState(false);
   const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
 
   // Cleanup function for component unmount
@@ -98,19 +97,25 @@ export default function ResultPage() {
 
     const data = latestTaskData;
 
+
+
     if (data.lyrics) {
       setCurrentSongLyrics(data.lyrics);
     }
 
     switch (data.status) {
       case 'processing':
-        setStatusMsg('AI-ul compune piesa...');
+        setStatusMsg('AI-ul compune piesele...');
         break;
       case 'partial':
       case 'completed': {
-        const resolvedSongId = data.songId || (Array.isArray(data.songIds) && data.songIds.length > 0 ? data.songIds[0] : null);
-        if (resolvedSongId) {
-          setSongId(resolvedSongId);
+        // Handle both single songId and array of songIds
+        if (data.songIds && Array.isArray(data.songIds) && data.songIds.length > 0) {
+          setSongIds(data.songIds);
+          setSongId(data.songIds[0]); // Keep first one for backward compatibility
+        } else if (data.songId) {
+          setSongIds([data.songId]);
+          setSongId(data.songId);
         }
         break;
       }
@@ -118,6 +123,7 @@ export default function ResultPage() {
         // Clear saved request id when task fails so user can start over
         localStorage.removeItem('activeGenerationRequestId');
         if (Array.isArray(data.songIds) && data.songIds.length > 0) {
+          setSongIds(data.songIds);
           setSongId(data.songIds[0]);
         } else {
           setError(data.error || 'Generarea a eșuat pentru toate piesele.');
@@ -129,53 +135,70 @@ export default function ResultPage() {
     }
   }, [latestTaskData]);
 
-  // ---- Listen to song document when songId available ----
+  // ---- Listen to all song documents when songIds available ----
   useEffect(() => {
-    const idToUse = activeSongId || songId;
-    if (!idToUse) return;
+    const idsToUse = songIds.length > 0 ? songIds : (activeSongId || songId ? [activeSongId || songId] : []);
+    if (idsToUse.length === 0) return;
 
-    let unsubscribe = null;
+    const unsubscribes = [];
 
-    const setupListener = async () => {
+    const setupListeners = async () => {
       try {
-        unsubscribe = onSnapshot(
-          doc(db, 'songsPublic', idToUse),
-          (docSnap) => {
-            if (!mounted.current) return;
-            
-            if (docSnap.exists()) {
-              const songData = docSnap.data();
+        idsToUse.forEach((songId) => {
+          const unsubscribe = onSnapshot(
+            doc(db, 'songsPublic', songId),
+            (docSnap) => {
+              if (!mounted.current) return;
               
-              setSongData(songData);
-              
-              // Clear localStorage items when song is complete
-              if (songData && songData.apiData && songData.apiData.title) {
-                localStorage.removeItem('resultPageLoadingProgress');
-                localStorage.removeItem('resultPageRequestId');
+              if (docSnap.exists()) {
+                const songData = docSnap.data();
+                
+                setSongsData(prev => {
+                  const existing = prev.find(song => song.id === songId);
+                  if (existing) {
+                    return prev.map(song => song.id === songId ? { ...song, ...songData } : song);
+                  } else {
+                    return [...prev, { id: songId, ...songData }];
+                  }
+                });
+                
+                // Keep first song for backward compatibility
+                if (songId === idsToUse[0]) {
+                  setSongData(songData);
+                }
+                
+                // Clear localStorage items when any song is complete
+                if (songData && songData.apiData && songData.apiData.title) {
+                  localStorage.removeItem('resultPageLoadingProgress');
+                  localStorage.removeItem('resultPageRequestId');
+                }
+              }
+            },
+            (err) => {
+              if (mounted.current) {
+                setError('Eroare la încărcarea piesei.');
               }
             }
-          },
-          (err) => {
-            if (mounted.current) {
-              setError('Eroare la încărcarea piesei.');
-            }
-          }
-        );
+          );
+          unsubscribes.push(unsubscribe);
+        });
       } catch (err) {
         if (mounted.current) {
-          setError('Eroare la inițializarea ascultătorului pentru piesă.');
+          setError('Eroare la inițializarea ascultătorilor pentru piesele.');
         }
       }
     };
 
-    setupListener();
+    setupListeners();
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      unsubscribes.forEach(unsubscribe => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      });
     };
-  }, [activeSongId, songId]);
+  }, [songIds, activeSongId, songId]);
 
   // Add loading progress animation (timeout is now handled by useGlobalSongStatus hook)
   useEffect(() => {
@@ -228,10 +251,6 @@ export default function ResultPage() {
     }
   }, [latestGenerationData]);
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
   // Test audio URL accessibility
   const testAudioUrl = async (url) => {
     try {
@@ -242,126 +261,22 @@ export default function ResultPage() {
     }
   };
 
-  const handleDownload = async () => {
-    // Verifică toate URL-urile posibile pentru download
-    const rawUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
-
-    if (!rawUrl) {
-      setError("Nu s-a găsit URL-ul pentru descărcare.");
-      return;
-    }
-
-    setIsDownloading(true);
-    try {
-      let resolvedUrl = rawUrl;
-
-      // Dacă este un URL de tip gs://, obține un URL temporar de descărcare
-      if (resolvedUrl.startsWith('gs://')) {
-        const storageRef = ref(storage, resolvedUrl);
-        resolvedUrl = await getDownloadURL(storageRef);
-      }
-
-      // Test URL accessibility
-      const isAccessible = await testAudioUrl(resolvedUrl);
-      if (!isAccessible) {
-        throw new Error('URL-ul nu este accesibil');
-      }
-
-      await downloadFile(resolvedUrl, `${songData.apiData.title || 'manea'}.mp3`);
-    } catch (error) {
-      setError("Nu s-a putut descărca piesa. Încearcă din nou.");
-    } finally {
-      setIsDownloading(false);
+  // Handle play/pause for specific song
+  const handlePlayPauseForSong = (songId) => {
+    if (playingSongId === songId) {
+      // Dacă aceeași piesă este deja în play, o oprește
+      setPlayingSongId(null);
+    } else {
+      // Dacă o piesă diferită este în play, o oprește pe cea veche și pornește pe cea nouă
+      setPlayingSongId(songId);
     }
   };
 
 
 
-  // Get song style information
-  const getSongStyle = () => {
-    if (!songData?.userGenerationInput?.style) return null;
-    
-    const style = styles.find(s => s.value === songData.userGenerationInput.style);
-    return style;
-  };
 
-  // Get song lyrics from state or API data
-  const getSongLyrics = () => {
-    // Încearcă să citească versurile din state (din taskStatuses)
-    if (currentSongLyrics) {
-      return currentSongLyrics;
-    }
-    
-    // Fallback la versurile din API data
-    if (!songData?.apiData?.lyrics) return null;
-    return songData.apiData.lyrics;
-  };
 
-  // Get dedication from user input
-  const getDedication = () => {
-    return songData.userGenerationInput?.dedication || null;
-  };
 
-  // Get donation amount from user input
-  const getDonation = () => {
-    return songData.userGenerationInput?.donationAmount || null;
-  };
-
-  // Set stable URL once we have a good audio URL - keep the first URL we get
-  useEffect(() => {
-    if (songData && !hasStableUrl) {
-      // Get the first available URL (prefer stream URL for stability)
-      let audioUrl = null;
-      if (songData?.apiData?.streamAudioUrl) {
-        audioUrl = songData.apiData.streamAudioUrl;
-      } else if (songData?.apiData?.audioUrl) {
-        audioUrl = songData.apiData.audioUrl;
-      } else if (songData?.storage?.url) {
-        audioUrl = songData.storage.url;
-      }
-
-      if (audioUrl) {
-        const maybeResolve = async () => {
-          try {
-            if (audioUrl.startsWith('gs://')) {
-              const storageRef = ref(storage, audioUrl);
-              const httpsUrl = await getDownloadURL(storageRef);
-              setStableAudioUrl(httpsUrl);
-            } else {
-              setStableAudioUrl(audioUrl);
-            }
-            setHasStableUrl(true);
-          } catch (e) {
-            // fallback: keep original url if resolution fails
-            setStableAudioUrl(audioUrl);
-            setHasStableUrl(true);
-          }
-        };
-        maybeResolve();
-      }
-    }
-  }, [songData, hasStableUrl]);
-
-  // Prevent re-renders when songData changes but we already have stable URL
-  const shouldRenderPlayer = stableAudioUrl && songData;
-  
-  // Memoize player to prevent unnecessary re-renders
-  const playerKey = stableAudioUrl || 'no-audio';
-  
-  // Memoize AudioPlayer to prevent re-renders
-  const memoizedAudioPlayer = useMemo(() => {
-    if (!shouldRenderPlayer) return null;
-    
-    return (
-      <AudioPlayer
-        key={playerKey}
-        audioUrl={stableAudioUrl}
-        isPlaying={isPlaying}
-        onPlayPause={handlePlayPause}
-        onError={setError}
-      />
-    );
-  }, [playerKey, stableAudioUrl, isPlaying, handlePlayPause]);
   
 
 
@@ -402,8 +317,8 @@ export default function ResultPage() {
     );
   }
 
-  // Show loading state while waiting for song or status
-  if (!songData) {
+  // Show loading state while waiting for songs or status
+  if (songsData.length === 0 && !songData) {
     return (
       <div 
         className="result-page"
@@ -441,14 +356,69 @@ export default function ResultPage() {
     );
   }
 
-  const canDownload = songData.storage?.url || songData.apiData?.audioUrl;
+  // Get all songs data - use songsData if available, otherwise fallback to single songData
+  const allSongsData = songsData.length > 0 ? songsData : (songData ? [{ id: songId, ...songData }] : []);
   
-  // Debug log pentru a vedea ce URL-uri sunt disponibile
-  
-  const songStyle = getSongStyle();
-  const songLyrics = getSongLyrics();
-  const dedication = getDedication();
-  const donation = getDonation();
+  // Helper function to get song style
+  const getSongStyleForSong = (song) => {
+    if (!song?.userGenerationInput?.style) return null;
+    return styles.find(s => s.value === song.userGenerationInput.style);
+  };
+
+  // Helper function to get song lyrics
+  const getSongLyricsForSong = (song) => {
+    // Pentru toate piesele, folosește versurile din currentSongLyrics dacă există
+    // (versurile sunt generate o singură dată pentru ambele piese)
+    if (currentSongLyrics) {
+      return currentSongLyrics;
+    }
+    
+    // Fallback pentru versurile din song data
+    const lyrics = song?.apiData?.lyrics || 
+                   song?.lyrics || 
+                   song?.userGenerationInput?.lyrics ||
+                   null;
+    
+    return lyrics;
+  };
+
+  // Helper function to check if song can be downloaded
+  const canDownloadSong = (song) => {
+    return song.storage?.url || song.apiData?.audioUrl;
+  };
+
+  // Handle download for specific song
+  const handleDownloadForSong = async (song) => {
+    const rawUrl = song?.storage?.url || song?.apiData?.audioUrl || song?.apiData?.streamAudioUrl;
+
+    if (!rawUrl) {
+      setError("Nu s-a găsit URL-ul pentru descărcare.");
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      let resolvedUrl = rawUrl;
+
+      // Dacă este un URL de tip gs://, obține un URL temporar de descărcare
+      if (resolvedUrl.startsWith('gs://')) {
+        const storageRef = ref(storage, resolvedUrl);
+        resolvedUrl = await getDownloadURL(storageRef);
+      }
+
+      // Test URL accessibility
+      const isAccessible = await testAudioUrl(resolvedUrl);
+      if (!isAccessible) {
+        throw new Error('URL-ul nu este accesibil');
+      }
+
+      await downloadFile(resolvedUrl, `${song.apiData?.title || 'manea'}.mp3`);
+    } catch (error) {
+      setError("Nu s-a putut descărca piesa. Încearcă din nou.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div 
@@ -463,23 +433,36 @@ export default function ResultPage() {
       <div className="result-container">
   
        
-        <div className="player-box">
-          <img
-            src={songData.apiData.imageUrl || 'https://via.placeholder.com/150'}
-            alt="Song artwork"
-            className="song-artwork"
-          />
-          <h2 className="player-song-title">{songData.apiData.title || 'Piesa ta e gata!'}</h2>
-          <h4 className="song-style-name">{songStyle.title}</h4>
-          
-          {shouldRenderPlayer ? (
-            <>
-              {/* Player audio încadrat într-un container cu fundal gri */}
+        <div className="songs-container">
+          {allSongsData.map((song, index) => {
+            const songStyle = getSongStyleForSong(song);
+            const songLyrics = getSongLyricsForSong(song);
+            const canDownload = canDownloadSong(song);
+            
+
+            
+            return (
+              <div key={song.id || index} className="player-box">
+              <img
+                src={song.apiData?.imageUrl || 'https://via.placeholder.com/150'}
+                alt="Song artwork"
+                className="song-artwork"
+              />
+              <h2 className="player-song-title">{song.apiData?.title || 'Piesa ta e gata!'}</h2>
+              <h4 className="song-style-name">{songStyle?.title || 'Manele'}</h4>
+              
+              {/* Player audio pentru această piesă */}
               <div className="result-player-container">
-                {memoizedAudioPlayer}
+                <AudioPlayer
+                  key={`audio-${song.id || index}`}
+                  audioUrl={song.apiData?.streamAudioUrl || song.apiData?.audioUrl || song.storage?.url}
+                  isPlaying={playingSongId === song.id}
+                  onPlayPause={() => handlePlayPauseForSong(song.id)}
+                  onError={(error) => setError(error)}
+                />
               </div>
               
-              {/* Versurile piesei - între player și butoane */}
+              {/* Versurile piesei */}
               {songLyrics && (
                 <div className="song-lyrics-standalone">
                   <div className="song-lyrics-standalone-content">
@@ -490,10 +473,12 @@ export default function ResultPage() {
               
               {/* Spațiu între versuri și butoane */}
               <div style={{ marginBottom: 16 }} />
+              
+              {/* Buton de download pentru această piesă */}
               {canDownload ? (
                 <Button
                   className="hero-btn"
-                  onClick={handleDownload}
+                  onClick={() => handleDownloadForSong(song)}
                   disabled={isDownloading}
                   style={{ marginBottom: 16 }}
                 >
@@ -506,19 +491,20 @@ export default function ResultPage() {
                   </p>
                 </div>
               )}
-              <Button
-                className="hero-btn"
-                style={{ marginTop: 0 }}
-                onClick={() => navigate('/select-style')}
-              >
-                <span className="hero-btn-text">Generează manea nouă</span>
-              </Button>
-            </>
-          ) : (
-            <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
-          )}
-                  </div>
+            </div>
+          );
+        })}
         </div>
+        
+        {/* Buton pentru generarea unei piese noi */}
+        <Button
+          className="hero-btn"
+          style={{ marginTop: 20 }}
+          onClick={() => navigate('/select-style')}
+        >
+          <span className="hero-btn-text">Generează manea nouă</span>
+        </Button>
+      </div>
     </div>
   );
 } 
