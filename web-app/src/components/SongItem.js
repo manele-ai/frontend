@@ -17,7 +17,6 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       return song.apiData.audioUrl;
     }
     if (song.apiData?.streamAudioUrl) {
-      console.log("song.apiData.streamAudioUrl", song.apiData.streamAudioUrl);
       return song.apiData.streamAudioUrl;
     }
     return null;

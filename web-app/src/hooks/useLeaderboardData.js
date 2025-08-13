@@ -23,9 +23,7 @@ export function useLeaderboardData() {
       setLoading(true);
       setError(null);
       
-      try {
-        console.log('Starting leaderboard data fetch...');
-        
+      try {        
         // Get current date for today's stats
         const now = new Date();
         const todayKey = now.toISOString().split('T')[0].replace(/-/g, '');
@@ -50,7 +48,6 @@ export function useLeaderboardData() {
         const fetchDailyStats = async (periodKey, bucketName) => {
           const statsRef = collection(db, 'stats', 'day', periodKey, 'buckets', bucketName);
           const q = query(statsRef, orderBy('count', 'desc'), limit(10));
-          console.log('Fetching daily stats for:', periodKey, bucketName);
           const snapshot = await getDocs(q);
           
           // Get user details for each stat entry
@@ -61,9 +58,7 @@ export function useLeaderboardData() {
               const userDoc = await getDoc(userRef);
               const userData = userDoc.data() || {};
               const count = statDoc.data().count || 0;
-              
-              console.log(`Daily ${bucketName} - User ${userData.displayName || 'Anonymous'}: count = ${count}`);
-              
+                            
               return {
                 id: userId,
                 displayName: userData.displayName || 'Anonymous User',
@@ -74,7 +69,6 @@ export function useLeaderboardData() {
           );
 
           const filteredResults = statsWithUserDetails.filter(user => user.count > 0);
-          console.log(`Daily ${bucketName} results:`, filteredResults);
           return filteredResults;
         };
 
@@ -86,14 +80,12 @@ export function useLeaderboardData() {
             orderBy(`stats.${fieldName}`, 'desc'), 
             limit(10)
           );
-          console.log('Fetching all-time stats for:', fieldName);
           const snapshot = await getDocs(q);
           
           const results = snapshot.docs
             .map(doc => {
               const data = doc.data();
               const count = data.stats?.[fieldName] || 0;
-              console.log(`User ${data.displayName || 'Anonymous'}: ${fieldName} = ${count}`);
               return {
                 id: doc.id,
                 displayName: data.displayName || 'Anonymous User',
@@ -103,7 +95,6 @@ export function useLeaderboardData() {
             })
             .filter(user => user.count > 0); // Filtrează doar utilizatorii cu count > 0
           
-          console.log(`All-time ${fieldName} results:`, results);
           return results;
         };
 
@@ -123,7 +114,6 @@ export function useLeaderboardData() {
 
         // Fetch stats for each type
         for (const [key, { allTimeField, dailyCollection }] of Object.entries(statTypes)) {
-          console.log(`Fetching stats for ${key}: allTimeField=${allTimeField}, dailyCollection=${dailyCollection}`);
           
           // Fetch all-time stats from usersPublic
           results.allTime[key] = await fetchAllTimeStats(allTimeField);
@@ -132,7 +122,6 @@ export function useLeaderboardData() {
           results.today[key] = await fetchDailyStats(todayKey, dailyCollection);
         }
 
-        console.log('Final results:', results);
         setData(results);
       } catch (err) {
         console.error('Error fetching leaderboard data:', {

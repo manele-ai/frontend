@@ -97,7 +97,6 @@ export default function ResultPage() {
     if (!mounted.current) return;
 
     const data = latestTaskData;
-    console.log('Task status update (global):', data.status, data);
 
     if (data.lyrics) {
       setCurrentSongLyrics(data.lyrics);

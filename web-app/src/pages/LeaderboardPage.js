@@ -66,9 +66,6 @@ export default function LeaderboardPage() {
 
   const getActiveData = () => {
     const timeframeData = data[timeframe];
-    console.log('Timeframe data:', timeframeData);
-    console.log('Current timeframe:', timeframe);
-    console.log('Current activeTab:', activeTab);
     
     let activeData;
     switch (activeTab) {
@@ -80,8 +77,6 @@ export default function LeaderboardPage() {
         break;
       case 'donations':
         activeData = timeframeData.donations;
-        console.log('Donations data:', activeData);
-        console.log('Donations data length:', activeData?.length);
         break;
       default:
         activeData = [];
@@ -89,8 +84,6 @@ export default function LeaderboardPage() {
     
     // Return only the top 10 users
     const top10Data = activeData ? activeData.slice(0, 10) : [];
-    console.log(`Top 10 ${activeTab} data:`, top10Data);
-    console.log(`Top 10 ${activeTab} data length:`, top10Data.length);
     return top10Data;
   };
 
