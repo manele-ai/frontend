@@ -200,7 +200,6 @@ export function AuthProvider({ children }) {
       // Update display name in Firebase Auth and wait for it to complete
       await updateProfile(user, {
         displayName: user.displayName,
-        photoURL: user.photoURL,
       });
       await fetchOrCreateUserProfile(user);
       trackAuth('google_signin', true);

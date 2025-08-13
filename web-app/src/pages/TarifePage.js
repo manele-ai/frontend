@@ -20,8 +20,7 @@ export default function TarifePage() {
           const userDoc = await getDoc(userRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            const subscriptionStatus = userData.subscription?.status;
-            setIsSubscribed(subscriptionStatus === 'active');
+            setIsSubscribed(userData.isSubscribed);
           } else {
             setIsSubscribed(false);
           }
