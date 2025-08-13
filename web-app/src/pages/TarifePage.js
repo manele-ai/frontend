@@ -72,7 +72,7 @@ export default function TarifePage() {
           {/* Card 1 - Standard */}
           <div className="pricing-card standard">
             <div className="card-content">
-              <div className="price">59.99 RON</div>
+              <div className="price">24.99 RON</div>
               <div className="description">
                 Pretul standard al unei manele generate.
               </div>
@@ -92,11 +92,11 @@ export default function TarifePage() {
               <div className="features">
                 <div className="feature">
                   <span className="checkmark">✓</span>
-                  2 manele gratuite in fiecare luna
+                  1 manele gratuite in fiecare luna
                 </div>
                 <div className="feature">
                   <span className="checkmark">✓</span>
-                  25% reducere la orice manea generata pe perioada abonamentului
+                  10 RON reducere la orice manea generata pe perioada abonamentului
                 </div>
               </div>
               {!isSubscribed && (
@@ -113,7 +113,7 @@ export default function TarifePage() {
           {/* Card 3 - Premium */}
           <div className="pricing-card premium">
             <div className="card-content">
-              <div className="price">74.99 RON</div>
+              <div className="price">34.99 RON</div>
               <div className="description">
                 Pretul standard al unei manele generate + dedicatie.
               </div>
