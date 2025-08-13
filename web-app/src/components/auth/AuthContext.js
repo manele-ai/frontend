@@ -11,8 +11,9 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { auth } from '../../services/firebase';
+import { auth, db } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
 import { usePostHogTracking } from '../../utils/posthog';
 
@@ -86,7 +87,6 @@ export function AuthProvider({ children }) {
 
   const fetchOrCreateUserProfile = async (firebaseUser) => {
     setIsUserDocCreated(null);
-
     try {
       // Force refresh token
       await firebaseUser.reload();
@@ -110,18 +110,18 @@ export function AuthProvider({ children }) {
   };
 
   // Fetch user profile from Firestore
-  // const fetchUserProfile = async (uid) => {
-  //   try {
-  //     const userDoc = await getDoc(doc(db, 'usersPublic', uid));
-  //     if (!userDoc.exists()) {
-  //       return null;
-  //     }
-  //     return { id: userDoc.id, ...userDoc.data() };
-  //   } catch (error) {
-  //     console.error('Error fetching/creating user profile:', error);
-  //     return null;
-  //   }
-  // };
+  const fetchUserProfile = async (uid) => {
+    try {
+      const userDoc = await getDoc(doc(db, 'usersPublic', uid));
+      if (!userDoc.exists()) {
+        return null;
+      }
+      return { id: userDoc.id, ...userDoc.data() };
+    } catch (error) {
+      console.error('Error fetching/creating user profile:', error);
+      return null;
+    }
+  };
 
   // Update user profile
   const updateUserProfile = async (updates) => {
@@ -397,7 +397,10 @@ export function AuthProvider({ children }) {
       // Logged in
       setUser(user);
       try {
-        await fetchOrCreateUserProfile(user);
+        const userProfile = await fetchUserProfile(user.uid);
+        if (userProfile) {
+          setUserProfile(userProfile);
+        }
       } catch (e) {
         // Profile fetch/create failure is surfaced via error state elsewhere
       } finally {
