@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import '../styles/SongItem.css';
 
 export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError }) {
@@ -8,12 +8,73 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
+  const [lastAudioUrl, setLastAudioUrl] = useState(null);
   
   // Detect if we're using a stream URL
   const isStreamUrl = audioUrl?.includes('stream');
 
+  // Memoize the play function to prevent unnecessary re-renders
+  const playAudio = useCallback(async () => {
+    if (!audioRef.current || !isAudioLoaded) return;
+    
+    try {
+      setIsLoading(true);
+      await audioRef.current.play();
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      const errorMsg = 'Nu s-a putut porni redarea. Încearcă din nou.';
+      setError(errorMsg);
+      onError?.(errorMsg);
+    }
+  }, [isAudioLoaded, onError]);
+
+  // Memoize the pause function
+  const pauseAudio = useCallback(() => {
+    if (!audioRef.current) return;
+    audioRef.current.pause();
+    setIsLoading(false);
+  }, []);
+
+  // Handle audio URL changes
+  useEffect(() => {
+    if (!audioUrl || audioUrl === lastAudioUrl) return;
+    
+    setLastAudioUrl(audioUrl);
+    setIsAudioLoaded(false);
+    setError(null);
+    setCurrentTime(0);
+    setDuration(0);
+    setHasStartedPlaying(false);
+    
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Reset audio element
+    audio.pause();
+    audio.currentTime = 0;
+    
+    // Set new source
+    audio.src = audioUrl;
+    audio.load();
+  }, [audioUrl, lastAudioUrl]);
+
+  // Handle play/pause state changes
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    if (isPlaying && isAudioLoaded) {
+      playAudio();
+    } else if (!isPlaying) {
+      pauseAudio();
+    }
+  }, [isPlaying, isAudioLoaded, playAudio, pauseAudio]);
+
+  // Audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
+    if (!audio) return;
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -26,6 +87,31 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       if (!isStreamUrl) {
         setDuration(audio.duration);
       }
+      setIsAudioLoaded(true);
+      setIsLoading(false);
+    };
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      if (isPlaying && isAudioLoaded) {
+        playAudio();
+      }
+    };
+
+    const handleCanPlayThrough = () => {
+      setIsLoading(false);
+    };
+
+    const handleWaiting = () => {
+      setIsLoading(true);
+    };
+
+    const handlePlaying = () => {
+      setIsLoading(false);
+      setError(null);
+    };
+
+    const handlePause = () => {
       setIsLoading(false);
     };
 
@@ -33,109 +119,110 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       onPlayPause();
       setCurrentTime(0);
       setHasStartedPlaying(false);
+      setIsLoading(false);
     };
 
     const handleError = (e) => {
-      // Only show error if we're actually trying to play
-      if (isPlaying) {
-        console.error('Audio playback error:', e);
-        const errorMsg = 'Error playing audio. Please try again.';
-        setError(errorMsg);
-        onError?.(errorMsg);
-      }
+      const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
+      setError(errorMsg);
+      setIsLoading(false);
+      onError?.(errorMsg);
+    };
+
+    const handleAbort = () => {
       setIsLoading(false);
     };
 
-    const handleCanPlay = () => {
-      setIsLoading(false);
-      if (isPlaying) {
-        audio.play().catch(() => {
-          // Only show error if play() fails
-          const errorMsg = 'Error playing audio. Please try again.';
-          setError(errorMsg);
-          onError?.(errorMsg);
-        });
-      }
-    };
-
-    const handleWaiting = () => {
+    const handleStalled = () => {
       setIsLoading(true);
     };
 
+    // Add event listeners
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('canplaythrough', handleCanPlayThrough);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('playing', handlePlaying);
+    audio.addEventListener('pause', handlePause);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
-    audio.addEventListener('canplay', handleCanPlay);
-    audio.addEventListener('waiting', handleWaiting);
-
-    // Load or unload audio based on active state
-    if (isPlaying) {
-      setError(null);
-      // Check if we need to set or update the source
-      const currentSrc = audio.src || '';
-      const newSrc = audioUrl || '';
-      // Do not reload audio if src is already set and matches
-      if (!currentSrc) {
-        if (audioUrl) {
-          setIsLoading(true);
-          audio.src = audioUrl;
-          audio.load();
-        }
-      } else {
-        // Dacă sursa este deja setată și audio nu rulează, pornește de la currentTime
-        if (audio.paused && !isLoading) {
-          audio.play().catch(() => {});
-        }
-      }
-    } else {
-      audio.pause();
-      // Don't change URL at all - keep the original URL
-      if (!audioUrl) {
-        audio.removeAttribute('src'); // More reliable than setting empty string
-        setCurrentTime(0);
-        setHasStartedPlaying(false);
-      }
-      setError(null);
-      setIsLoading(false);
-    }
+    audio.addEventListener('abort', handleAbort);
+    audio.addEventListener('stalled', handleStalled);
 
     return () => {
+      // Remove event listeners
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('canplaythrough', handleCanPlayThrough);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('playing', handlePlaying);
+      audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
-      audio.removeEventListener('canplay', handleCanPlay);
-      audio.removeEventListener('waiting', handleWaiting);
-      audio.pause();
-      audio.removeAttribute('src');
+      audio.removeEventListener('abort', handleAbort);
+      audio.removeEventListener('stalled', handleStalled);
     };
-  }, [audioUrl, isPlaying, onPlayPause, onError, isStreamUrl, hasStartedPlaying]);
+  }, [isPlaying, isAudioLoaded, playAudio, onPlayPause, onError, isStreamUrl]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+    };
+  }, []);
 
   const handleSeek = (e) => {
-    if (isStreamUrl) return; // Disable seeking for stream URLs
-    const newTime = e.target.value;
+    if (isStreamUrl || !audioRef.current) return;
+    
+    const newTime = parseFloat(e.target.value);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const formatTime = (time) => {
-    if (typeof time !== 'number' || isNaN(time) || !isFinite(time)) return '';
+    if (typeof time !== 'number' || isNaN(time) || !isFinite(time)) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const formatDuration = (time) => {
+    if (typeof time !== 'number' || isNaN(time) || !isFinite(time) || time <= 0) return '';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handlePlayPauseClick = () => {
+    if (isLoading) return; // Prevent clicks while loading
+    onPlayPause();
+  };
+
   return (
     <div className="song-playback">
-      <audio ref={audioRef} />
+      <audio 
+        ref={audioRef}
+        preload="metadata"
+        crossOrigin="anonymous"
+      />
+      
       <div className="song-slider-row">
         <button 
           className="play-pause-button" 
-          onClick={onPlayPause}
-          disabled={isLoading}
+          onClick={handlePlayPauseClick}
+          disabled={isLoading || !isAudioLoaded}
+          title={isLoading ? 'Se încarcă...' : (isPlaying ? 'Pauză' : 'Play')}
         >
-          {isLoading ? '⌛' : (
+          {isLoading ? (
+            <div className="loading-spinner">
+              
+            </div>
+          ) : (
             isPlaying ? (
               // Icon pauză SVG cu gradient
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -153,7 +240,9 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
             )
           )}
         </button>
+        
         <span className="time-display time-current">{formatTime(currentTime)}</span>
+        
         <input
           type="range"
           min="0"
@@ -161,14 +250,43 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
           value={currentTime}
           onChange={handleSeek}
           className="progress-bar"
-          disabled={isLoading}
+          disabled={isLoading || isStreamUrl || !isAudioLoaded}
           style={{ flex: 1, minWidth: 80, maxWidth: 360 }}
         />
-        <span className="time-display time-duration">{formatTime(duration)}</span>
+        
+        {formatDuration(duration) && (
+          <span className="time-display time-duration">{formatDuration(duration)}</span>
+        )}
       </div>
 
-      {error && isPlaying && (
-        <div className="error-message">{error}</div>
+      {error && (
+        <div className="error-message">
+          {error}
+          <button 
+            onClick={() => {
+              setError(null);
+              if (audioRef.current) {
+                audioRef.current.load();
+              }
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#eab111',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              marginLeft: '10px'
+            }}
+          >
+            Încearcă din nou
+          </button>
+        </div>
+      )}
+
+      {!isAudioLoaded && audioUrl && (
+        <div className="loading-message">
+          Se încarcă audio...
+        </div>
       )}
     </div>
   );

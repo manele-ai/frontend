@@ -97,7 +97,6 @@ export default function ResultPage() {
     if (!mounted.current) return;
 
     const data = latestTaskData;
-    console.log('Task status update (global):', data.status, data);
 
     if (data.lyrics) {
       setCurrentSongLyrics(data.lyrics);
@@ -233,11 +232,22 @@ export default function ResultPage() {
     setIsPlaying(!isPlaying);
   };
 
+  // Test audio URL accessibility
+  const testAudioUrl = async (url) => {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const handleDownload = async () => {
     // Verifică toate URL-urile posibile pentru download
     const rawUrl = songData?.storage?.url || songData?.apiData?.audioUrl || songData?.apiData?.streamAudioUrl;
 
     if (!rawUrl) {
+      setError("Nu s-a găsit URL-ul pentru descărcare.");
       return;
     }
 
@@ -251,9 +261,15 @@ export default function ResultPage() {
         resolvedUrl = await getDownloadURL(storageRef);
       }
 
+      // Test URL accessibility
+      const isAccessible = await testAudioUrl(resolvedUrl);
+      if (!isAccessible) {
+        throw new Error('URL-ul nu este accesibil');
+      }
+
       await downloadFile(resolvedUrl, `${songData.apiData.title || 'manea'}.mp3`);
     } catch (error) {
-      setError("Failed to download song. Please try again.");
+      setError("Nu s-a putut descărca piesa. Încearcă din nou.");
     } finally {
       setIsDownloading(false);
     }
@@ -345,7 +361,7 @@ export default function ResultPage() {
         onError={setError}
       />
     );
-  }, [playerKey, stableAudioUrl, isPlaying]); // Removed handlePlayPause and setError from dependencies
+  }, [playerKey, stableAudioUrl, isPlaying, handlePlayPause]);
   
 
 

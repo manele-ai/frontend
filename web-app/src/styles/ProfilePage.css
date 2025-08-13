@@ -26,6 +26,7 @@
   z-index: 1;
 }
 
+
 /* Asigură-te că conținutul este deasupra overlay-ului */
 .profile-page > * {
   position: relative;
@@ -908,6 +909,8 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   object-fit: cover;
 } 
 
+
+
 /* Drag & drop avatar uploader */
 .profile-page .avatar-dropzone {
   border: 1.5px dashed rgba(235, 197, 95, 0.4);
@@ -1194,9 +1197,11 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 
 .profile-page .profile-song-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 0;
   margin-left: 12px;
+  width: 120px;
+  flex-shrink: 0;
 }
 
 .profile-page .download-button {
