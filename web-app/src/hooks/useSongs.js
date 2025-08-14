@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../components/auth/AuthContext';
 import { db } from '../services/firebase';
@@ -8,7 +8,12 @@ export function useSongs() {
   const { user } = useAuth();
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastDoc, setLastDoc] = useState(null);
+
+  const SONGS_PER_PAGE = 5;
 
   useEffect(() => {
     async function fetchSongs() {
@@ -28,7 +33,7 @@ export function useSongs() {
           songsRef,
           where('userId', '==', user.uid),
           orderBy('createdAt', 'desc'),
-          limit(20)
+          limit(SONGS_PER_PAGE)
         );
         const querySnapshot = await getDocs(q);
         
@@ -38,6 +43,8 @@ export function useSongs() {
         }));
 
         setSongs(fetchedSongs);
+        setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setHasMore(querySnapshot.docs.length === SONGS_PER_PAGE);
         setError(null);
       } catch (err) {
         console.error('Error fetching songs:', err);
@@ -48,8 +55,49 @@ export function useSongs() {
     }
 
     setLoading(true);
+    setSongs([]);
+    setLastDoc(null);
+    setHasMore(true);
     fetchSongs();
   }, [user]);
 
-  return { songs, loading, error };
+  const loadMoreSongs = async () => {
+    if (!user || !hasMore || loadingMore) return;
+
+    setLoadingMore(true);
+    try {
+      const songsRef = collection(db, 'songsPublic');
+      const q = query(
+        songsRef,
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc'),
+        startAfter(lastDoc),
+        limit(SONGS_PER_PAGE)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      const newSongs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setSongs(prev => [...prev, ...newSongs]);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setHasMore(querySnapshot.docs.length === SONGS_PER_PAGE);
+    } catch (err) {
+      console.error('Error loading more songs:', err);
+      setError('Failed to load more songs. Please try again later.');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  return { 
+    songs, 
+    loading, 
+    loadingMore,
+    error, 
+    hasMore, 
+    loadMoreSongs 
+  };
 } 
