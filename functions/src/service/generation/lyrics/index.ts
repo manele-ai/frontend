@@ -15,6 +15,8 @@ Vers 1:
 ...
 Vers 2:
 ...
+
+De asemenea, vei pune diacritice peste tot pe unde este nevoie in versurile generate.
 `;
 
 const PROMPT_LEAK_INSTRUCTION = `
@@ -31,6 +33,7 @@ const USER_REQUESTS_PROMPT = `
 [ARUNCA_CU_BANI]
 
 Vei indeplini cerinta utilizatorului.
+Vei pune diacritice peste tot pe unde este nevoie.
 `;
 
 function fillInUserRequests(data: Requests.GenerateSong) {
