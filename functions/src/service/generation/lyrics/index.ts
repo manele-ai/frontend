@@ -15,6 +15,8 @@ Vers 1:
 ...
 Vers 2:
 ...
+
+De asemenea, vei pune diacritice peste tot pe unde este nevoie in versurile generate.
 `;
 
 const PROMPT_LEAK_INSTRUCTION = `
