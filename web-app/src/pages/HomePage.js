@@ -3,20 +3,20 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
 import { getStripe } from 'services/stripe';
-import AudioPlayer from '../components/AudioPlayer';
+import LazyAudioPlayer from '../components/LazyAudioPlayer';
 import { useAuth } from '../components/auth/AuthContext';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/HomePage.css';
 
-function ReusableCard({ background, title, subtitle, styleValue }) {
+function ReusableCard({ background, title, subtitle, styleValue, audioUrl }) {
   const navigate = useNavigate();
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // Hardcoded audio URL - aceeași piesă pentru toate stilurile
-  const audioUrl = '/music/mohanveena-indian-guitar-374179.mp3';
+  // Fallback audio URL in case the specific style audio fails
+  const fallbackAudioUrl = '/music/mohanveena-indian-guitar-374179.mp3';
   
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -43,8 +43,9 @@ function ReusableCard({ background, title, subtitle, styleValue }) {
           <h2 className="style-example-title">{title}</h2>
         </div>
         <div className="style-example-audio-player">
-          <AudioPlayer 
+          <LazyAudioPlayer 
             audioUrl={audioUrl}
+            fallbackAudioUrl={fallbackAudioUrl}
             isPlaying={isPlaying}
             onPlayPause={handlePlayPause}
             onError={() => console.error('Audio playback error')}
@@ -156,6 +157,7 @@ export default function HomePage() {
               title={style.title}
               subtitle={style.subtitle}
               styleValue={style.value}
+              audioUrl={style.audioUrl}
             />
           ))}
         </div>
