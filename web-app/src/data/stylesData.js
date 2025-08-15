@@ -6,7 +6,7 @@ export const styles = [
     value: 'jale',
   },
   {
-    title: 'MANELE DE OPULENTA',
+    title: 'MANELE DE OPULENȚĂ',
     subtitle: '',
     image: '/photos/music-style-cards/OPULENTA.png',
     value: 'opulenta',
@@ -30,7 +30,7 @@ export const styles = [
     value: 'de-pahar',
   },
   {
-    title: 'MUZICA POPULARA',
+    title: 'MUZICĂ POPULARĂ',
     subtitle: '',
     image: '/photos/music-style-cards/POPULARA.png',
     value: 'populara',
@@ -42,7 +42,7 @@ export const styles = [
     value: 'orientale',
   },
   {
-    title: 'LAUTARESTI',
+    title: 'LĂUTĂREȘTI',
     subtitle: '',
     image: '/photos/music-style-cards/LAUTARESTI.png',
     value: 'lautaresti',

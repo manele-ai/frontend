@@ -229,6 +229,34 @@
   margin-bottom: 8px;
 }
 
+.mobile-nav-btn.generate-nav-btn {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 0.15) 0%, rgba(201, 169, 104, 0.15) 100%);
+  border: 1px solid rgba(255, 224, 161, 0.3);
+  padding: 14px 16px;
+}
+
+.mobile-nav-btn.generate-nav-btn .mobile-nav-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.mobile-nav-btn.generate-nav-btn .nav-emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.mobile-nav-btn.generate-nav-btn:hover {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 0.2) 0%, rgba(201, 169, 104, 0.2) 100%);
+  border-color: rgba(255, 224, 161, 0.4);
+}
+
+.mobile-nav-btn.generate-nav-btn.active {
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  border-color: transparent;
+}
+
 .mobile-nav-btn:last-child {
   margin-bottom: 0;
 }

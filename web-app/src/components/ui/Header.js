@@ -91,6 +91,16 @@ export default function Header() {
         
         <div className={`mobile-dropdown ${isMenuOpen ? 'open' : ''}`}>
           <button 
+            className={`mobile-nav-btn generate-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/select-style')}
+          >
+                <span className="mobile-nav-text">
+                <span className="nav-emoji">💎</span>
+                GENEREAZĂ
+                <span className="nav-emoji">🎵</span>
+              </span>
+          </button>
+          <button 
             className={`mobile-nav-btn ${isActive('/') ? 'active' : ''}`}
             onClick={() => handleNavigation('/')}
           >

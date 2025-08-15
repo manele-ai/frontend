@@ -101,8 +101,8 @@ export default function GeneratePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Configureaza maneaua</h2>
-            <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+            <h2 className="hero-title">FĂ-ȚI MANEAUA MAI JOS!</h2>
+            <p className="hero-subtitle">Creează-ți manea completând formularul de mai jos.</p>
           </div>
         </div>
       </div>
@@ -123,13 +123,13 @@ export default function GeneratePage() {
               className={`mode-slider-option ${mode === 'hard' ? 'active' : ''}`}
               onClick={() => setMode('hard')}
             >
-              <span className="mode-slider-text">Complex</span>
+              <span className="mode-slider-text">Detaliat</span>
             </button>
             <button
               className={`mode-slider-option ${mode === 'easy' ? 'active' : ''}`}
               onClick={() => setMode('easy')}
             >
-              <span className="mode-slider-text">Easy</span>
+              <span className="mode-slider-text">Ușor</span>
             </button>
           </div>
         </div>

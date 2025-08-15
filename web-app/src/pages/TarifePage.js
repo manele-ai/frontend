@@ -66,7 +66,10 @@ export default function TarifePage() {
       }}
     >
       <div className="tarife-container">
-        <h1 className="tarife-title">Tarife</h1>
+        <div className="tarife-header">
+          <span className="tarife-title-emoji">💰</span>
+          <h1 className="tarife-title">Tarife</h1>
+        </div>
         
         <div className="pricing-cards">
           {/* Card 1 - Standard */}
@@ -74,7 +77,7 @@ export default function TarifePage() {
             <div className="card-content">
               <div className="price">24.99 RON</div>
               <div className="description">
-                Pretul standard al unei manele generate.
+                Prețul standard al unei manele generate.
               </div>
               <button 
                 className="generate-btn"
@@ -88,15 +91,19 @@ export default function TarifePage() {
           {/* Card 2 - Subscription (Featured) */}
           <div className="pricing-card subscription featured">
             <div className="card-content">
-              <div className="price">29.99 RON/luna</div>
+              <div className="price">💎 29.99 RON/luna</div>
               <div className="features">
                 <div className="feature">
                   <span className="checkmark">✓</span>
-                  1 manele gratuite in fiecare luna
+                  1 manea gratis in fiecare lună.
                 </div>
                 <div className="feature">
                   <span className="checkmark">✓</span>
-                  10 RON reducere la orice manea generata pe perioada abonamentului
+                  1 dedicație gratis in fiecare lună.
+                </div>
+                <div className="feature">
+                  <span className="checkmark">✓</span>
+                  10 RON reducere la orice manea generată pe perioada abonamentului.
                 </div>
               </div>
               {!isSubscribed && (
@@ -115,7 +122,7 @@ export default function TarifePage() {
             <div className="card-content">
               <div className="price">34.99 RON</div>
               <div className="description">
-                Pretul standard al unei manele generate + dedicatie.
+                Prețul standard al unei manele generate + dedicație.
               </div>
               <button 
                 className="generate-btn"
