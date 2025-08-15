@@ -37,6 +37,7 @@ export async function initiateMusicGeneration({
       customMode: true,
       instrumental: false,
       model: "V4_5PLUS",
+      styleWeight: 1.0,
       negativeTags: negativeTags || ["pop", "trap"],
       callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
