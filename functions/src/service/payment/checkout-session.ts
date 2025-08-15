@@ -50,13 +50,18 @@ export const createSongCheckoutSession = async ({
         quantity: 1,
       });
     }
+
+    let allowPromotionCodes = true;
+    if (applySubscriptionDiscount) {
+      allowPromotionCodes = false;
+    }
     
     return await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ['card'],
         mode: 'payment',
         line_items,
-        allow_promotion_codes: true,
+        ...(allowPromotionCodes ? { allow_promotion_codes: true } : {}),
         discounts: applySubscriptionDiscount ? [{
             coupon: STRIPE_COUPON_ID_SUBSCRIBED_SONG.value(),
         }] : [],
