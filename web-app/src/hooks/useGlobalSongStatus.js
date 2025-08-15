@@ -214,7 +214,7 @@ export const useGlobalSongStatus = () => {
           showNotification({
             type: 'success',
             title: 'Maneaua e gata!',
-            message: 'Click pentru a asculta rezultatul.',
+            message: 'Click pentru a asculta rezultatul. Piesa se poate asculta și pe pagina de profil.',
             action: {
               label: 'Ascultă',
               onClick: () => {
