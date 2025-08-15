@@ -461,6 +461,12 @@
   transform: translateY(-1px);
 }
 
+.generate-page .checkbox-slider-option:active {
+  transform: translateY(0px);
+  box-shadow: 0 1px 4px rgba(234, 177, 17, 0.2);
+  transition: all 0.1s ease;
+}
+
 .generate-page .checkbox-slider-text {
   font-family: 'Satoshi', sans-serif;
   font-size: 11px;
@@ -833,17 +839,35 @@
   }
   
   .generate-page .mode-slider {
-    padding: 3px;
-    gap: 1px;
+    padding: 4px;
+    gap: 2px;
   }
   
   .generate-page .mode-slider-option {
-    padding: 8px 14px;
-    min-width: 70px;
+    padding: 12px 20px;
+    min-width: 90px;
+    border-radius: 28px;
+  }
+  
+  .generate-page .mode-slider-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(234, 177, 17, 0.4);
+  }
+  
+  .generate-page .mode-slider-option.active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(234, 177, 17, 0.5);
+  }
+  
+  .generate-page .mode-slider-option:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
+    transition: all 0.1s ease;
   }
   
   .generate-page .mode-slider-text {
-    font-size: 11px;
+    font-size: 14px;
+    font-weight: 600;
   }
   
   .generate-page .input-group {
@@ -868,16 +892,36 @@
   }
   
   .generate-page .checkbox-slider {
-    min-width: 70px;
+    min-width: 90px;
+    padding: 4px;
+    gap: 3px;
   }
   
   .generate-page .checkbox-slider-option {
-    padding: 5px 10px;
-    min-width: 30px;
+    padding: 8px 16px;
+    min-width: 40px;
+    border-radius: 20px;
+  }
+  
+  .generate-page .checkbox-slider-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(234, 177, 17, 0.4);
+  }
+  
+  .generate-page .checkbox-slider-option.active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(234, 177, 17, 0.5);
+  }
+  
+  .generate-page .checkbox-slider-option:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
+    transition: all 0.1s ease;
   }
   
   .generate-page .checkbox-slider-text {
-    font-size: 10px;
+    font-size: 12px;
+    font-weight: 700;
   }
   
   .generate-page .checkbox-slider-container {
@@ -921,25 +965,63 @@
   }
   
   .generate-page .mode-slider-option {
-    padding: 6px 10px;
-    min-width: 60px;
+    padding: 16px 24px;
+    min-width: 100px;
+    border-radius: 30px;
+  }
+  
+  .generate-page .mode-slider-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(234, 177, 17, 0.5);
+  }
+  
+  .generate-page .mode-slider-option.active {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(234, 177, 17, 0.6);
+  }
+  
+  .generate-page .mode-slider-option:active {
+    transform: translateY(0px);
+    box-shadow: 0 3px 10px rgba(234, 177, 17, 0.4);
+    transition: all 0.1s ease;
   }
   
   .generate-page .mode-slider-text {
-    font-size: 10px;
+    font-size: 16px;
+    font-weight: 600;
   }
   
   .generate-page .checkbox-slider {
-    min-width: 60px;
+    min-width: 100px;
+    padding: 5px;
+    gap: 4px;
   }
   
   .generate-page .checkbox-slider-option {
-    padding: 4px 8px;
-    min-width: 25px;
+    padding: 12px 20px;
+    min-width: 45px;
+    border-radius: 22px;
+  }
+  
+  .generate-page .checkbox-slider-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(234, 177, 17, 0.5);
+  }
+  
+  .generate-page .checkbox-slider-option.active {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(234, 177, 17, 0.6);
+  }
+  
+  .generate-page .checkbox-slider-option:active {
+    transform: translateY(0px);
+    box-shadow: 0 3px 10px rgba(234, 177, 17, 0.4);
+    transition: all 0.1s ease;
   }
   
   .generate-page .checkbox-slider-text {
-    font-size: 9px;
+    font-size: 14px;
+    font-weight: 700;
   }
   
   .generate-page .checkbox-slider-container {
@@ -953,8 +1035,52 @@
   
   .generate-page .generate-back-button,
   .generate-page .generate-button {
-    width: 160px;
-    height: 45px;
+    width: 180px;
+    height: 50px;
+  }
+  
+  .generate-page .generate-back-button .hero-btn-text,
+  .generate-page .generate-button .hero-btn-text {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .generate-page .generate-back-button:hover,
+  .generate-page .generate-button:hover {
+    transform: translateY(-2px);
+    box-shadow: -2px 4px 3px 0px #000;
+  }
+  
+  .generate-page .generate-back-button:active,
+  .generate-page .generate-button:active {
+    transform: translateY(0px);
+    box-shadow: -1px 2px 1px 0px #000;
+    transition: all 0.1s ease;
+  }
+  
+  .generate-page .generate-back-button,
+  .generate-page .generate-button {
+    width: 200px;
+    height: 55px;
+  }
+  
+  .generate-page .generate-back-button .hero-btn-text,
+  .generate-page .generate-button .hero-btn-text {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .generate-page .generate-back-button:hover,
+  .generate-page .generate-button:hover {
+    transform: translateY(-2px);
+    box-shadow: -2px 4px 3px 0px #000;
+  }
+  
+  .generate-page .generate-back-button:active,
+  .generate-page .generate-button:active {
+    transform: translateY(0px);
+    box-shadow: -1px 2px 1px 0px #000;
+    transition: all 0.1s ease;
   }
   
   .generate-page .input:focus {
