@@ -27,7 +27,7 @@ export default function ProfilePage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
-  const { songs, loading: songsLoading, error: songsError } = useSongs();
+  const { songs, loading: songsLoading, loadingMore, error: songsError, hasMore, loadMoreSongs } = useSongs();
   const [activeSong, setActiveSong] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [userData, setUserData] = useState(null);
@@ -451,6 +451,26 @@ export default function ProfilePage() {
             ) : (
               <div className="no-songs">
                 <p>Nu există piese pentru acest stil.</p>
+              </div>
+            )}
+            
+            {/* Buton pentru încărcarea mai multor piese */}
+            {hasMore && filteredSongs.length > 0 && (
+              <div className="load-more-container">
+                <button
+                  className="load-more-button"
+                  onClick={loadMoreSongs}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? (
+                    <>
+                      <span className="inline-spinner-gold"></span>
+                      Se încarcă...
+                    </>
+                  ) : (
+                    'Încarcă mai multe piese'
+                  )}
+                </button>
               </div>
             )}
           </div>
