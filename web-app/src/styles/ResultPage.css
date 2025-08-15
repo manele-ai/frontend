@@ -211,9 +211,9 @@
 }
 .result-page .hero-btn-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 00;
   line-height: normal;
   letter-spacing: -0.2px;
   text-align: center;
@@ -222,6 +222,11 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+}
+
+.result-page .gen-btn {
+  font-size: 18px !important;
+  font-weight: 600;
 }
 
 .back-button {
@@ -902,6 +907,78 @@
   margin: 0;
   white-space: pre-wrap;
   text-align: center;
+}
+
+.result-page .share-song-button {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  min-width: 40px;
+  height: 38px; /* Match download button height */
+  align-self: center; /* Center vertically in the flex container */
+}
+
+.result-page .share-song-button:hover {
+  transform: scale(1.1);
+}
+
+.result-page .share-song-button:active {
+  transform: scale(0.95);
+}
+
+.result-page .share-song-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.result-page .share-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.result-page .share-icon path {
+  transition: opacity 0.2s ease;
+}
+
+.result-page .share-loading {
+  font-size: 12px;
+  color: #ffeecd;
+  font-weight: 500;
+}
+
+/* Result song actions container */
+.result-page .result-song-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  max-width: 100%;
+  padding: 0 20px; /* Add padding to prevent share button from being at edge */
+}
+
+/* Invisible spacer to help center the download button */
+.result-page .result-song-actions::before {
+  content: '';
+  width: 40px; /* Same width as share button */
+  height: 40px;
+}
+
+/* Result download button - centered in the container */
+.result-page .result-download-btn.hero-btn.button {
+  min-width: 120px;
+  max-width: 180px;
+  width: auto !important; /* Override the fixed 300px width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto; /* Center the button */
 }
 
 @media (max-width: 768px) {
