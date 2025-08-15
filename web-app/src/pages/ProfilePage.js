@@ -376,11 +376,11 @@ export default function ProfilePage() {
             </div>
             <div className="stat-item">
               <span className="stat-number gold-text">{userData?.stats?.numDedicationsGiven || 0}</span>
-              <span className="stat-label">Dedicatii</span>
+              <span className="stat-label">Dedicații</span>
             </div>
             <div className="stat-item">
               <span className="stat-number gold-text">{userData?.stats?.sumDonationsTotal || 0} RON</span>
-              <span className="stat-label">Bani la lautar</span>
+              <span className="stat-label">Bani aruncați</span>
             </div>
           </div>
         </div>

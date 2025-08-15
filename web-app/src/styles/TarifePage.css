@@ -32,13 +32,31 @@
   width: 100%;
 }
 
+.tarife-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 60px;
+}
+
 .tarife-title {
   text-align: center;
-  color: white;
+  background: linear-gradient(90deg, #FFE0A1 0%, #C9A968 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-size: 40px;
   font-weight: bold;
-  margin-bottom: 60px;
   letter-spacing: 1px;
+  margin: 0;
+}
+
+.tarife-title-emoji {
+  font-size: 40px;
+  display: inline-block;
+  transform: translateY(-2px);
 }
 
 .pricing-cards {
@@ -190,9 +208,16 @@
     padding: 70px 15px 150px 15px;
   }
   
+  .tarife-header {
+    margin-bottom: 40px;
+  }
+
   .tarife-title {
     font-size: 32px;
-    margin-bottom: 40px;
+  }
+
+  .tarife-title-emoji {
+    font-size: 32px;
   }
   
   .pricing-cards {
@@ -233,9 +258,16 @@
     padding: 60px 10px 150px 10px;
   }
   
+  .tarife-header {
+    margin-bottom: 30px;
+  }
+
   .tarife-title {
     font-size: 28px;
-    margin-bottom: 30px;
+  }
+
+  .tarife-title-emoji {
+    font-size: 28px;
   }
   
   .pricing-cards {

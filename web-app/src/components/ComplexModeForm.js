@@ -492,7 +492,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     <div className="complex-mode-form">
       {/* Style Selection */}
               <div className="style-selection-container">
-          <label className="input-label">Alege stilul</label>
+          <label className="input-label">Alege stilul:</label>
           <div className="style-cards-grid">
             {styles.map((style) => (
               <div
@@ -515,11 +515,11 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
 
       {/* Song Name */}
       <div className="input-group">
-        <label className="input-label">Titlu piesă</label>
+        <label className="input-label">Titlu piesă:</label>
         <input
           className={`input ${fieldErrors.songName ? 'error' : ''}`}
           type="text"
-          placeholder="Nume piesă"
+          placeholder="Scrie aici numele piesei"
           value={songName}
           maxLength={100}
           onChange={(e) => {
@@ -533,11 +533,14 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
 
       {/* Song Details */}
       <div className="input-group">
-        <label className="input-label">Detalii versuri</label>
+        <label className="input-label">Detalii versuri:</label>
+        <p className="checkbox-explanation">
+            Spune-ne despre ce să fie versurile manelei, dă-ne detalii.
+          </p>
         <input
           className="input"
           type="text"
-          placeholder="Detalii versuri (ex: temă, atmosferă, poveste)"
+          placeholder="Scrie aici detalii versuri"
           value={songDetails}
           maxLength={300}
           onChange={(e) => setSongDetails(e.target.value)}
@@ -552,7 +555,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             Vrei dedicație?
           </label>
           <p className="checkbox-explanation">
-            Vrei sa dedici aceasta melodie unei persoane?
+            Vrei să dedici această melodie unei persoane?
           </p>
         </div>
         <div className="checkbox-slider-container">
@@ -620,7 +623,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <input
               className={`input ${fieldErrors.fromName ? 'error' : ''}`}
               type="text"
-              placeholder="De la cine?"
+              placeholder="Scrie de la cine e dedicația"
               value={fromName}
               maxLength={50}
               onChange={(e) => {
@@ -636,7 +639,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <input
               className={`input ${fieldErrors.toName ? 'error' : ''}`}
               type="text"
-              placeholder="Pentru cine?"
+              placeholder="Scrie aici pentru cine e dedicația"
               value={toName}
               maxLength={50}
               onChange={(e) => {
@@ -648,11 +651,14 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             {fieldErrors.toName && <div className="field-error">{fieldErrors.toName}</div>}
           </div>
           <div className="input-group">
-            <label className="input-label">Dedicatie</label>
+            <label className="input-label">Dedicație</label>
+            {/* <p className="checkbox-explanation">
+              Spune-ne aici ce vrei sa spună în dedicație.
+            </p> */}
             <input
               className={`input ${fieldErrors.dedication ? 'error' : ''}`}
               type="text"
-              placeholder="Dedicatie (ex: pentru tine, pentru mama, pentru baiatul meu)"
+              placeholder="Scrie aici ce vrei sa spună în dedicație"
               value={dedication}
               maxLength={100}
               onChange={(e) => {
@@ -675,7 +681,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             Vrei să arunci cu bani?
           </label>
           <p className="checkbox-explanation">
-            Alege suma pe care vrei sa o arunci la manele si se va specifica in piesa (RON)
+            Alege suma pe care vrei să o arunci la lăutar. Exemplu: 10 RON (va fi "un milion" in piesa)
           </p>
         </div>
         <div className="checkbox-slider-container">
@@ -742,7 +748,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <input
               className={`input ${fieldErrors.donorName ? 'error' : ''}`}
               type="text"
-              placeholder="Ex: Ion Popescu"
+              placeholder="Scrie aici numele celui care dă bani"
               value={donorName}
               maxLength={50}
               onChange={(e) => {
@@ -758,7 +764,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <input
               className={`input ${fieldErrors.donationAmount ? 'error' : ''}`}
               type="number"
-              placeholder="Ex: 10 RON (va fi 100 RON in piesa)"
+              placeholder="Scrie aici suma"
               value={donationAmount}
               onChange={(e) => {
                 handleDonationAmountChange(e);
@@ -778,14 +784,14 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       <div className="price-container-wrapper">
         <div className="price-container">
           <div className="price-card">
-            <h3 className="price-title">Preț final</h3>
+            <h3 className="price-title">Preț final <br/><i>(două manele la preț de una)</i></h3>
             <div className="price-amount">
               <span className="price-value">{calculatePrice().toFixed(2)}</span>
               <span className="price-currency">RON</span>
             </div>
             <div className="price-breakdown">
               <div className="price-item">
-                <span className="price-item-label">Preț de bază:</span>
+                <span className="price-item-label">2 manele:</span>
                 <span className="price-item-value">24.99 RON</span>
               </div>
               {wantsDedication && (

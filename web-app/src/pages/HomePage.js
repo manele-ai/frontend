@@ -122,22 +122,22 @@ export default function HomePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Fa-ti propria manea acum</h2>
-            <p className="hero-subtitle">Genereaza-ti propria manea instant</p>
+            <h2 className="hero-title">GENEREAZĂ PROPRIA MANEA ACUM</h2>
+            <p className="hero-subtitle">Generază acum două manele <br></br>la preț de una!</p>
             <div className="hero-buttons" style={{ 
               display: 'flex', 
               gap: '20px',
               alignItems: 'center' 
             }}>
               <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
-                <span className="hero-btn-text">Fa-ti o manea</span>
+                <span className="hero-btn-text">Fă o manea!</span>
               </Button>
               {!isSubscribed && (
                 <Button 
                   className="hero-btn subscription-btn"
                   onClick={onClickSubscription}
                 >
-                  <span className="hero-btn-text">Fa-ti abonament</span>
+                  <span className="hero-btn-text">Fă-ți abonament!</span>
                 </Button>
               )}
             </div>

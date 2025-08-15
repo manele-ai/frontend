@@ -111,6 +111,24 @@
   margin: 0 0 12px 0;
 }
 
+@media (max-width: 768px) {
+  .generate-page .credits-badge-container {
+    margin: 0 0 8px 0;
+  }
+  
+  .generate-page .credits-badge {
+    padding: 6px 10px;
+  }
+  
+  .generate-page .credits-badge-label {
+    font-size: 11px;
+  }
+  
+  .generate-page .credits-badge-value {
+    font-size: 14px;
+  }
+}
+
 .generate-page .credits-badge-label {
   font-family: 'Satoshi', sans-serif;
   font-weight: 600;
@@ -128,6 +146,8 @@
   color: transparent;
   font-weight: 800;
   font-size: 16px;
+  display: inline-block;
+  transform: translateY(5%);
 }
 
 .generate-page .hero-card-img {
@@ -291,6 +311,12 @@
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .generate-page .mode-slider-container {
+    margin: 8px 0 16px 0;
+  }
+}
+
 .generate-page .mode-slider {
   display: flex;
   background: #2a2a2a;
@@ -339,6 +365,40 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .generate-page .mode-slider {
+    padding: 3px;
+    gap: 2px;
+  }
+  
+  .generate-page .mode-slider-option {
+    padding: 8px 16px;
+    min-width: 80px;
+    border-radius: 24px;
+  }
+  
+  .generate-page .mode-slider-option:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(234, 177, 17, 0.4);
+  }
+  
+  .generate-page .mode-slider-option.active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(234, 177, 17, 0.5);
+  }
+  
+  .generate-page .mode-slider-option:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 6px rgba(234, 177, 17, 0.3);
+    transition: all 0.1s ease;
+  }
+  
+  .generate-page .mode-slider-text {
+    font-size: 13px;
+    font-weight: 600;
+  }
 }
 
 /* Form elements - specific pentru GeneratePage */
@@ -390,6 +450,59 @@
   border-color: #FFE0A1;
   box-shadow: 0 0 0 2px rgba(255, 224, 161, 0.3);
   background-color: rgba(255, 224, 161, 0.05);
+}
+
+/* Styling number input spinners */
+.generate-page .input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;
+}
+
+.generate-page .input[type="number"]::-webkit-outer-spin-button,
+.generate-page .input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  background: linear-gradient(90deg, rgba(255,224,161,0.1) 0%, rgba(201,169,104,0.1) 100%);
+  border-left: 1px solid rgba(255, 224, 161, 0.2);
+  width: 24px;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  opacity: 1;
+  margin: 0;
+}
+
+.generate-page .input[type="number"]::-webkit-inner-spin-button {
+  display: block;
+  position: absolute;
+  height: 100%;
+}
+
+.generate-page .input[type="number"]::-webkit-inner-spin-button:hover {
+  background: linear-gradient(90deg, rgba(255,224,161,0.2) 0%, rgba(201,169,104,0.2) 100%);
+}
+
+.generate-page .input[type="number"]::-webkit-inner-spin-button:active {
+  background: linear-gradient(90deg, rgba(255,224,161,0.3) 0%, rgba(201,169,104,0.3) 100%);
+}
+
+/* Add padding for the spinner buttons */
+.generate-page .input[type="number"] {
+  padding-right: 32px;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .generate-page .input[type="number"]::-webkit-outer-spin-button,
+  .generate-page .input[type="number"]::-webkit-inner-spin-button {
+    width: 28px;
+  }
+  
+  .generate-page .input[type="number"] {
+    padding-right: 36px;
+  }
 }
 
 /* Character counter styles */
@@ -525,12 +638,15 @@
 }
 
 .generate-page .checkbox-label {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 500;
-  cursor: pointer;
-  user-select: none;
-  margin: 0;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-align: left;
 }
 
@@ -938,6 +1054,42 @@
   
   .generate-page .main-content-container {
     padding: 0 10px;
+  }
+  
+  .generate-page .credits-badge-container {
+    margin: 0 0 6px 0;
+  }
+  
+  .generate-page .credits-badge {
+    padding: 5px 8px;
+  }
+  
+  .generate-page .credits-badge-label {
+    font-size: 10px;
+  }
+  
+  .generate-page .credits-badge-value {
+    font-size: 13px;
+    transform: translateY(10%);
+  }
+  
+  .generate-page .mode-slider-container {
+    margin: 6px 0 14px 0;
+  }
+  
+  .generate-page .mode-slider {
+    padding: 2px;
+  }
+  
+  .generate-page .mode-slider-option {
+    padding: 5px 12px;
+    min-width: 65px;
+    border-radius: 18px;
+  }
+  
+  .generate-page .mode-slider-text {
+    font-size: 11px;
+    letter-spacing: 0.3px;
   }
   
   /* Butonul din hero section pe ecrane foarte mici */

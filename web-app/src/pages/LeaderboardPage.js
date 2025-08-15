@@ -10,8 +10,8 @@ function HeroCardLeaderboard() {
   return (
     <div className="hero-card">
       <div className="hero-card-content">
-        <h2 className="hero-title">Topul manelistilor</h2>
-        <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+        <h2 className="hero-title">Topul maneliștilor</h2>
+        <p className="hero-subtitle">Dă click pe butonul de mai jos pentru a genera o manea.</p>
         <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
           <span className="hero-btn-text">Generează acum</span>
         </Button>
@@ -121,7 +121,7 @@ export default function LeaderboardPage() {
                     />
                   ) : (
                     <div className="current-user-avatar-placeholder">
-                      {currentUserRank.userData.displayName?.charAt(0).toUpperCase() || 'U'}
+                      {currentUserRank.userData.displayName?.charAt(0).toUpperCase() || '?'}
                     </div>
                   )}
                 </div>
@@ -145,10 +145,10 @@ export default function LeaderboardPage() {
           <thead>
             <tr>
               <th>Rank</th>
-              <th>User</th>
-              {activeTab === 'songs' && <th>Songs Generated</th>}
-              {activeTab === 'dedications' && <th>Dedications Made</th>}
-              {activeTab === 'donations' && <th>Total Donations</th>}
+              <th>Nume manelist</th>
+              {activeTab === 'songs' && <th>Piese Generate</th>}
+              {activeTab === 'dedications' && <th>Dedicații date</th>}
+              {activeTab === 'donations' && <th>Bani aruncați</th>}
             </tr>
           </thead>
           <tbody>
@@ -228,7 +228,7 @@ export default function LeaderboardPage() {
             className={`filter-btn ${activeTab === 'donations' ? 'active' : ''}`}
             onClick={() => setActiveTab('donations')}
           >
-            Donații
+            Bani
           </button>
         </div>
       </div>
