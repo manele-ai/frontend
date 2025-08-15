@@ -371,7 +371,6 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
 
       {!isAudioLoaded && isPlaying && (
         <div className="loading-message">
-          Se încarcă audio...
         </div>
       )}
     </div>
