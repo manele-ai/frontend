@@ -11,6 +11,7 @@ export namespace MusicApi {
       model?: "V3_5" | "V4" | "V4_5" | "V4_5PLUS";
       negativeTags?: string[];
       callBackUrl?: string;
+      styleWeight?: number; 
     }
 
     // ============= Responses =============
