@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { downloadFile } from 'utils';
 import { useAuth } from '../components/auth/AuthContext';
+import ShareSongButton from '../components/ShareSongButton';
 import SongItem from '../components/SongItem';
 import { styles } from '../data/stylesData';
 import { useSongs } from '../hooks/useSongs';
@@ -431,14 +432,17 @@ export default function ProfilePage() {
                     />
                     <div className="profile-song-actions">
                       {song.storage?.url || song.apiData?.audioUrl ? (
-                      <button
-                        type="button"
-                        className="download-button"
-                        onClick={() => handleDownload(song)}
-                        aria-label="Descarcă melodia"
-                      >
-                        Descarcă
-                      </button>
+                        <>
+                          <button
+                            type="button"
+                            className="download-button"
+                            onClick={() => handleDownload(song)}
+                            aria-label="Descarcă melodia"
+                          >
+                            Descarcă
+                          </button>
+                          <ShareSongButton song={song} />
+                        </>
                       ) : (
                         <div className="download-button-disabled" aria-label="Piesa este în curs de generare">
                           <span className="inline-spinner-gold" aria-hidden="true"></span>

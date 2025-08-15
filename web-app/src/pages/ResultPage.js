@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
+import ShareSongButton from '../components/ShareSongButton';
 import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
@@ -474,16 +475,18 @@ export default function ResultPage() {
               {/* Spațiu între versuri și butoane */}
               <div style={{ marginBottom: 16 }} />
               
-              {/* Buton de download pentru această piesă */}
+              {/* Butoane de download și share pentru această piesă */}
               {canDownload ? (
-                <Button
-                  className="hero-btn"
-                  onClick={() => handleDownloadForSong(song)}
-                  disabled={isDownloading}
-                  style={{ marginBottom: 16 }}
-                >
-                  <span className="hero-btn-text">{isDownloading ? 'Se descarcă...' : 'Descarcă piesa'}</span>
-                </Button>
+                <div className="result-song-actions">
+                  <Button
+                    className="hero-btn result-download-btn"
+                    onClick={() => handleDownloadForSong(song)}
+                    disabled={isDownloading}
+                  >
+                    <span className="hero-btn-text">{isDownloading ? 'Se descarcă...' : 'Descarcă'}</span>
+                  </Button>
+                  <ShareSongButton song={song} />
+                </div>
               ) : (
                 <div>
                   <p className="song-lyrics-standalone-text">
@@ -502,7 +505,7 @@ export default function ResultPage() {
           style={{ marginTop: 20 }}
           onClick={() => navigate('/select-style')}
         >
-          <span className="hero-btn-text">Generează manea nouă</span>
+          <span className="hero-btn-text gen-btn">Generează manea nouă</span>
         </Button>
       </div>
     </div>

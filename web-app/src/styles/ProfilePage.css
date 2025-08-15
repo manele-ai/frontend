@@ -1247,9 +1247,11 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 .profile-page .profile-song-actions {
   display: flex;
   justify-content: center;
+  gap: 8px;
   margin-top: 0;
   margin-left: 12px;
-  width: 120px;
+  width: auto;
+  min-width: 250px;
   flex-shrink: 0;
 }
 
@@ -1318,15 +1320,62 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 
   .profile-page .profile-song-actions {
     justify-content: center;
+    gap: 8px;
     margin-top: 0px;
     margin-left: 0;
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .profile-page .download-button {
-    width: 100%;
-    max-width: 360px;
+    flex: 1;
+    min-width: 110px;
+    max-width: 180px;
   }
+}
+
+/* Share button styling - icon only, no background */
+.profile-page .share-song-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  min-width: 40px;
+  height: 38px; /* Match download button height */
+  align-self: center; /* Center vertically in the flex container */
+}
+
+.profile-page .share-song-button:hover {
+  transform: scale(1.1);
+}
+
+.profile-page .share-song-button:active {
+  transform: scale(0.95);
+}
+
+.profile-page .share-song-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.profile-page .share-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-page .share-icon path {
+  transition: opacity 0.2s ease;
+}
+
+.profile-page .share-loading {
+  font-size: 12px;
+  color: #ffeecd;
+  font-weight: 500;
 }
 
 /* Stiluri pentru butonul de încărcare mai multe piese */
