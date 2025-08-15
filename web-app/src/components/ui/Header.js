@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 // import UserMenu from '../auth/UserMenu';
@@ -9,7 +9,26 @@ export default function Header() {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
   
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen &&   
+          menuRef.current && 
+          buttonRef.current &&
+          !menuRef.current.contains(event.target) && 
+          !buttonRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -80,6 +99,7 @@ export default function Header() {
       {/* Mobile hamburger menu */}
       <div className="mobile-menu">
         <button 
+          ref={buttonRef}
           className={`hamburger-btn ${isMenuOpen ? 'active' : ''}`}
           onClick={toggleMenu}
           aria-label="Toggle menu"
@@ -89,7 +109,7 @@ export default function Header() {
           <span className="hamburger-line"></span>
         </button>
         
-        <div className={`mobile-dropdown ${isMenuOpen ? 'open' : ''}`}>
+        <div ref={menuRef} className={`mobile-dropdown ${isMenuOpen ? 'open' : ''}`}>
           <button 
             className={`mobile-nav-btn generate-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
             onClick={() => handleNavigation('/select-style')}
