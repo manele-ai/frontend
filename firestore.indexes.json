@@ -4,88 +4,33 @@
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "songIds",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "songIds",     "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdAt",   "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "taskIds",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "taskIds",     "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdAt",   "order": "DESCENDING" }
       ]
     },
     {
-      "collectionGroup": "usersPublic",
+      "collectionGroup": "songsPublic",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "stats.numSongsGenerated",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
     {
-      "collectionGroup": "usersPublic",
+      "collectionGroup": "tasks",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "stats.numDedicationsGiven",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "usersPublic", 
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "stats.sumDonationsTotal",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "numSongsGenerated",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "count",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "numDedicationsGiven",
-      "queryScope": "COLLECTION", 
-      "fields": [
-        {
-          "fieldPath": "count",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "donationValue",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "count",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "externalStatus", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     }
   ],

@@ -1,13 +1,46 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions/v2";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { db, REGION, stripe, STRIPE_PRICE_ID_SONG } from "../config";
+import { db, REGION, stripe } from "../config";
 import { COLLECTIONS } from "../constants/collections";
 import { createGenerationRequestTransaction } from "../service/generation/generation-request";
 import { createSongCheckoutSession } from "../service/payment/checkout-session";
 import { createCustomer, getCustomerIdByUserId } from "../service/payment/customer";
 import { Requests } from "../types";
 
+const validateUserInput = (data: Requests.GenerateSong) => {
+  if (!data.title) {
+    throw new HttpsError('invalid-argument', 'Title is required');
+  }
+  if (!data.style) {
+    throw new HttpsError('invalid-argument', 'Style is required');
+  }
+  // Validate title
+  if (data.title.length > 100) {
+    throw new HttpsError('invalid-argument', 'Title must be no longer than 100 characters');
+  }
+  // Validate lyrics details
+  if (data.lyricsDetails && data.lyricsDetails.length > 300) {
+    throw new HttpsError('invalid-argument', 'Lyrics must be no longer than 300 characters');
+  }
+  // Validate dedication data
+  if (data.wantsDedication) {
+    if (data.from && data.from.length > 50) {
+      throw new HttpsError('invalid-argument', 'From must be no longer than 50 characters');
+    }
+    if (data.to && data.to.length > 50) {
+      throw new HttpsError('invalid-argument', 'To must be no longer than 50 characters');
+    }
+    if (data.dedication && data.dedication.length > 100) {
+      throw new HttpsError('invalid-argument', 'Dedication must be no longer than 100 characters');
+    }
+  }
+  if (data.wantsDonation) {
+    if (data.donationAmount && data.donationAmount < 0) {
+      throw new HttpsError('invalid-argument', 'Donation amount must be greater than 0');
+    }
+  }
+}
 /**
  * Creates a generation request and handles checkout url creation.
  * - checks if user has credits
@@ -21,7 +54,11 @@ import { Requests } from "../types";
  * @throws HttpsError if the user is not authenticated or if the generation request cannot be created.
  */
 export const createGenerationRequest = onCall<Requests.GenerateSong>(
-  { region: REGION },
+  { 
+    region: REGION,
+    enforceAppCheck: true,
+    memory: "256MiB",
+  },
   async (request) => {
     if (!stripe) {
       throw new HttpsError('internal', 'Stripe not initialized');
@@ -33,6 +70,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
       throw new HttpsError('unauthenticated', 'Not authenticated.');
     }
 
+    validateUserInput(data);
+
     let customerId = await getCustomerIdByUserId(auth.uid);
     if (!customerId) {
       // Create a customer
@@ -41,15 +80,20 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
     
 
     try {
-      const { requestId, paymentType, paymentStatus }  = await createGenerationRequestTransaction(auth.uid, data);
+      const {
+        requestId,
+        songPaymentType,
+        dedicationPaymentType,
+        aruncaCuBaniAmountToPay,
+        paymentStatus
+      } = await createGenerationRequestTransaction(auth.uid, data);
    
       // If payment not needed, return immediately
       if (paymentStatus === 'success') {
         return { requestId, paymentStatus };
       }
 
-      const priceId = STRIPE_PRICE_ID_SONG.value();
-      const applySubscriptionDiscount = paymentType === 'subscription_discount' ;
+      const applySubscriptionDiscount = songPaymentType === 'subscription_discount' ;
 
       // Create a Stripe session
       try {
@@ -57,7 +101,8 @@ export const createGenerationRequest = onCall<Requests.GenerateSong>(
             userId: auth.uid,
             customerId,
             requestId,
-            priceId,
+            shouldPayDedication: dedicationPaymentType === 'onetime',
+            aruncaCuBaniAmountToPay: aruncaCuBaniAmountToPay || 0,
             applySubscriptionDiscount,
           });
           // Attach Stripe session id to generation request

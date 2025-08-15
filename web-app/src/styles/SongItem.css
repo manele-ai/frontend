@@ -3,7 +3,6 @@
   border: none;
   box-shadow: none;
   padding: 0;
-  margin-bottom: 18px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -63,8 +62,6 @@
   background: none;
   border: none;
   color: inherit;
-  width: 50px;
-  height: 50px;
   font-size: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -98,7 +95,7 @@
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 0.3) 0%, rgba(207, 175, 110, 0.3) 100%);
   border-radius: 2px;
   outline: none;
   transition: background 0.2s;
@@ -112,14 +109,16 @@
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   border-radius: 50%;
   cursor: pointer;
+  border: none;
 }
 
 .progress-bar::-moz-range-thumb {
   width: 12px;
   height: 12px;
-  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   cursor: pointer;
+  border: none;
 }
 
 .progress-bar::-ms-thumb {
@@ -168,6 +167,39 @@
   color: #ef4444;
   font-size: 0.9em;
   margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loading-message {
+  color: #9ca3af;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #eab111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .status-message {
@@ -279,6 +311,8 @@
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .song-playback-inline input[type="range"] {
@@ -299,7 +333,7 @@
 .song-slider-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 

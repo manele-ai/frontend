@@ -1,5 +1,6 @@
 import axios from "axios";
-import * as functions from "firebase-functions";
+import { logger } from "firebase-functions/v2";
+import { FunctionsErrorCode, HttpsError } from "firebase-functions/v2/https";
 import { thirdPartyApiBaseUrl, thirdPartyApiKey } from "../config";
 import { MusicApi } from "../types/music-api";
 
@@ -11,59 +12,77 @@ const apiClient = axios.create({
   },
 });
 
-export async function initiateMusicGeneration(
-  lyrics: string,
-  title: string,
-  style: string,
+export interface InitiateMusicGenerationParams {
+  lyrics: string;
+  title: string;
+  stylePrompt: string;
+  negativeTags?: string[];
+}
+
+export async function initiateMusicGeneration({
+  lyrics,
+  title,
+  stylePrompt,
+  negativeTags,
+}: InitiateMusicGenerationParams
 ): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
+    if (!lyrics || !title || !stylePrompt) {
+      throw new Error("Missing required arguments for music generation");
+    }
     const requestBody: MusicApi.GenerateRequest = {
       prompt: lyrics,
-      style: style || "Romanian manea in a party mood. Song must be in Romanian language.",
-      title: title || "Maneaua verii",
+      style: stylePrompt,
+      title: title,
       customMode: true,
       instrumental: false,
-      model: "V4_5",
-      negativeTags: ["pop", "trap"],
+      model: "V4_5PLUS",
+      negativeTags: negativeTags || ["pop", "trap"],
       callBackUrl: "https://your-callback-url.com", // TODO: handle callback with cloud functions http endpoint 
     }
-    functions.logger.info("Request body for music API /generate", requestBody);
     const { data } = await apiClient.post<MusicApi.Response<MusicApi.GenerateResponseData>>("/generate", requestBody);
-    functions.logger.info("Received response from music API /generate", { responseData: data });
+
+    // In-case the API returns HTTP 200 but embeds an error code in the body
+    if (typeof data?.code === "number" && data.code !== 200) {
+      logger.error("[MUSIC][initiateMusicGeneration] Music generationAPI body error", {
+        code: data.code,
+        msg: data.msg,
+        responseData: data,
+      });
+      throw new Error(`[MUSIC][initiateMusicGeneration] Music generation API error: ${data.msg || data.code}`);
+    }
+
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      functions.logger.error("Error calling third-party generation API", {
+      logger.error("[MUSIC][initiateMusicGeneration] Error calling music generation API", {
         message: error.message,
+        code: error.code,
         response: error.response?.data,
         status: error.response?.status,
         headers: error.response?.headers,
         config: error.config,
       });
-      throw new functions.https.HttpsError(
-        "internal",
-        `Third-party API error: ${error.message}`,
-        error.response?.data,
-      );
+      throw new Error("[MUSIC][initiateMusicGeneration] Error calling music generation API");
     }
-    functions.logger.error("Non-Axios error calling third-party generation API", { error });
-    throw new functions.https.HttpsError("internal", "Failed to initiate music generation with third-party API.");
+    logger.error("[MUSIC][initiateMusicGeneration] Error calling music generation API", { error });
+    throw new Error("[MUSIC][initiateMusicGeneration] Error calling music generation API");
   }
 }
 
 export async function getTaskStatus(externaTaskId: string): Promise<MusicApi.Response<MusicApi.StatusResponseData>> {
   try {
-    functions.logger.info(`Fetching status for task ID: ${externaTaskId} from music API`);
+    logger.info(`[MUSIC][getTaskStatus] Fetching status for task ID: ${externaTaskId} from music API`);
     const { data } = await apiClient.get<MusicApi.Response<MusicApi.StatusResponseData>>('/generate/record-info', {
       params: {
         taskId: externaTaskId
       }
     });
-    functions.logger.info(`Received status for task ID: ${externaTaskId}`, { responseData: data });
+    logger.info(`[MUSIC][getTaskStatus] Received status for task ID: ${externaTaskId}`, { responseData: data });
 
     // Handle specific error codes even with successful HTTP response
     if (data.code !== 200) {
-      let errorType: functions.https.FunctionsErrorCode = "internal";
+      let errorType: FunctionsErrorCode = "internal";
       switch (data.code) {
         case 400:
           errorType = "invalid-argument";
@@ -83,7 +102,7 @@ export async function getTaskStatus(externaTaskId: string): Promise<MusicApi.Res
           break;
         // 413, 500 and others default to "internal"
       }
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         errorType,
         data.msg || "Error from third-party API",
         data
@@ -92,11 +111,11 @@ export async function getTaskStatus(externaTaskId: string): Promise<MusicApi.Res
 
     return data;
   } catch (error) {
-    functions.logger.error(`Error fetching status for task ID: ${externaTaskId}`, { error });
+    logger.error(`[MUSIC][getTaskStatus] Error fetching status for task ID: ${externaTaskId}`, { error });
     
     if (axios.isAxiosError(error)) {
       // Map HTTP errors to appropriate Firebase error types
-      let errorType: functions.https.FunctionsErrorCode = "internal";
+      let errorType: FunctionsErrorCode = "internal";
       
       switch (error.response?.status) {
         case 400:
@@ -117,16 +136,16 @@ export async function getTaskStatus(externaTaskId: string): Promise<MusicApi.Res
           break;
       }
 
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         errorType,
-        `Third-party API status error: ${error.message}`,
+        `[MUSIC][getTaskStatus] Music generation API status error: ${error.message}`,
         error.response?.data
       );
     }
     
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "internal",
-      "Failed to get task status from third-party API"
+      "[MUSIC][getTaskStatus] Failed to get task status from music generation API"
     );
   }
 }

@@ -98,7 +98,8 @@ export const onSubPeriodStartChange = onDocumentWritten({
             }
 
             transaction.update(userRef, {
-                creditsBalance: FieldValue.increment(2),
+                creditsBalance: FieldValue.increment(1),
+                dedicationBalance: FieldValue.increment(1),
                 lastSubPeriodCreditGrant: afterPeriodStart,
                 updatedAt: FieldValue.serverTimestamp()
             });

@@ -24,10 +24,11 @@ code {
 .App {
   min-height: 100vh;
   background-color: #181A20;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Eliminat padding global pe .container pentru a nu suprascrie paddingul local din pagini */
-
+/* Removed problematic flex rule that was affecting header */
 
 .subtitle {
   /* */
@@ -89,12 +90,12 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #eab111;
+  background: var(--gold-gradient);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #eab111;
+  background: linear-gradient(135deg, #FFE135 0%, #FFD700 30%, #FFE135 50%, #FFD700 70%, #FFE135 100%);
 }
 
 /* Focus styles for accessibility - removed to allow local styling */
@@ -156,9 +157,7 @@ a {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
-  body {
-    padding-top: 50px; /* Adjusted for smaller header on mobile */
-  }
+  /* Removed padding-top that was affecting header */
   
   /* Eliminat padding global pe .container pentru mobile */
   

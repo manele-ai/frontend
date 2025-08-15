@@ -1,61 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import '../styles/ExampleSongsList.css';
+import AudioPlayer from './AudioPlayer';
+
+const EXAMPLE_SONGS = [
+  {
+    id: 'ex-1',
+    title: 'Mohan Veena - Indian Guitar',
+    artist: 'Manele AI',
+    audioUrl: '/music/mohanveena-indian-guitar-374179.mp3',
+    imageUrl: null,
+  },
+  { id: 'ex-2', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
+  { id: 'ex-3', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
+  { id: 'ex-4', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
+];
 
 const ExampleSongsList = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentPlayingIndex, setCurrentPlayingIndex] = useState(null);
-  const audioRef = useRef(new Audio('/music/mohanveena-indian-guitar-374179.mp3'));
+  const [currentPlayingId, setCurrentPlayingId] = useState(null);
 
-  // Funcție pentru redarea/pauza audio
-  const handlePlayClick = (index) => {
-    if (currentPlayingIndex === index) {
-      // Dacă aceeași piesă este deja în redare, o oprește
-      audioRef.current.pause();
-      setIsPlaying(false);
-      setCurrentPlayingIndex(null);
-    } else {
-      // Dacă o altă piesă este în redare, o oprește și redă pe cea nouă
-      if (currentPlayingIndex !== null) {
-        audioRef.current.pause();
-      }
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-      setIsPlaying(true);
-      setCurrentPlayingIndex(index);
-    }
+  const handlePlayPause = (songId) => {
+    setCurrentPlayingId((prev) => (prev === songId ? null : songId));
   };
 
-  // Event listener pentru când audio-ul se termină
-  useEffect(() => {
-    const audio = audioRef.current;
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentPlayingIndex(null);
-    };
-
-    audio.addEventListener('ended', handleEnded);
-    return () => {
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, []);
-
   return (
-    <div className="songs-container">
-      <h2 className="songs-title">Piese generate</h2>
-      <div className="songs-list">
-        {[0, 1, 2, 3].map((index) => (
-          <div key={index} className="loading-song-item">
-            <div className="song-image-placeholder"></div>
-            <div className="song-info">
-              <div className="song-artist">Manele AI</div>
-              <div className="song-name">Mohan Veena - Indian Guitar</div>
+    <div className="exlist-container">
+      <h2 className="exlist-title">Piese generate</h2>
+      <div className="exlist-list">
+        {EXAMPLE_SONGS.map((song) => (
+          <div key={song.id} className="exlist-card">
+            <div className="exlist-left">
+              {/* <div className="exlist-cover" /> */}
+              <div className="exlist-info">
+                <div className="exlist-artist">{song.artist}</div>
+                <div className="exlist-name">{song.title}</div>
+              </div>
             </div>
-            <img 
-              src="/icons/Play.png" 
-              alt="Play" 
-              className="play-icon" 
-              onClick={() => handlePlayClick(index)}
-              style={{ cursor: 'pointer' }}
-            />
+            <div className="exlist-right">
+              <AudioPlayer
+                audioUrl={song.audioUrl}
+                isPlaying={currentPlayingId === song.id}
+                onPlayPause={() => handlePlayPause(song.id)}
+                onError={() => {}}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -63,4 +50,4 @@ const ExampleSongsList = () => {
   );
 };
 
-export default ExampleSongsList; 
+export default ExampleSongsList;

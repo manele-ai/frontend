@@ -481,7 +481,15 @@ export default function ExemplePage() {
   };
 
   return (
-    <div className="exemple-page">
+    <div 
+      className="exemple-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section */}
       <div className="hero-section">
         <HeroCardExemple style={style} />

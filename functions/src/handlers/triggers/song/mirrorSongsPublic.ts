@@ -1,5 +1,6 @@
-import * as functions from "firebase-functions/v2";
+import { logger } from "firebase-functions/v2";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { HttpsError } from "firebase-functions/v2/https";
 import { isEqual } from "lodash";
 import { COLLECTIONS } from "../../../constants/collections";
 import { Database } from "../../../types";
@@ -67,7 +68,7 @@ export const mirrorSongsPublic = onDocumentWritten(
   `${COLLECTIONS.SONGS}/{songId}`,
   async (event) => {
     if (!event.data) {
-      console.warn('No event data available');
+      logger.warn('No event data available');
       return;
     }
 
@@ -100,8 +101,8 @@ export const mirrorSongsPublic = onDocumentWritten(
       await publicSongRef.set(afterPublicData);
             
     } catch (error) {
-      console.error(`Error in mirrorSongsPublicHandler for song ${songId}:`, error);
-      throw new functions.https.HttpsError(
+      logger.error(`Error in mirrorSongsPublicHandler for song ${songId}:`, error);
+      throw new HttpsError(
         'internal',
         'Failed to sync public song data'
       );

@@ -2,15 +2,19 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
+  RecaptchaVerifier,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPhoneNumber,
   signInWithPopup,
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { auth, db } from '../../services/firebase';
+import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
+import { usePostHogTracking } from '../../utils/posthog';
 
 // User context structure
 const AuthContext = createContext({
@@ -21,28 +25,99 @@ const AuthContext = createContext({
   signUp: async (email, password, displayName) => Promise.resolve(),
   signIn: async (email, password) => Promise.resolve(),
   signInWithGoogle: async () => Promise.resolve(),
+  signInWithPhone: async (phoneNumber) => Promise.resolve(null),
+  verifyPhoneCode: async (verificationId, code, displayName) => Promise.resolve(),
   signOut: async () => Promise.resolve(),
   resetPassword: async (email) => Promise.resolve(),
   updateUserProfile: async (updates) => Promise.resolve(),
-  isAuthenticated: false
+  isAuthenticated: false,
+  waitForUserDocCreation: async (_timeoutMs = 10000) => {
+    // Placeholder, fuck js
+    return Promise.resolve(false);
+  },
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUserDocCreated, setIsUserDocCreated] = useState(null);
   const [error, setError] = useState(null);
+  const recaptchaVerifier = useRef(null);
+  const recaptchaContainerRef = useRef(null);
+  // Resolver ref
+  const readyResolvers = useRef([]);
+  
+  // Initialize PostHog tracking
+  const { trackAuth } = usePostHogTracking();
+
+  /**
+   * Wait until auth + user doc creation finishes, or timeout expires.
+   * @param timeoutMs – how many milliseconds to wait before auto‐failing (resolves to false).
+   * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
+   */
+  const waitForUserDocCreation = (timeoutMs = 10000) => {
+    return new Promise((resolve) => {
+      // Check if already settled
+      if (isUserDocCreated !== null) {
+        return resolve(isUserDocCreated);
+      }
+      // Otherwise, add resolver to queue
+      const resolver = (docCreationStatus) => {
+        clearTimeout(timer);
+        resolve(docCreationStatus);
+      };
+      readyResolvers.current.push(resolver);
+
+      // Start the timeout
+      const timer = setTimeout(() => {
+        // Remove this resolver so it doesn’t fire later
+        readyResolvers.current = readyResolvers.current.filter(r => r !== resolver);
+        // Timeout is treated as “failed to get ready”
+        resolve(false);
+      }, timeoutMs);
+    });
+  };
+
+  function flushUserDocCreationResolvers(status) {
+    readyResolvers.current.forEach((res) => res(status));
+    readyResolvers.current = [];
+  }
+
+  const fetchOrCreateUserProfile = async (firebaseUser) => {
+    setIsUserDocCreated(null);
+    try {
+      // Force refresh token
+      await firebaseUser.reload();
+      // Fetch profile if exists, otherwise creates and returns it
+      const { profile } = await createUserIfNotExists({
+          displayName: firebaseUser.displayName,
+      });
+      const userProfile = { id: profile.uid, ...profile };
+      setUserProfile(userProfile);
+
+      setIsUserDocCreated(true);
+      flushUserDocCreationResolvers(true);
+      return userProfile;
+
+    } catch (error) {
+      console.error('Error fetching/creating user profile:', error);
+      setIsUserDocCreated(false);
+      flushUserDocCreationResolvers(false);
+      throw error;
+    }
+  };
 
   // Fetch user profile from Firestore
   const fetchUserProfile = async (uid) => {
     try {
-      const userDoc = await getDoc(doc(db, 'users', uid));
-      if (userDoc.exists()) {
-        return { id: userDoc.id, ...userDoc.data() };
+      const userDoc = await getDoc(doc(db, 'usersPublic', uid));
+      if (!userDoc.exists()) {
+        return null;
       }
-      return null;
+      return { id: userDoc.id, ...userDoc.data() };
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error fetching/creating user profile:', error);
       return null;
     }
   };
@@ -52,15 +127,14 @@ export function AuthProvider({ children }) {
     if (!user) throw new Error('No user authenticated');
 
     try {
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        ...updates,
-        updatedAt: new Date()
+      const { displayName, photoURL } = await updateUserProfileCloudFn({
+        displayName: updates.displayName,
+        photoURL: updates.photoURL
       });
 
       // Update local state
-      setUserProfile(prev => ({ ...prev, ...updates }));
-      
+      setUserProfile(prev => ({ ...prev, displayName, photoURL }));
+
       // Update Firebase Auth profile if displayName or photoURL changed
       if (updates.displayName || updates.photoURL) {
         await updateProfile(auth.currentUser, {
@@ -80,17 +154,17 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Update display name in Firebase Auth
-      await updateProfile(user, { displayName });
-
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      // Update display name in Firebase Auth and wait for it to complete
+      await updateProfile(user, {
+        displayName,
+      });
+      await fetchOrCreateUserProfile(user);
+      trackAuth('email_signup', true);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('email_signup', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -103,15 +177,13 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      // Fetch user profile
-      await fetchUserProfile(user.uid);
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      await fetchOrCreateUserProfile(user);
+      trackAuth('email_signin', true);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('email_signin', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -124,18 +196,17 @@ export function AuthProvider({ children }) {
     setLoading(true);
     
     try {
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(auth, provider);
-      const user = userCredential.user;
-
-      // Check if user profile exists, if not create it
-      let profile = await fetchUserProfile(user.uid);
-
-      // setUserProfile(profile); // profile is fetched onAuthStateChanged
-      // return user; // REMOVE, should return void
+      const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
+      // Update display name in Firebase Auth and wait for it to complete
+      await updateProfile(user, {
+        displayName: user.displayName,
+      });
+      await fetchOrCreateUserProfile(user);
+      trackAuth('google_signin', true);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
+      trackAuth('google_signin', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -173,20 +244,136 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Initialize recaptcha verifier
+  useEffect(() => {
+    // Clear any existing verifier
+    if (recaptchaVerifier.current) {
+      recaptchaVerifier.current.clear();
+      recaptchaVerifier.current = null;
+    }
+
+    // Create container if it doesn't exist
+    if (!recaptchaContainerRef.current) {
+      recaptchaContainerRef.current = document.createElement('div');
+      recaptchaContainerRef.current.id = 'recaptcha-container';
+      document.body.appendChild(recaptchaContainerRef.current);
+    }
+
+    // Initialize verifier
+    try {
+      recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {}
+      });
+    } catch (error) {
+      console.error('Error initializing RecaptchaVerifier:', error);
+    }
+
+    return () => {
+      if (recaptchaVerifier.current) {
+        recaptchaVerifier.current.clear();
+        recaptchaVerifier.current = null;
+      }
+      if (recaptchaContainerRef.current) {
+        document.body.removeChild(recaptchaContainerRef.current);
+        recaptchaContainerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Sign in with phone number
+  const signInWithPhone = async (phoneNumber) => {
+    setError(null);
+    setLoading(true);
+    
+    try {
+      // Clean up any existing reCAPTCHA verifier and container
+      if (recaptchaVerifier.current) {
+        recaptchaVerifier.current.clear();
+        recaptchaVerifier.current = null;
+      }
+      
+      // Remove and recreate the container element
+      if (recaptchaContainerRef.current) {
+        document.body.removeChild(recaptchaContainerRef.current);
+      }
+      recaptchaContainerRef.current = document.createElement('div');
+      recaptchaContainerRef.current.id = 'recaptcha-container';
+      document.body.appendChild(recaptchaContainerRef.current);
+
+      // Create new RecaptchaVerifier instance
+      recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {}
+      });
+
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        recaptchaVerifier.current
+      );
+      return confirmationResult;
+    } catch (error) {
+      console.error('Phone sign in error:', error);
+      const errorMessage = getAuthErrorMessage(error.code);
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Verify phone code
+  const verifyPhoneCode = async (confirmationResult, code, displayName = '') => {
+    setError(null);
+    setLoading(true);
+    
+    try {
+      const { user } = await confirmationResult.confirm(code);
+      
+      // Update display name first if provided (for new users)
+      if (displayName) {
+        await updateProfile(user, {
+          displayName,
+        });
+      }
+      await fetchOrCreateUserProfile(user);
+    } catch (error) {
+      console.error('Phone verification error:', error);
+      const errorMessage = getAuthErrorMessage(error.code);
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Auth state listener
   useEffect(() => {
     let unsub = null;
     setLoading(true);
+
     unsub = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        // Fetch user profile
-        const profile = await fetchUserProfile(user.uid);
-        setUserProfile(profile);
-        setLoading(false);
-      } else {
+      // Logged out
+      if (!user) {
         setUser(null);
         setUserProfile(null);
+        setLoading(false);
+        return;
+      }
+      
+      // Logged in
+      setUser(user);
+      try {
+        const userProfile = await fetchUserProfile(user.uid);
+        if (userProfile) {
+          setUserProfile(userProfile);
+        }
+      } catch (e) {
+        // Profile fetch/create failure is surfaced via error state elsewhere
+      } finally {
         setLoading(false);
       }
     });
@@ -201,10 +388,13 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     signInWithGoogle,
+    signInWithPhone,
+    verifyPhoneCode,
     signOut: signOutUser,
     resetPassword,
     updateUserProfile,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    waitForUserDocCreation,
   };
 
   return (
@@ -222,7 +412,7 @@ export function useAuth() {
   return context;
 }
 
-// Helper function to get user-friendly error messages
+// Update error messages
 function getAuthErrorMessage(errorCode) {
   switch (errorCode) {
     case 'auth/user-not-found':
@@ -243,7 +433,33 @@ function getAuthErrorMessage(errorCode) {
       return 'Fereastra de autentificare a fost închisă.';
     case 'auth/cancelled-popup-request':
       return 'Autentificarea a fost anulată.';
+    case 'auth/invalid-phone-number':
+      return 'Numărul de telefon nu este valid.';
+    case 'auth/invalid-verification-code':
+      return 'Codul de verificare nu este valid.';
+    case 'auth/code-expired':
+      return 'Codul de verificare a expirat.';
+    case 'auth/missing-verification-code':
+      return 'Te rugăm să introduci codul de verificare.';
+    case 'auth/quota-exceeded':
+      return 'Am întâmpinat o eroare. Te rugăm să încerci din nou mai târziu.';
+    // Google-specific errors
+    case 'auth/account-exists-with-different-credential':
+      return 'Există deja un cont cu această adresă de email folosind o metodă diferită de autentificare.';
+    case 'auth/auth-domain-config-required':
+      return 'Configurația domeniului de autentificare este necesară pentru această operațiune.';
+    case 'auth/credential-already-in-use':
+      return 'Această credențială este deja asociată cu un cont diferit.';
+    case 'auth/operation-not-allowed':
+      return 'Această operațiune nu este permisă. Contactează administratorul.';
+    case 'auth/requires-recent-login':
+      return 'Această operațiune necesită o autentificare recentă. Te rugăm să te autentifici din nou.';
+    case 'auth/redirect-cancelled-by-user':
+      return 'Autentificarea Google a fost anulată.';
+    case 'auth/redirect-operation-pending':
+      return 'O operațiune de redirecționare este deja în desfășurare.';
     default:
+      console.error('Unknown auth error code:', errorCode);
       return 'A apărut o eroare. Încearcă din nou.';
   }
 } 

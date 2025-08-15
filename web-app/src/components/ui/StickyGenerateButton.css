@@ -1,0 +1,73 @@
+.sticky-generate-btn {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 1000;
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 16px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+.sticky-generate-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sticky-generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.sticky-generate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sticky-generate-text {
+  color: #1a1a1a;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .sticky-generate-btn {
+    top: 25px;
+    right: 25px;
+    padding: 14px 20px;
+    min-width: 120px;
+  }
+  
+  .sticky-generate-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sticky-generate-btn {
+    display: none;
+  }
+}
+
+/* Focus styles for accessibility */
+.sticky-generate-btn:focus-visible {
+  outline: 2px solid rgba(255, 224, 161, 1);
+  outline-offset: 2px;
+  border-radius: 50px;
+}

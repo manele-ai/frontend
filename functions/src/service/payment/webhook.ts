@@ -1,4 +1,5 @@
 import { FieldValue } from "firebase-admin/firestore";
+import { logger } from "firebase-functions/v2";
 import Stripe from "stripe";
 import { db, stripe } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
@@ -36,7 +37,7 @@ export const processEvent = async (event: Stripe.Event) => {
     } else if (event.type === 'checkout.session.expired' && (event.data.object as Stripe.Checkout.Session).mode === 'payment') {
         await processOnetimeCheckoutSessionExpired(event.data.object as Stripe.Checkout.Session);
     } else {
-        console.error(`[STRIPE HOOK][ERROR] Unhandled event type ${event.type}, event: ${JSON.stringify(event)}`);
+        logger.error(`[STRIPE HOOK][ERROR] Unhandled event type ${event.type}, event: ${JSON.stringify(event)}`);
     }
 }
 

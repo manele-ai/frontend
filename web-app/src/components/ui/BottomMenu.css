@@ -62,6 +62,13 @@
   filter: brightness(0) invert(1);
 }
 
+/* Hide bottom menu on desktop */
+@media (min-width: 769px) {
+  .bottom-menu {
+    display: none;
+  }
+}
+
 @media (max-width: 600px) {
   .bottom-menu {
     bottom: 12px;

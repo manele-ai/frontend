@@ -3,17 +3,34 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
 import { getStripe } from 'services/stripe';
+import AudioPlayer from '../components/AudioPlayer';
 import { useAuth } from '../components/auth/AuthContext';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/HomePage.css';
 
-
- 
-
-function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }) {
+function ReusableCard({ background, title, subtitle, styleValue }) {
+  const navigate = useNavigate();
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  // Hardcoded audio URL - aceeași piesă pentru toate stilurile
+  const audioUrl = '/music/mohanveena-indian-guitar-374179.mp3';
+  
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleGenerateClick = () => {
+    // Navigate to generate page with the selected style
+    navigate('/generate', { 
+      state: { 
+        selectedStyle: styleValue,
+        fromHomePage: true 
+      } 
+    });
+  };
   
   return (
     <div 
@@ -22,11 +39,25 @@ function ReusableCard({ background, title, subtitle, buttonText, onButtonClick }
     >
       <div className="style-example-card-overlay"></div>
       <div className="style-example-card-content">
-        <h2 className="style-example-title">{title}</h2>
-        <p className="style-example-subtitle">{subtitle}</p>
-        <Button className="hero-btn style-example-card-button" onClick={onButtonClick}>
-          <span className="hero-btn-text">{buttonText}</span>
-        </Button>
+        <div className="style-example-card-content-inner">
+          <h2 className="style-example-title">{title}</h2>
+        </div>
+        <div className="style-example-audio-player">
+          <AudioPlayer 
+            audioUrl={audioUrl}
+            isPlaying={isPlaying}
+            onPlayPause={handlePlayPause}
+            onError={() => console.error('Audio playback error')}
+          />
+        </div>
+        <div className="style-example-generate-button">
+          <Button 
+            className="hero-btn hero-section-button" 
+            onClick={handleGenerateClick}
+          >
+            <span className="hero-btn-text">Generează acum</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -41,7 +72,7 @@ export default function HomePage() {
     const checkSubscriptionStatus = async () => {
       if (user) {
         try {
-          const userRef = doc(db, 'users', user.uid);
+          const userRef = doc(db, 'usersPublic', user.uid);
           const userDoc = await getDoc(userRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
@@ -78,34 +109,38 @@ export default function HomePage() {
   };
 
   return (
-    <div className="home-page">
+    <div 
+      className="home-page"
+      style={{
+        backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
+        backgroundSize: '30%',
+        backgroundPosition: '0 0',
+        backgroundRepeat: 'repeat',
+      }}
+    >
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">Genereaza-ti propria manea in cateva minute.</h2>
-            <p className="hero-subtitle">Genereaza-ti propria manea in cateva minute cu ajutorul aplicatiei noastre.</p>
+            <h2 className="hero-title">GENEREAZĂ PROPRIA MANEA ACUM</h2>
+            <p className="hero-subtitle">Generază acum două manele <br></br>la preț de una!</p>
             <div className="hero-buttons" style={{ 
               display: 'flex', 
               gap: '20px',
               alignItems: 'center' 
             }}>
-              <Button className="hero-btn hero-section-button" onClick={() => navigate('/select-style')}>
-                <span className="hero-btn-text">Genereaza acum</span>
+              <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
+                <span className="hero-btn-text">Fă o manea!</span>
               </Button>
               {!isSubscribed && (
                 <Button 
-                  className="hero-btn hero-section-button"
+                  className="hero-btn subscription-btn"
                   onClick={onClickSubscription}
                 >
-                  <span className="hero-btn-text">Abonează-te</span>
+                  <span className="hero-btn-text">Fă-ți abonament!</span>
                 </Button>
               )}
             </div>
-          </div>
-          <div className="hero-card-img">
-            <div className="ellipse-bg"></div>
-            <img src="/icons/Microphone.png" alt="Microfon" className="hero-icon" />
           </div>
         </div>
       </div>
@@ -120,8 +155,7 @@ export default function HomePage() {
               background={`url(${style.image}) center/cover no-repeat`}
               title={style.title}
               subtitle={style.subtitle}
-              buttonText="Exemple"
-              onButtonClick={() => navigate('/exemple')}
+              styleValue={style.value}
             />
           ))}
         </div>

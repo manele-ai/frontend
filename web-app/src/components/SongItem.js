@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { useEffect, useState } from 'react';
+import { storage } from '../services/firebase';
 import '../styles/SongItem.css';
 import AudioPlayer from './AudioPlayer';
 
 export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel }) {
   const [error, setError] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
 
   // Get the appropriate audio URL based on availability
   const getAudioUrl = () => {
@@ -20,8 +23,32 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
     return null;
   };
 
-  const audioUrl = getAudioUrl();
-  const canDownload = song.storage?.url || song.apiData?.audioUrl;
+  useEffect(() => {
+    const raw = getAudioUrl();
+    if (!raw) {
+      setAudioUrl(null);
+      return;
+    }
+
+    // Resolve gs:// URLs to temporary HTTPS URLs
+    const resolveUrl = async () => {
+      try {
+        if (raw.startsWith('gs://')) {
+          const storageRef = ref(storage, raw);
+          const httpsUrl = await getDownloadURL(storageRef);
+          setAudioUrl(httpsUrl);
+        } else {
+          setAudioUrl(raw);
+        }
+      } catch (e) {
+        setError('Failed to resolve audio URL');
+        setAudioUrl(null);
+      }
+    };
+
+    resolveUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [song?.storage?.url, song?.apiData?.audioUrl, song?.apiData?.streamAudioUrl]);
 
   return (
     <div className="song-item song-row-layout">

@@ -44,29 +44,54 @@ export namespace Database {
     userGenerationInput: UserGenerationInput;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
+    lyrics?: string;
+    statsAlreadyUpdated?: boolean;
   }
 
   export interface GenerationRequest {
     userId: string;
     taskId?: string;
-    paymentStatus: 'pending' | 'success' | 'failed';
-    paymentType: 'credits' | 'subscription_free' | 'subscription_discount' | 'onetime_unsubscribed';
+    paymentStatus: // Overall payment status (can only pay at once)
+      'pending'
+      | 'success'
+      | 'failed'; 
+    songPaymentType:
+      'balance'
+      | 'subscription_free'
+      | 'subscription_discount'
+      | 'onetime_unsubscribed';
+    dedicationPaymentType:
+      'no_payment'
+      | 'balance'
+      | 'onetime';
+    aruncaCuBaniPaymentType:
+      'no_payment'
+      | 'balance'
+      | 'onetime';
+    aruncaCuBaniAmountToPay?: number;
+    shouldFulfillDedication?: boolean;
+    shouldFulfillAruncaCuBani?: boolean;
+    aruncaCuBaniAmountToFulfill?: number;
     error?: string;
     refundedAsCredit?: boolean;
     paymentSessionId?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     userGenerationInput: UserGenerationInput;
+    generationStarted?: boolean;
+    generationStartedAt?: admin.firestore.Timestamp;
   }
   
   export interface User {
     uid: string;
-    displayName?: string;
+    displayName: string;
     photoURL?: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     stripeCustomerId?: string;
     creditsBalance?: number;
+    dedicationBalance?: number;
+    aruncaCuBaniBalance?: number;
     lastSubPeriodCreditGrant?: admin.firestore.Timestamp;
     subscription?: {
       stripeSubscriptionId: string;
@@ -92,6 +117,10 @@ export namespace Database {
     displayName: string;
     createdAt: admin.firestore.Timestamp;
     photoURL?: string;
+    creditsBalance?: number;
+    dedicationBalance?: number;
+    aruncaCuBaniBalance?: number;
+    isSubscribed?: boolean;
     stats: {
       numSongsGenerated: number;
       numDedicationsGiven: number;

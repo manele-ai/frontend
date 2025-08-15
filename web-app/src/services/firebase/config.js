@@ -1,17 +1,30 @@
-// Firebase configuration
-export const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyC-example-key",
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "manele-ai-dev-fa776",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "manele-ai-dev-fa776.firebaseapp.com",
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "manele-ai-dev-fa776.appspot.com",
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:123456789:web:example",
-};
 
 // Environment settings
 export const isDevelopment = process.env.NODE_ENV === 'development';
-export const useEmulators = process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true' || 
-                           window.location.hostname === 'localhost';
+export const useEmulators = (process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true' && 
+                           (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
+
+// Firebase configuration
+const dummyFirebaseConfig = {
+  apiKey: "AIzaSyAd-_OJQfpGyMBh9wKA_526ZtMUvMOUtqQ",
+  projectId: "manele-io-test",
+  authDomain: "manele-io-test.firebaseapp.com",
+  storageBucket: "manele-io-test.firebasestorage.app",
+  messagingSenderId: "473723194717",
+  appId: "1:473723194717:web:b1e1e9d2cdb7c7964d2cb4",
+};
+
+export const firebaseConfig = {
+  apiKey: !useEmulators ? process.env.REACT_APP_FIREBASE_API_KEY : dummyFirebaseConfig.apiKey,
+  projectId: !useEmulators ? process.env.REACT_APP_FIREBASE_PROJECT_ID : dummyFirebaseConfig.projectId,
+  authDomain: !useEmulators ? process.env.REACT_APP_FIREBASE_AUTH_DOMAIN : dummyFirebaseConfig.authDomain,
+  storageBucket: !useEmulators ? process.env.REACT_APP_FIREBASE_STORAGE_BUCKET : dummyFirebaseConfig.storageBucket,
+  messagingSenderId: !useEmulators ? process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID : dummyFirebaseConfig.messagingSenderId,
+  appId: !useEmulators ? process.env.REACT_APP_FIREBASE_APP_ID : dummyFirebaseConfig.appId,
+};
+
+export const appCheckSiteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+// export const appCheckDebugToken = process.env.REACT_APP_APPCHECK_DEBUG_TOKEN;
 
 // App configuration
 export const appConfig = {

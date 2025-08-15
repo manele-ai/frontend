@@ -1,0 +1,52 @@
+.cookie-policy-wrapper {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.cookie-policy-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  color: white;
+  line-height: 1.6;
+}
+
+.cookie-policy-heading {
+  color: white;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.cookie-policy-subheading {
+  color: white;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.cookie-policy-paragraph {
+  margin-bottom: 1rem;
+  color: #E0E0E0;
+}
+
+.cookie-policy-list {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  color: #E0E0E0;
+}
+
+.cookie-policy-link {
+  color: #ffe270;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.cookie-policy-link:hover {
+  color: #f7d23e;
+}
+
+.cookie-policy-strong {
+  color: white;
+  font-weight: bold;
+} 

@@ -8,7 +8,7 @@ export namespace MusicApi {
       title?: string;
       customMode: boolean;
       instrumental: boolean;
-      model?: "V3_5" | "V4" | "V4_5";
+      model?: "V3_5" | "V4" | "V4_5" | "V4_5PLUS";
       negativeTags?: string[];
       callBackUrl?: string;
     }

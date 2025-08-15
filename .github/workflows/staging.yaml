@@ -1,0 +1,79 @@
+name: Staging Deployment
+
+on:
+    push:
+        branches:
+            - staging
+
+jobs:
+    Deploy-Staging:
+        runs-on: ubuntu-latest
+        environment: Staging
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          # These are public, don't worry
+          FIREBASE_REGION: europe-central2
+          FIREBASE_PROJECT_ID: manele-io-test
+          REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          REACT_APP_FIREBASE_API_KEY: AIzaSyAd-_OJQfpGyMBh9wKA_526ZtMUvMOUtqQ
+          REACT_APP_FIREBASE_AUTH_DOMAIN: manele-io-test.firebaseapp.com
+          REACT_APP_FIREBASE_PROJECT_ID: manele-io-test
+          REACT_APP_FIREBASE_STORAGE_BUCKET: manele-io-test.firebasestorage.app
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 473723194717
+          REACT_APP_FIREBASE_APP_ID: 1:473723194717:web:b1e1e9d2cdb7c7964d2cb4
+          REACT_APP_FIREBASE_MEASUREMENT_ID: G-W7YVXY1W5T
+          REACT_APP_RECAPTCHA_SITE_KEY: 6Lc2G6MrAAAAAH_z1XT4gKUZy8LOKC6mQQNQWRuJ
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '22.17.0'
+
+            # Deploy frontend to Vercel
+            - name: Install Vercel CLI
+              run: npm install --global vercel
+
+            - name: Pull Vercel Environment Information
+              run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Build Project Artifacts
+              run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Deploy Project Artifacts
+              run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Install Firebase CLI
+              run: npm install -g firebase-tools@13.18.0
+
+            - name: Generate .env file for Functions
+              run: |
+                mkdir -p functions
+                cat <<EOF > functions/.env
+                THIRD_PARTY_API_BASE_URL=${{ secrets.THIRD_PARTY_API_BASE_URL }}
+                THIRD_PARTY_API_KEY=${{ secrets.THIRD_PARTY_API_KEY }}
+                MP3_STORAGE_BUCKET=manele-io-test.firebasestorage.app
+                OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+                STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+                STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+                STRIPE_PRICE_ID_SONG=${{ secrets.STRIPE_PRICE_ID_SONG }}
+                STRIPE_PRICE_ID_DEDICATION=${{ secrets.STRIPE_PRICE_ID_DEDICATION }}
+                STRIPE_PRICE_ID_SUBSCRIPTION=${{ secrets.STRIPE_PRICE_ID_SUBSCRIPTION }}
+                STRIPE_COUPON_ID_SUBSCRIBED_SONG=${{ secrets.STRIPE_COUPON_ID_SUBSCRIBED_SONG }}
+                FRONTEND_BASE_URL=https://staging-9bha86vbc1980bca71.manele.io
+                EOF
+
+            - name: Build Firebase functions
+              run: |
+                cd functions
+                npm install
+                npm run build
+            # Functions are deployed to https://{REGION}-{PROJECT_ID}.cloudfunctions.net/{functionName}
+            - name: Deploy Firebase
+              run: |
+                firebase deploy \
+                  --only functions,firestore,storage \
+                  --project "$FIREBASE_PROJECT_ID" \
+                  --token "${{ secrets.FIREBASE_SECRET_TOKEN }}" \
+                  --force
