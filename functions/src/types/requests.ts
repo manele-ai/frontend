@@ -11,6 +11,7 @@ export namespace Requests {
     to?: string;
     dedication?: string;
     wantsDonation: boolean;
+    donorName?: string;
     donationAmount?: number;
   }
   

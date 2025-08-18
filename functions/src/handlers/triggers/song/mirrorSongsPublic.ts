@@ -48,6 +48,7 @@ function extractPublicFields(songData: Database.SongData): Database.SongDataPubl
       dedication: userInput.dedication || "",
       wantsDedication: userInput.wantsDedication || false,
       wantsDonation: userInput.wantsDonation || false,
+      donorName: userInput.donorName || "",
       donationAmount: userInput.donationAmount || 0,
     },
     apiData: {
