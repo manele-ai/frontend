@@ -32,6 +32,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   // Funcții pentru persistența formularului
   const saveFormData = useCallback(() => {
@@ -127,11 +128,13 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
           // Align with ProfilePage: read from 'usersPublic' for up-to-date credits
           getDoc(doc(db, "usersPublic", user.uid)).then(userDoc => {
             setUserCredits(userDoc.data()?.creditsBalance ?? 0);
+            setUserData(userDoc.data());
           });
         });
       });
     } else {
       setUserCredits(0);
+      setUserData(null);
     }
   }, [user, isAuthenticated]);
 
@@ -336,7 +339,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
     let basePrice = 24.99; // Preț fix pentru Easy Mode
     
     // Apply subscription discount of 10 RON if user has active subscription
-    if (userCredits > 0 && userCredits < 999) {
+    if (userData?.isSubscribed) {
       // This indicates user has subscription (credits but not unlimited)
       basePrice = Math.max(0, basePrice - 10.00);
     }
@@ -401,7 +404,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
                 <span className="price-item-label">Preț de bază:</span>
                 <span className="price-item-value">24.99 RON</span>
               </div>
-              {userCredits > 0 && userCredits < 999 && (
+              {userData?.isSubscribed && (
                 <div className="price-item discount">
                   <span className="price-item-label">Reducere abonament:</span>
                   <span className="price-item-value">-10.00 RON</span>

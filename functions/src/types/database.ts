@@ -12,6 +12,7 @@ export namespace Database {
     dedication?: string;
     wantsDedication?: boolean;
     wantsDonation?: boolean;
+    donorName?: string;
     donationAmount?: number;
   }
 

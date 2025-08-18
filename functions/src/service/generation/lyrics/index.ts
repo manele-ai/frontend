@@ -66,7 +66,7 @@ function fillInUserRequests(data: Requests.GenerateSong) {
     s = s.replace("[DEDICATIE]", dedication_instruction);
   }
   // Add donation if wanted
-  if (!(data.wantsDonation && data.from && data.donationAmount && data.donationAmount > 0)) {
+  if (!(data.wantsDonation && data.donorName && data.donationAmount && data.donationAmount > 0)) {
     s = s.replace("[ARUNCA_CU_BANI]", "");
   } else {
     const arunca_cu_bani_template = readFileSync(
@@ -77,12 +77,8 @@ function fillInUserRequests(data: Requests.GenerateSong) {
     // We multiply by 10 for extra barosaneala
     const suma = formatMoneyRON(Math.floor(data.donationAmount * 10));
     let arunca_cu_bani_instruction = arunca_cu_bani_template
-      .replace(/\[NUME\]/g, data.from)
+      .replace(/\[NUME\]/g, data.donorName)
       .replace(/\[SUMA\]/g, suma);
-    if (data.to) {
-      arunca_cu_bani_instruction = arunca_cu_bani_instruction.replace(/\[TO\]/g, data.to);
-    }
-    
     s = s.replace("[ARUNCA_CU_BANI]", arunca_cu_bani_instruction);
   }
   return s;
