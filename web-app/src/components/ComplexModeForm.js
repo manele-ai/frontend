@@ -4,6 +4,7 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
+import LazyAudioPlayer from './LazyAudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 import LazyAudioPlayer from './LazyAudioPlayer';
@@ -608,6 +609,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               <div className="example-player-controls">
                 <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.dedication.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.storage.url}
                   isPlaying={activeDedicationPlayer}
                   onPlayPause={() => {
                     setActiveDedicationPlayer(!activeDedicationPlayer);
@@ -733,7 +735,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               </div>
               <div className="example-player-controls">
                 <LazyAudioPlayer
-                  audioUrl={EXAMPLE_SONGS.aruncaCuBani.storage.url}
+                  audioUrl={EXAMPLE_SONGS.donation.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.donation.storage.url}
+
                   isPlaying={activeDonationPlayer}
                   fallbackAudioUrl={EXAMPLE_SONGS.aruncaCuBani.apiData.audioUrl}
                   onPlayPause={() => {
