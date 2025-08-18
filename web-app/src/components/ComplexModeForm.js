@@ -4,9 +4,9 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
-import AudioPlayer from './AudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
+import LazyAudioPlayer from './LazyAudioPlayer';
 
 // Constante pentru localStorage - Complex Mode
 const COMPLEX_FORM_DATA_KEYS = {
@@ -28,20 +28,20 @@ const EXAMPLE_SONGS = {
   dedication: {
     id: 'dedication-example',
     apiData: {
-      title: 'Dedicație pentru Maria',
+      title: 'Dedicație pentru Liviu',
       imageUrl: '/photos/Petrecere.jpeg',
-      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+      audioUrl: '/music/dedicatie-example.mp4'
     },
-    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+    storage: { url: '/music/dedication-example.mp4' }
   },
-  donation: {
-    id: 'donation-example',
+  aruncaCuBani: {
+    id: 'arunca-cu-bani-example',
     apiData: {
       title: 'Aruncat cu 100 RON',
       imageUrl: '/photos/Comerciale.jpeg',
-      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+      audioUrl: '/music/arunca-cu-bani-example.mp4'
     },
-    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+    storage: { url: '/music/arunca-cu-bani-example.mp4' }
   }
 };
 
@@ -606,13 +606,14 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
+                <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.dedication.storage.url}
                   isPlaying={activeDedicationPlayer}
                   onPlayPause={() => {
                     setActiveDedicationPlayer(!activeDedicationPlayer);
                     setActiveDonationPlayer(false); // Pause other player
                   }}
+                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.apiData.audioUrl}
                   onError={() => {}}
                 />
               </div>
@@ -731,9 +732,10 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
-                  audioUrl={EXAMPLE_SONGS.donation.storage.url}
+                <LazyAudioPlayer
+                  audioUrl={EXAMPLE_SONGS.aruncaCuBani.storage.url}
                   isPlaying={activeDonationPlayer}
+                  fallbackAudioUrl={EXAMPLE_SONGS.aruncaCuBani.apiData.audioUrl}
                   onPlayPause={() => {
                     setActiveDonationPlayer(!activeDonationPlayer);
                     setActiveDedicationPlayer(false); // Pause other player
