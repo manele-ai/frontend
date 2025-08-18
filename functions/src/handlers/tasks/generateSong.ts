@@ -114,6 +114,7 @@ export const generateSongTask = onTaskDispatched({
         dedication: generationData.dedication,
         wantsDedication: generationData.wantsDedication,
         wantsDonation: generationData.wantsDonation,
+        donorName: generationData.donorName,
         donationAmount: generationData.donationAmount
       }
     } as Database.GenerateSongTask);
@@ -131,6 +132,7 @@ export const generateSongTask = onTaskDispatched({
         dedication: generationData.dedication,
         wantsDedication: generationData.wantsDedication,
         wantsDonation: generationData.wantsDonation,
+        donorName: generationData.donorName,
         donationAmount: generationData.donationAmount
       },
       lyrics,

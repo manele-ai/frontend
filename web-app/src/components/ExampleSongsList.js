@@ -1,18 +1,64 @@
 import { useState } from 'react';
 import '../styles/ExampleSongsList.css';
-import AudioPlayer from './AudioPlayer';
+import LazyAudioPlayer from './LazyAudioPlayer';
 
 const EXAMPLE_SONGS = [
   {
     id: 'ex-1',
-    title: 'Mohan Veena - Indian Guitar',
+    title: 'Manele Trapanele',
     artist: 'Manele AI',
-    audioUrl: '/music/mohanveena-indian-guitar-374179.mp3',
+    audioUrl: '/music/trapanele.mp3',
     imageUrl: null,
   },
-  { id: 'ex-2', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
-  { id: 'ex-3', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
-  { id: 'ex-4', title: 'Mohan Veena - Indian Guitar', artist: 'Manele AI', audioUrl: '/music/mohanveena-indian-guitar-374179.mp3', imageUrl: null },
+  {
+    id: 'ex-2',
+    title: 'Muzică Populară',
+    artist: 'Manele AI',
+    audioUrl: '/music/muzica-populara.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-3',
+    title: 'Manele Orientale',
+    artist: 'Manele AI',
+    audioUrl: '/music/manele-orientale.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-4',
+    title: 'Manele Live',
+    artist: 'Manele AI',
+    audioUrl: '/music/manele-live.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-5',
+    title: 'Manele de Pahar',
+    artist: 'Manele AI',
+    audioUrl: '/music/manele-de-pahar.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-6',
+    title: 'Manele de Opulență',
+    artist: 'Manele AI',
+    audioUrl: '/music/manele-de-opulenta.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-7',
+    title: 'Lăutărești',
+    artist: 'Manele AI',
+    audioUrl: '/music/lautaresti.mp3',
+    imageUrl: null,
+  },
+  {
+    id: 'ex-8',
+    title: 'Jale',
+    artist: 'Manele AI',
+    audioUrl: '/music/jale.mp3',
+    imageUrl: null,
+  },
 ];
 
 const ExampleSongsList = () => {
@@ -36,8 +82,9 @@ const ExampleSongsList = () => {
               </div>
             </div>
             <div className="exlist-right">
-              <AudioPlayer
+              <LazyAudioPlayer
                 audioUrl={song.audioUrl}
+                fallbackAudioUrl={song.audioUrl}
                 isPlaying={currentPlayingId === song.id}
                 onPlayPause={() => handlePlayPause(song.id)}
                 onError={() => {}}

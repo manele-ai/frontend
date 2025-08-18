@@ -4,9 +4,9 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
-import AudioPlayer from './AudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
+import LazyAudioPlayer from './LazyAudioPlayer';
 
 // Constante pentru localStorage - Complex Mode
 const COMPLEX_FORM_DATA_KEYS = {
@@ -28,20 +28,20 @@ const EXAMPLE_SONGS = {
   dedication: {
     id: 'dedication-example',
     apiData: {
-      title: 'Dedicație pentru Maria',
+      title: 'Dedicație pentru Liviu',
       imageUrl: '/photos/Petrecere.jpeg',
-      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+      audioUrl: '/music/dedicatie-example.mp4'
     },
-    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+    storage: { url: '/music/dedication-example.mp4' }
   },
-  donation: {
-    id: 'donation-example',
+  aruncaCuBani: {
+    id: 'arunca-cu-bani-example',
     apiData: {
       title: 'Aruncat cu 100 RON',
-      imageUrl: '/photos/Comerciale.jpeg',
-      audioUrl: '/music/mohanveena-indian-guitar-374179.mp3'
+      imageUrl: '/photos/arunca-cu-bani-example.png',
+      audioUrl: '/music/arunca-cu-bani-example.mp4'
     },
-    storage: { url: '/music/mohanveena-indian-guitar-374179.mp3' }
+    storage: { url: '/music/arunca-cu-bani-example.mp3' }
   }
 };
 
@@ -80,6 +80,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   // State pentru player-ele de exemplu
   const [activeDedicationPlayer, setActiveDedicationPlayer] = useState(false);
   const [activeDonationPlayer, setActiveDonationPlayer] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   // Funcții pentru persistența formularului
   const saveFormData = useCallback(() => {
@@ -216,11 +217,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           // Align with ProfilePage: read from 'usersPublic' for up-to-date credits
           getDoc(doc(db, "usersPublic", user.uid)).then(userDoc => {
             setUserCredits(userDoc.data()?.creditsBalance ?? 0);
+            setUserData(userDoc.data());
           });
         });
       });
     } else {
       setUserCredits(0);
+      setUserData(null);
     }
   }, [user, isAuthenticated]);
 
@@ -340,7 +343,6 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
         donorName,
         mode: 'hard'
       };
-
       const response = await createGenerationRequest(params);
       
       if (response.paymentStatus === 'success') {
@@ -480,7 +482,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     }
     
     // Apply subscription discount of 10 RON if user has active subscription
-    if (userCredits > 0 && userCredits < 999) {
+    if (userData?.isSubscribed) {
       // This indicates user has subscription (credits but not unlimited)
       basePrice = Math.max(0, basePrice - 10.00);
     }
@@ -563,7 +565,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <button
               className={`checkbox-slider-option ${!wantsDedication ? 'active' : ''}`}
               onClick={() => {
-                setWantsDedication(false);
+                setWantsDedication(!wantsDedication);
                 resetErrors();
               }}
             >
@@ -572,7 +574,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <button
               className={`checkbox-slider-option ${wantsDedication ? 'active' : ''}`}
               onClick={() => {
-                setWantsDedication(true);
+                setWantsDedication(!wantsDedication);
                 resetErrors();
               }}
             >
@@ -606,8 +608,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
+                <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.dedication.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.apiData.audioUrl}
                   isPlaying={activeDedicationPlayer}
                   onPlayPause={() => {
                     setActiveDedicationPlayer(!activeDedicationPlayer);
@@ -689,7 +692,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <button
               className={`checkbox-slider-option ${!wantsDonation ? 'active' : ''}`}
               onClick={() => {
-                setWantsDonation(false);
+                setWantsDonation(!wantsDonation);
                 resetErrors();
               }}
             >
@@ -698,7 +701,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <button
               className={`checkbox-slider-option ${wantsDonation ? 'active' : ''}`}
               onClick={() => {
-                setWantsDonation(true);
+                setWantsDonation(!wantsDonation);
                 resetErrors();
               }}
             >
@@ -720,7 +723,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               <div className="example-song-info">
                 <img
                   className="example-song-cover"
-                  src={EXAMPLE_SONGS.donation.apiData.imageUrl}
+                  src={EXAMPLE_SONGS.aruncaCuBani.apiData.imageUrl}
                   alt="cover"
                   width={48}
                   height={48}
@@ -731,8 +734,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
-                  audioUrl={EXAMPLE_SONGS.donation.storage.url}
+                <LazyAudioPlayer
+                  audioUrl={EXAMPLE_SONGS.aruncaCuBani.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.aruncaCuBani.apiData.audioUrl}
                   isPlaying={activeDonationPlayer}
                   onPlayPause={() => {
                     setActiveDonationPlayer(!activeDonationPlayer);
@@ -806,7 +810,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                   <span className="price-item-value">+{parseFloat(donationAmount) || 0} RON</span>
                 </div>
               )}
-              {userCredits > 0 && userCredits < 999 && (
+              {userData?.isSubscribed && (
                 <div className="price-item discount">
                   <span className="price-item-label">Reducere abonament:</span>
                   <span className="price-item-value">-10.00 RON</span>

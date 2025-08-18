@@ -95,6 +95,7 @@ export async function createGenerationRequestTransaction(
         dedication: data.dedication,
         wantsDedication: data.wantsDedication,
         wantsDonation: data.wantsDonation,
+        donorName: data.donorName,
         donationAmount: data.donationAmount
       },
       generationStarted: false,
