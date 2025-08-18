@@ -1,6 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import '../styles/SongItem.css';
 
+// Global audio manager to prevent multiple simultaneous playbacks
+class AudioManager {
+  constructor() {
+    this.currentPlayer = null;
+  }
+
+  setCurrentPlayer(player) {
+    // Pause previous player
+    if (this.currentPlayer && this.currentPlayer !== player) {
+      this.currentPlayer.pause();
+    }
+    this.currentPlayer = player;
+  }
+
+  clearCurrentPlayer(player) {
+    if (this.currentPlayer === player) {
+      this.currentPlayer = null;
+    }
+  }
+}
+
+const audioManager = new AudioManager();
+
 export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError }) {
   const audioRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -10,32 +33,51 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
   const [isAudioLoaded, setIsAudioLoaded] = useState(false);
   const [lastAudioUrl, setLastAudioUrl] = useState(null);
+  const [isStablePlaying, setIsStablePlaying] = useState(false);
+  const loadingTimeoutRef = useRef(null);
   
   // Detect if we're using a stream URL
   const isStreamUrl = audioUrl?.includes('stream');
+  
+  // Detect Safari browser
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  
+  // Debounced loading state setter
+  const setLoadingWithDebounce = useCallback((loading) => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+    }
+    
+    loadingTimeoutRef.current = setTimeout(() => {
+      setIsLoading(loading);
+    }, isSafari ? 200 : 50); // Longer delay for Safari to prevent flickering
+  }, [isSafari]);
 
   // Memoize the play function to prevent unnecessary re-renders
   const playAudio = useCallback(async () => {
     if (!audioRef.current || !isAudioLoaded) return;
     
     try {
-      setIsLoading(true);
+      audioManager.setCurrentPlayer({ pause: () => audioRef.current.pause() });
+      setLoadingWithDebounce(true);
       await audioRef.current.play();
-      setIsLoading(false);
+      // Don't set loading to false here - let the audio events handle it
     } catch (err) {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
       const errorMsg = 'Nu s-a putut porni redarea. Încearcă din nou.';
       setError(errorMsg);
       onError?.(errorMsg);
     }
-  }, [isAudioLoaded, onError]);
+  }, [isAudioLoaded, onError, setLoadingWithDebounce]);
 
   // Memoize the pause function
   const pauseAudio = useCallback(() => {
     if (!audioRef.current) return;
     audioRef.current.pause();
-    setIsLoading(false);
-  }, []);
+    audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
+    setLoadingWithDebounce(false);
+    setIsStablePlaying(false);
+  }, [setLoadingWithDebounce]);
 
   // Handle audio URL changes
   useEffect(() => {
@@ -47,6 +89,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     setCurrentTime(0);
     setDuration(0);
     setHasStartedPlaying(false);
+    setIsStablePlaying(false);
     
     const audio = audioRef.current;
     if (!audio) return;
@@ -88,53 +131,75 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
         setDuration(audio.duration);
       }
       setIsAudioLoaded(true);
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
     };
 
     const handleCanPlay = () => {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
+      
       if (isPlaying && isAudioLoaded) {
         playAudio();
       }
     };
 
     const handleCanPlayThrough = () => {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
     };
 
     const handleWaiting = () => {
-      setIsLoading(true);
+      if (isSafari) {
+        // În Safari, să fim mai conservatori cu waiting - doar dacă nu suntem în playing stabil
+        if (!isStablePlaying) {
+          setLoadingWithDebounce(true);
+        }
+      } else {
+        setLoadingWithDebounce(true);
+      }
     };
 
     const handlePlaying = () => {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
       setError(null);
+      setIsStablePlaying(true);
     };
 
     const handlePause = () => {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
+      setIsStablePlaying(false);
     };
 
     const handleEnded = () => {
-      onPlayPause();
+      audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
+      // Nu apela onPlayPause() automat când se termină audio-ul
+      // Lăsăm utilizatorul să decidă dacă vrea să pornească din nou
       setCurrentTime(0);
       setHasStartedPlaying(false);
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
+      setIsStablePlaying(false);
     };
 
     const handleError = (e) => {
       const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
       setError(errorMsg);
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
+      setIsStablePlaying(false);
       onError?.(errorMsg);
     };
 
     const handleAbort = () => {
-      setIsLoading(false);
+      setLoadingWithDebounce(false);
+      setIsStablePlaying(false);
     };
 
     const handleStalled = () => {
-      setIsLoading(true);
+      if (isSafari) {
+        // În Safari, să fim mai conservatori cu stalled - doar dacă nu suntem în playing stabil
+        if (!isStablePlaying) {
+          setLoadingWithDebounce(true);
+        }
+      } else {
+        setLoadingWithDebounce(true);
+      }
     };
 
     // Add event listeners
@@ -172,6 +237,10 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = '';
+        audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
+      }
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
       }
     };
   }, []);
