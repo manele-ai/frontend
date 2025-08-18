@@ -16,15 +16,16 @@ import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
 import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 import AuthPage from './pages/AuthPage';
-import CookiePolicy from './pages/CookiePolicy';
 import ExemplePage from './pages/ExemplePage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import TarifePage from './pages/TarifePage';
+import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 import './styles/App.css';
 
 function App() {
@@ -76,7 +77,8 @@ function AppContent() {
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/tarife" element={<TarifePage />} />
-        <Route path="/privacy-policy" element={<CookiePolicy />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
         
         {/* Protected routes */}
         <Route path="/result" element={

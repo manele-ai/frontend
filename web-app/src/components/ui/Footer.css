@@ -49,6 +49,17 @@
   text-transform: none;
 }
 
+.footer-link {
+  cursor: pointer;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: #ffe270;
+  text-decoration: underline;
+}
+
 .footer-copyright {
   color: #A0A0A0;
   font-size: 14px;
