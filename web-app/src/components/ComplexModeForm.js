@@ -38,10 +38,10 @@ const EXAMPLE_SONGS = {
     id: 'arunca-cu-bani-example',
     apiData: {
       title: 'Aruncat cu 100 RON',
-      imageUrl: '/photos/Comerciale.jpeg',
+      imageUrl: '/photos/dedicatie-imagine.png',
       audioUrl: '/music/arunca-cu-bani-example.mp4'
     },
-    storage: { url: '/music/arunca-cu-bani-example.mp4' }
+    storage: { url: '/music/arunca-cu-bani-example.mp3' }
   }
 };
 
