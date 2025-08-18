@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '../styles/ExampleSongsList.css';
-import AudioPlayer from './AudioPlayer';
+import LazyAudioPlayer from './LazyAudioPlayer';
 
 const EXAMPLE_SONGS = [
   {
@@ -82,8 +82,9 @@ const ExampleSongsList = () => {
               </div>
             </div>
             <div className="exlist-right">
-              <AudioPlayer
+              <LazyAudioPlayer
                 audioUrl={song.audioUrl}
+                fallbackAudioUrl={song.audioUrl}
                 isPlaying={currentPlayingId === song.id}
                 onPlayPause={() => handlePlayPause(song.id)}
                 onError={() => {}}

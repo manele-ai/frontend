@@ -4,7 +4,7 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
-import AudioPlayer from './AudioPlayer';
+import LazyAudioPlayer from './LazyAudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 
@@ -606,8 +606,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
+                <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.dedication.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.storage.url}
                   isPlaying={activeDedicationPlayer}
                   onPlayPause={() => {
                     setActiveDedicationPlayer(!activeDedicationPlayer);
@@ -731,8 +732,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <AudioPlayer
+                <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.donation.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.donation.storage.url}
                   isPlaying={activeDonationPlayer}
                   onPlayPause={() => {
                     setActiveDonationPlayer(!activeDonationPlayer);
