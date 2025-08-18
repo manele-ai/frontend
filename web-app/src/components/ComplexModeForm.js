@@ -4,7 +4,6 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
-import LazyAudioPlayer from './LazyAudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 import LazyAudioPlayer from './LazyAudioPlayer';
@@ -39,7 +38,7 @@ const EXAMPLE_SONGS = {
     id: 'arunca-cu-bani-example',
     apiData: {
       title: 'Aruncat cu 100 RON',
-      imageUrl: '/photos/dedicatie-imagine.png',
+      imageUrl: '/photos/arunca-cu-bani-example.png',
       audioUrl: '/music/arunca-cu-bani-example.mp4'
     },
     storage: { url: '/music/arunca-cu-bani-example.mp3' }
@@ -611,13 +610,12 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               <div className="example-player-controls">
                 <LazyAudioPlayer
                   audioUrl={EXAMPLE_SONGS.dedication.storage.url}
-                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.storage.url}
+                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.apiData.audioUrl}
                   isPlaying={activeDedicationPlayer}
                   onPlayPause={() => {
                     setActiveDedicationPlayer(!activeDedicationPlayer);
                     setActiveDonationPlayer(false); // Pause other player
                   }}
-                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.apiData.audioUrl}
                   onError={() => {}}
                 />
               </div>
@@ -737,11 +735,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               </div>
               <div className="example-player-controls">
                 <LazyAudioPlayer
-                  audioUrl={EXAMPLE_SONGS.donation.storage.url}
-                  fallbackAudioUrl={EXAMPLE_SONGS.donation.storage.url}
-
-                  isPlaying={activeDonationPlayer}
+                  audioUrl={EXAMPLE_SONGS.aruncaCuBani.storage.url}
                   fallbackAudioUrl={EXAMPLE_SONGS.aruncaCuBani.apiData.audioUrl}
+                  isPlaying={activeDonationPlayer}
                   onPlayPause={() => {
                     setActiveDonationPlayer(!activeDonationPlayer);
                     setActiveDedicationPlayer(false); // Pause other player
