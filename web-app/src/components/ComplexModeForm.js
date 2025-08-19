@@ -46,7 +46,7 @@ const EXAMPLE_SONGS = {
 };
 
 export default function ComplexModeForm({ onBack, preSelectedStyle }) {
-  const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -446,14 +446,6 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   const handleAuthSuccess = async () => {
     if (pendingGenerationParams) {
       try {
-        console.log('waitForUserDocCreation');
-        const userDocCreated = await waitForUserDocCreation(10000);
-        console.log('userDocCreated', userDocCreated);
-        if (!userDocCreated) {
-          setError('A apărut o eroare la autentificare. Te rugăm să încerci din nou.');
-          return;
-        }
-
         const { auth } = await import('../services/firebase');
         const currentUser = auth.currentUser;
         if (currentUser) {
