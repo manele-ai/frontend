@@ -9,6 +9,7 @@ import { appCheckSiteKey, firebaseConfig, useEmulators } from './config';
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+auth.languageCode = 'ro'; // Set default language to Romanian
 setPersistence(auth, browserLocalPersistence);
 export const db = getFirestore(app);
 export const functions = getFunctions(app, 'europe-central2');
