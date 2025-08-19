@@ -6,13 +6,27 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 80px; /* Leave space for bottom menu */
-  background-color: rgba(0, 0, 0, 0.8);
+  bottom: 0; /* Cover the entire viewport */
+  background-color: rgba(0, 0, 0, 0.85); /* Darker background */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999; /* Much higher z-index */
   padding: 20px;
+  backdrop-filter: blur(4px); /* Add blur effect */
+  animation: fadeIn 0.3s ease-out; /* Smooth fade-in */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
 }
 
 /* Modal Container */
@@ -22,11 +36,30 @@
   padding: 25px;
   width: 100%;
   max-width: 400px;
-  max-height: calc(100vh - 120px); /* Account for bottom menu and padding */
+  max-height: calc(100vh - 40px); /* Use more viewport height */
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); /* Stronger shadow */
   border: 1px solid #333;
   position: relative;
+  z-index: 10000; /* Ensure modal content is above overlay */
+  animation: modalSlideIn 0.3s ease-out; /* Smooth slide-in */
+}
+
+/* Auth flow in progress - no visual changes, just functional restrictions */
+.auth-modal.auth-flow-active {
+  /* Modal looks exactly the same, just exit functionality is disabled */
+}
+
+/* Modal slide-in animation */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Close button */
@@ -370,14 +403,15 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .auth-modal-overlay {
-    bottom: 70px;
+    bottom: 0; /* Cover full screen on mobile too */
+    padding: 15px;
   }
   
   .auth-modal {
     padding: 30px 20px;
     margin: 10px;
     max-width: 450px;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 30px);
   }
   
   .auth-form-row {
@@ -432,13 +466,14 @@
 
 @media (max-width: 480px) {
   .auth-modal-overlay {
-    bottom: 60px;
+    bottom: 0; /* Cover full screen on small mobile too */
+    padding: 10px;
   }
   
   .auth-modal {
     padding: 25px 15px;
     max-width: 400px;
-    max-height: calc(100vh - 90px);
+    max-height: calc(100vh - 20px);
   }
   
   .auth-form-row {
