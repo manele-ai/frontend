@@ -15,7 +15,7 @@ const EASY_FORM_DATA_KEYS = {
 };
 
 export default function EasyModeForm({ onBack, preSelectedStyle }) {
-  const { user, isAuthenticated, waitForUserDocCreation } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -313,14 +313,6 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   const handleAuthSuccess = async () => {
     if (pendingGenerationParams) {
       try {
-        console.log('waitForUserDocCreation');
-        const userDocCreated = await waitForUserDocCreation(10000);
-        console.log('userDocCreated', userDocCreated);
-        if (!userDocCreated) {
-          setError('A apărut o eroare la autentificare. Te rugăm să încerci din nou.');
-          return;
-        }
-
         const { auth } = await import('../services/firebase');
         const currentUser = auth.currentUser;
         if (currentUser) {

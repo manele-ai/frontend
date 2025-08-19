@@ -17,6 +17,14 @@ import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } 
 import { usePostHogTracking } from '../../utils/posthog';
 
 // User context structure
+
+export const AUTH_PHASE = {
+  NOT_STARTED: 'not-started',
+  STARTED: 'started',
+  READY: 'ready',
+  FAILED: 'failed',
+};
+
 const AuthContext = createContext({
   user: null,
   userProfile: null,
@@ -31,17 +39,14 @@ const AuthContext = createContext({
   resetPassword: async (email) => Promise.resolve(),
   updateUserProfile: async (updates) => Promise.resolve(),
   isAuthenticated: false,
-  waitForUserDocCreation: async (_timeoutMs = 10000) => {
-    // Placeholder, fuck js
-    return Promise.resolve(false);
-  },
+  authPhase: AUTH_PHASE.NOT_STARTED,
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isUserDocCreated, setIsUserDocCreated] = useState(null);
+  const [authPhase, setAuthPhase] = useState(AUTH_PHASE.NOT_STARTED);
   const [error, setError] = useState(null);
   const recaptchaVerifier = useRef(null);
   const recaptchaContainerRef = useRef(null);
@@ -51,41 +56,40 @@ export function AuthProvider({ children }) {
   // Initialize PostHog tracking
   const { trackAuth } = usePostHogTracking();
 
-  /**
-   * Wait until auth + user doc creation finishes, or timeout expires.
-   * @param timeoutMs – how many milliseconds to wait before auto‐failing (resolves to false).
-   * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
-   */
-  const waitForUserDocCreation = (timeoutMs = 10000) => {
-    return new Promise((resolve) => {
-      // Check if already settled
-      if (isUserDocCreated !== null) {
-        return resolve(isUserDocCreated);
-      }
-      // Otherwise, add resolver to queue
-      const resolver = (docCreationStatus) => {
-        clearTimeout(timer);
-        resolve(docCreationStatus);
-      };
-      readyResolvers.current.push(resolver);
+  // /**
+  //  * Wait until auth + user doc creation finishes, or timeout expires.
+  //  * @param timeoutMs – how many milliseconds to wait before auto‐failing (resolves to false).
+  //  * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
+  //  */
+  // const waitForUserDocCreation = (timeoutMs = 10000) => {
+  //   return new Promise((resolve) => {
+  //     // Check if already settled
+  //     if (['failed', 'created'].includes(userDocStatus)) {
+  //       return resolve(userDocStatus);
+  //     }
+  //     // Otherwise, add resolver to queue
+  //     const resolver = (docCreationStatus) => {
+  //       clearTimeout(timer);
+  //       resolve(docCreationStatus);
+  //     };
+  //     readyResolvers.current.push(resolver);
 
-      // Start the timeout
-      const timer = setTimeout(() => {
-        // Remove this resolver so it doesn’t fire later
-        readyResolvers.current = readyResolvers.current.filter(r => r !== resolver);
-        // Timeout is treated as “failed to get ready”
-        resolve(false);
-      }, timeoutMs);
-    });
-  };
+  //     // Start the timeout
+  //     const timer = setTimeout(() => {
+  //       // Remove this resolver so it doesn’t fire later
+  //       readyResolvers.current = readyResolvers.current.filter(r => r !== resolver);
+  //       // Timeout is treated as “failed to get ready”
+  //       resolve(false);
+  //     }, timeoutMs);
+  //   });
+  // };
 
-  function flushUserDocCreationResolvers(status) {
-    readyResolvers.current.forEach((res) => res(status));
-    readyResolvers.current = [];
-  }
+  // function flushUserDocCreationResolvers(status) {
+  //   readyResolvers.current.forEach((res) => res(status));
+  //   readyResolvers.current = [];
+  // }
 
   const fetchOrCreateUserProfile = async (firebaseUser) => {
-    setIsUserDocCreated(null);
     try {
       // Force refresh token
       await firebaseUser.reload();
@@ -96,14 +100,12 @@ export function AuthProvider({ children }) {
       const userProfile = { id: profile.uid, ...profile };
       setUserProfile(userProfile);
 
-      setIsUserDocCreated(true);
-      flushUserDocCreationResolvers(true);
+      setAuthPhase(AUTH_PHASE.READY);
       return userProfile;
 
     } catch (error) {
       console.error('Error fetching/creating user profile:', error);
-      setIsUserDocCreated(false);
-      flushUserDocCreationResolvers(false);
+      setAuthPhase(AUTH_PHASE.FAILED);
       throw error;
     }
   };
@@ -125,7 +127,6 @@ export function AuthProvider({ children }) {
   // Update user profile
   const updateUserProfile = async (updates) => {
     if (!user) throw new Error('No user authenticated');
-
     try {
       const { displayName, photoURL } = await updateUserProfileCloudFn({
         displayName: updates.displayName,
@@ -152,13 +153,11 @@ export function AuthProvider({ children }) {
   const signUp = async (email, password, displayName) => {
     setError(null);
     setLoading(true);
-    
+    setAuthPhase(AUTH_PHASE.STARTED);
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       // Update display name in Firebase Auth and wait for it to complete
-      await updateProfile(user, {
-        displayName,
-      });
+      await updateProfile(user, { displayName });
       await fetchOrCreateUserProfile(user);
       trackAuth('email_signup', true);
     } catch (error) {
@@ -175,7 +174,7 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     setError(null);
     setLoading(true);
-    
+    setAuthPhase(AUTH_PHASE.STARTED);
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       await fetchOrCreateUserProfile(user);
@@ -194,7 +193,7 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     setError(null);
     setLoading(true);
-    
+    setAuthPhase(AUTH_PHASE.STARTED);
     try {
       const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
       // Update display name in Firebase Auth and wait for it to complete
@@ -217,7 +216,6 @@ export function AuthProvider({ children }) {
   const signOutUser = async () => {
     setError(null);
     setLoading(true);
-    
     try {
       await signOut(auth);
       setUser(null);
@@ -234,7 +232,6 @@ export function AuthProvider({ children }) {
   // Reset password
   const resetPassword = async (email) => {
     setError(null);
-    
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error) {
@@ -286,7 +283,7 @@ export function AuthProvider({ children }) {
   const signInWithPhone = async (phoneNumber) => {
     setError(null);
     setLoading(true);
-    
+    setAuthPhase(AUTH_PHASE.STARTED);
     try {
       // Clean up any existing reCAPTCHA verifier and container
       if (recaptchaVerifier.current) {
@@ -329,7 +326,7 @@ export function AuthProvider({ children }) {
   const verifyPhoneCode = async (confirmationResult, code, displayName = '') => {
     setError(null);
     setLoading(true);
-    
+    setAuthPhase(AUTH_PHASE.STARTED);
     try {
       const { user } = await confirmationResult.confirm(code);
       
@@ -363,7 +360,6 @@ export function AuthProvider({ children }) {
         setLoading(false);
         return;
       }
-      
       // Logged in
       setUser(user);
       try {
@@ -394,7 +390,7 @@ export function AuthProvider({ children }) {
     resetPassword,
     updateUserProfile,
     isAuthenticated: !!user,
-    waitForUserDocCreation,
+    authPhase,
   };
 
   return (

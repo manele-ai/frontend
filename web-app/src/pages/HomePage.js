@@ -1,10 +1,10 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createSubscriptionCheckoutSession } from 'services/firebase/functions';
-import { getStripe } from 'services/stripe';
+import { redirectToSubscriptionCheckout } from 'services/stripe/subscription';
 import LazyAudioPlayer from '../components/LazyAudioPlayer';
 import { useAuth } from '../components/auth/AuthContext';
+import AuthModal from '../components/auth/AuthModal';
 import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
@@ -14,7 +14,7 @@ function ReusableCard({ background, title, subtitle, styleValue, audioUrl }) {
   const navigate = useNavigate();
   const imageUrl = background.replace('url(', '').replace(') center/cover no-repeat', '');
   const [isPlaying, setIsPlaying] = useState(false);
-  
+
   // Fallback audio URL in case the specific style audio fails
   const fallbackAudioUrl = '/music/mohanveena-indian-guitar-374179.mp3';
   
@@ -66,8 +66,9 @@ function ReusableCard({ background, title, subtitle, styleValue, audioUrl }) {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -97,16 +98,17 @@ export default function HomePage() {
   }, [user]);
 
   const onClickSubscription = async () => {
-    const { sessionId } = await createSubscriptionCheckoutSession();
-    if (sessionId) {
-      const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) {
-        console.error('A apărut o eroare la plata. Încearcă din nou.');
-      }
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
     } else {
-      console.error('Failed to create subscription checkout session');
+      await redirectToSubscriptionCheckout();
     }
+  };
+
+  const handleAuthSuccess = async () => {
+    console.log('handleAuthSuccess');
+    await redirectToSubscriptionCheckout();
   };
 
   return (
@@ -162,6 +164,13 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
+
     </div>
   );
 } 
