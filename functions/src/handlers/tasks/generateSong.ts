@@ -109,6 +109,7 @@ export const generateSongTask = onTaskDispatched({
       userGenerationInput: {
         style: generationData.style,
         title: generationData.title,
+        lyricsDetails: generationData.lyricsDetails,
         from: generationData.from,
         to: generationData.to,
         dedication: generationData.dedication,
@@ -127,6 +128,7 @@ export const generateSongTask = onTaskDispatched({
       userGenerationInput: {
         style: generationData.style,
         title: generationData.title,
+        lyricsDetails: generationData.lyricsDetails,
         from: generationData.from,
         to: generationData.to,
         dedication: generationData.dedication,
