@@ -344,11 +344,7 @@
 }
 
 .generate-page .mode-slider-option:hover {
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: #888;
   transform: translateY(-1px);
 }
 
@@ -681,7 +677,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
+  margin-top: 5px;
   gap: 20px;
   width: 100%;
 }
@@ -742,6 +738,7 @@
 
 .generate-page .price-container-wrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -749,8 +746,8 @@
 
 /* Price Display Styles */
 .generate-page .price-container {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   width: 35%;
 }
 
@@ -831,6 +828,26 @@
   font-weight: 600;
 }
 
+.generate-page .extra-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.generate-page .extra-info-text {
+  color: #FFE0A1;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  margin: 0;
+  padding-left: 0;
+  text-align: left;
+  align-self: stretch;
+}
 /* Style Selection */
 .style-selection-container {
   margin-bottom: 30px;
@@ -1259,8 +1276,8 @@
   }
 
   .generate-page .price-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 8px;
     width: 90%;
   }
 }
@@ -1366,6 +1383,8 @@
   font-weight: 500;
 }
 
+
+
 /* Stiluri responsive pentru butoanele hero din GeneratePage */
 @media (max-width: 768px) {
   .generate-page .hero-btn.button {
@@ -1380,12 +1399,12 @@
 
 @media (max-width: 480px) {
   .generate-page .hero-btn.button {
-    width: 140px;
-    height: 40px;
+    width: 150px;
+    height: 48px;
   }
   
   .generate-page .hero-btn.button .hero-btn-text {
-    font-size: 12px;
+    font-size: 15px;
   }
 }
 

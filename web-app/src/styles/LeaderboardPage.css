@@ -581,7 +581,7 @@
 /* Stiluri responsive pentru butoanele hero din LeaderboardPage */
 @media (max-width: 768px) {
   .leaderboard-page .hero-btn.button {
-    width: 160px;
+    width: 164px;
     height: 45px;
   }
   
@@ -592,7 +592,7 @@
 
 @media (max-width: 480px) {
   .leaderboard-page .hero-btn.button {
-    width: 140px;
+    width: 164px;
     height: 40px;
   }
   

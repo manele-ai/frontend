@@ -90,6 +90,7 @@ export async function createGenerationRequestTransaction(
       userGenerationInput: {
         style: data.style,
         title: data.title,
+        lyricsDetails: data.lyricsDetails,
         from: data.from,
         to: data.to,
         dedication: data.dedication,

@@ -43,6 +43,7 @@ function extractPublicFields(songData: Database.SongData): Database.SongDataPubl
     userGenerationInput: {
       title: userInput.title || "Untitled",
       style: userInput.style || "Default",
+      lyricsDetails: userInput.lyricsDetails,
       from: userInput.from || "",
       to: userInput.to || "",
       dedication: userInput.dedication || "",

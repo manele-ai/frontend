@@ -1,0 +1,90 @@
+/* Sound Wave Animation */
+@keyframes wave {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4); 
+  }
+  20% { 
+    transform: scaleY(1); 
+  }
+}
+
+.sound-wave-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.sound-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.wave-bar {
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  animation: wave 1.2s ease-in-out infinite;
+  transform-origin: center;
+  transform: scaleY(0.4); /* Start all bars at the low state */
+}
+
+/* Animation delays are handled dynamically via inline styles in the component */
+
+/* Size variants */
+.sound-wave-container.small {
+  margin-right: 0;
+}
+
+.sound-wave-container.small .sound-wave {
+  height: 12px;
+  gap: 1px;
+}
+
+.sound-wave-container.small .wave-bar {
+  width: 1.5px;
+}
+
+.sound-wave-container.medium {
+  margin-right: 0;
+}
+
+.sound-wave-container.medium .sound-wave {
+  height: 16px;
+  gap: 2px;
+}
+
+.sound-wave-container.medium .wave-bar {
+  width: 2px;
+}
+
+.sound-wave-container.large {
+  margin-right: 0;
+}
+
+.sound-wave-container.large .sound-wave {
+  height: 24px;
+  gap: 3px;
+}
+
+.sound-wave-container.large .wave-bar {
+  width: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sound-wave-container {
+    margin-right: 0;
+  }
+  
+  .sound-wave-container.medium .sound-wave {
+    height: 14px;
+    gap: 1.5px;
+  }
+  
+  .sound-wave-container.medium .wave-bar {
+    width: 1.5px;
+  }
+}

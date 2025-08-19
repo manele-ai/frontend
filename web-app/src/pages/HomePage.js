@@ -6,6 +6,7 @@ import LazyAudioPlayer from '../components/LazyAudioPlayer';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import Button from '../components/ui/Button';
+import SoundWave from '../components/ui/SoundWave';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
 import '../styles/HomePage.css';
@@ -68,6 +69,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isProcessingAbonament, setIsProcessingAbonament] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
@@ -98,6 +100,7 @@ export default function HomePage() {
   }, [user]);
 
   const onClickSubscription = async () => {
+    setIsProcessingAbonament(true);
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
@@ -139,8 +142,12 @@ export default function HomePage() {
                 <Button 
                   className="hero-btn subscription-btn"
                   onClick={onClickSubscription}
+                  disabled={isProcessingAbonament}
                 >
-                  <span className="hero-btn-text">Fă-ți abonament!</span>
+                  {isProcessingAbonament ?
+                    <SoundWave size="large" color="#181A20"/> 
+                    : <span className="hero-btn-text">Fă-ți abonament!</span>
+                  }
                 </Button>
               )}
             </div>
