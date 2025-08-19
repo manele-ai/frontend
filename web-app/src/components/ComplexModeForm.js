@@ -7,6 +7,7 @@ import '../styles/GeneratePage.css';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 import LazyAudioPlayer from './LazyAudioPlayer';
+import GenerateButton from './ui/GenerateButton';
 
 // Constante pentru localStorage - Complex Mode
 const COMPLEX_FORM_DATA_KEYS = {
@@ -811,20 +812,18 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             </div>
           </div>
         </div>
+        <div className="extra-info">
+          <p className="extra-info-text">Piesa ta va fi generată în 2-3 minute</p>
+        </div>
       </div>
 
-      {/* Buttons */}
-      <div className="buttons-container">
-        <button 
-          className="hero-btn button generate-button" 
-          onClick={handleGenerateOrGoToPay}
-          disabled={isProcessing}
-        >
-          <span className="hero-btn-text">
-            {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
-          </span>
-        </button>
-      </div>
+      {/* Generate Button */}
+      <GenerateButton
+        onClick={handleGenerateOrGoToPay}
+        disabled={isProcessing}
+        isProcessing={isProcessing}
+        text={userCredits > 0 ? 'Generează' : 'Plătește'}
+      />
 
       {error && <div className="error-message">{error}</div>}
 

@@ -155,7 +155,7 @@
 .generate-btn,
 .subscribe-btn {
   box-sizing: border-box;
-  width: 190.8px;
+  width: 210px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
@@ -243,7 +243,7 @@
   
   .generate-btn,
   .subscribe-btn {
-    width: 160px;
+    width: 164px;
     height: 45px;
   }
   
@@ -291,7 +291,7 @@
   
   .generate-btn,
   .subscribe-btn {
-    width: 140px;
+    width: 164px;
     height: 40px;
   }
   

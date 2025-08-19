@@ -439,7 +439,7 @@
 
 .profile-page .action-button {
   box-sizing: border-box;
-  width: 300px;
+  width: 230px;
   height: 51.675px;
   flex-shrink: 0;
   border-radius: 4150.876px;
@@ -644,8 +644,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   }
   
   .profile-page .action-button {
-    width: 100%;
-    max-width: 350px;
+    max-width: 230px;
   }
   
   .profile-page .back-button {

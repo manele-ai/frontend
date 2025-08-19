@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-import { Requests } from "../../../types";
+import { Database } from "../../../types";
 import { formatMoneyRON } from "./utils";
 
 const OUTPUT_FORMAT_PROMPT = `
@@ -35,7 +35,7 @@ const USER_REQUESTS_PROMPT = `
 Vei indeplini cerinta utilizatorului.
 `;
 
-function fillInUserRequests(data: Requests.GenerateSong) {
+function fillInUserRequests(data: Database.UserGenerationInput) {
   // Add song title as tema principala
   let s =  USER_REQUESTS_PROMPT.replace("[TEMA_PRINCIPALA]", data.title);
   // Add lyrics details if provided
@@ -97,7 +97,7 @@ function buildSystemPrompt(userRequests: string, { style } : {style: string}) {
   return [systemPromptStartSpecificToStyle, PROMPT_LEAK_INSTRUCTION, OUTPUT_FORMAT_PROMPT].join("\n\n");
 }
 
-export function buildLyricsPrompts(data : Requests.GenerateSong) {
+export function buildLyricsPrompts(data : Database.UserGenerationInput) {
   const userRequests = fillInUserRequests(data);
   const userPrompt = buildUserPrompt(userRequests, { style: data.style });
   const systemPrompt = buildSystemPrompt(userRequests, { style: data.style });

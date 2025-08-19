@@ -7,6 +7,7 @@ export namespace Database {
   export interface UserGenerationInput {
     style: string;
     title: string;
+    lyricsDetails?: string;
     from?: string;
     to?: string;
     dedication?: string;

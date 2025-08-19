@@ -6,6 +6,7 @@ import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
+import GenerateButton from './ui/GenerateButton';
 
 // Constante pentru localStorage - Easy Mode
 const EASY_FORM_DATA_KEYS = {
@@ -407,18 +408,13 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="buttons-container">
-        <button 
-          className="hero-btn button generate-button" 
-          onClick={handleGenerateOrGoToPay}
-          disabled={isProcessing || !selectedStyle || !songName.trim()}
-        >
-          <span className="hero-btn-text">
-            {isProcessing ? 'Se procesează...' : userCredits > 0 ? 'Generează' : 'Plătește'}
-          </span>
-        </button>
-      </div>
+      {/* Generate Button */}
+      <GenerateButton
+        onClick={handleGenerateOrGoToPay}
+        disabled={isProcessing}
+        isProcessing={isProcessing}
+        text={userCredits > 0 ? 'Generează' : 'Plătește'}
+      />
 
       {error && <div className="error-message">{error}</div>}
 
