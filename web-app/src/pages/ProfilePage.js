@@ -1,12 +1,13 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref as storageRef, uploadString } from 'firebase/storage';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { downloadFile } from 'utils';
 import { useAuth } from '../components/auth/AuthContext';
 import ShareSongButton from '../components/ShareSongButton';
 import SongItem from '../components/SongItem';
 import { styles } from '../data/stylesData';
+import { useAudioState } from '../hooks/useAudioState';
 import { useSongs } from '../hooks/useSongs';
 import { db, storage } from '../services/firebase';
 import '../styles/ProfilePage.css';
@@ -29,9 +30,11 @@ export default function ProfilePage() {
   const fileInputRef = useRef(null);
 
   const { songs, loading: songsLoading, loadingMore, error: songsError, hasMore, loadMoreSongs } = useSongs();
-  const [activeSong, setActiveSong] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [userData, setUserData] = useState(null);
+
+  // Use centralized audio state
+  const { playingSongId, playSong, stopSong } = useAudioState();
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -82,14 +85,14 @@ export default function ProfilePage() {
     ? songs
     : songs.filter(song => song.userGenerationInput?.style === selectedStyle);
 
-  const handlePlayPause = (song) => {
-    if (activeSong?.id === song.id) {
-      setActiveSong(null);
+  // Enhanced play/pause handler with centralized state
+  const handlePlayPause = useCallback((song) => {
+    if (playingSongId === song.id) {
+      stopSong();
     } else {
-
-      setActiveSong(song);
+      playSong(song.id);
     }
-  };
+  }, [playingSongId, playSong, stopSong]);
 
   const handleDownload = async (song) => {
     try {
@@ -425,7 +428,7 @@ export default function ProfilePage() {
                   <div className="profile-song-content">
                     <SongItem
                       song={song}
-                      isActive={activeSong?.id === song.id}
+                      isActive={playingSongId === song.id}
                       onPlayPause={handlePlayPause}
                       onDownload={handleDownload}
                       styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}

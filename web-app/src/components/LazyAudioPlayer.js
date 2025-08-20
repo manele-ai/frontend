@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAudioState } from '../hooks/useAudioState';
 import '../styles/SongItem.css';
 
-// Global audio manager to prevent multiple simultaneous playbacks
+// Enhanced AudioManager with better mobile support and caching
 class AudioManager {
   constructor() {
     this.currentPlayer = null;
     this.audioCache = new Map();
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   }
 
   setCurrentPlayer(player) {
-    // Pause previous player
     if (this.currentPlayer && this.currentPlayer !== player) {
       this.currentPlayer.pause();
     }
@@ -27,9 +29,25 @@ class AudioManager {
       const audio = new Audio();
       audio.preload = 'none'; // Only load when needed
       audio.crossOrigin = 'anonymous';
+      
+      // Mobile-specific settings
+      if (this.isMobile) {
+        audio.muted = false;
+      }
+      
       this.audioCache.set(audioUrl, audio);
     }
     return this.audioCache.get(audioUrl);
+  }
+
+  disposeAudioElement(audioUrl) {
+    const audio = this.audioCache.get(audioUrl);
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+      audio.load();
+      this.audioCache.delete(audioUrl);
+    }
   }
 
   cleanupCache() {
@@ -43,11 +61,21 @@ class AudioManager {
       });
     }, 5 * 60 * 1000);
   }
+
+  cleanup() {
+    this.audioCache.forEach((audio, url) => {
+      audio.pause();
+      audio.src = '';
+      audio.load();
+    });
+    this.audioCache.clear();
+    this.currentPlayer = null;
+  }
 }
 
 const audioManager = new AudioManager();
 
-export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onError, fallbackAudioUrl }) {
+export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onError, fallbackAudioUrl, songId }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,12 +87,13 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
   const audioRef = useRef(null);
   const playerIdRef = useRef(Math.random().toString(36).substr(2, 9));
   const loadingTimeoutRef = useRef(null);
+  const isMountedRef = useRef(true);
+
+  // Use centralized audio state
+  const { registerAudioElement, unregisterAudioElement, pauseAllExcept } = useAudioState();
 
   // Detect if we're using a stream URL
   const isStreamUrl = audioUrl?.includes('stream');
-  
-  // Detect Safari browser
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   
   // Debounced loading state setter
   const setLoadingWithDebounce = useCallback((loading) => {
@@ -73,15 +102,22 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     }
     
     loadingTimeoutRef.current = setTimeout(() => {
-      setIsLoading(loading);
-    }, isSafari ? 200 : 50); // Longer delay for Safari to prevent flickering
-  }, [isSafari]);
+      if (isMountedRef.current) {
+        setIsLoading(loading);
+      }
+    }, audioManager.isSafari ? 200 : 50);
+  }, []);
 
-  // Initialize audio element lazily
+  // Initialize audio element lazily with improved lifecycle management
   const initializeAudio = useCallback(() => {
     if (!audioUrl) return null;
 
     const effectiveAudioUrl = audioUrl;
+    
+    // Check if we already have a valid audio element
+    if (audioRef.current && audioRef.current.src && audioRef.current.src.endsWith(effectiveAudioUrl)) {
+      return audioRef.current;
+    }
     
     // Try to get cached audio element first
     let audio = audioManager.getAudioElement(effectiveAudioUrl);
@@ -97,10 +133,16 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
 
     audioRef.current = audio;
     setCurrentAudioUrl(effectiveAudioUrl);
+    
+    // Register with global state manager
+    if (songId) {
+      registerAudioElement(songId, audio);
+    }
+    
     return audio;
-  }, [audioUrl]);
+  }, [audioUrl, songId, registerAudioElement]);
 
-  // Memoize the play function to prevent unnecessary re-renders
+  // Enhanced play function with mobile support
   const playAudio = useCallback(async () => {
     const audio = audioRef.current || initializeAudio();
     if (!audio) return;
@@ -108,6 +150,24 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     try {
       audioManager.setCurrentPlayer({ pause: () => audio.pause() });
       setLoadingWithDebounce(true);
+      
+      // Mobile-specific handling
+      if (audioManager.isMobile) {
+        // Ensure audio context is resumed on mobile
+        if (audio.audioContext && audio.audioContext.state === 'suspended') {
+          await audio.audioContext.resume();
+        }
+        
+        // For iOS Safari, we need to handle autoplay restrictions
+        if (audioManager.isSafari) {
+          // Safari-specific handling
+        }
+      }
+      
+      // Pause all other audio elements
+      if (songId) {
+        pauseAllExcept(songId);
+      }
       
       // Load audio if not already loaded
       if (audio.readyState === 0) {
@@ -129,12 +189,23 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
         });
       }
       
-      await audio.play();
-      // Don't set loading to false here - let the audio events handle it
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+      }
+      
       setError(null);
     } catch (err) {
       setLoadingWithDebounce(false);
       console.error('Audio play error:', err);
+      
+      // Handle mobile-specific errors
+      if (err.name === 'NotAllowedError') {
+        const errorMsg = 'Trebuie să dai tap pe buton pentru a porni audio-ul';
+        setError(errorMsg);
+        onError?.(errorMsg);
+        return;
+      }
       
       // Try fallback if main audio fails and we have a fallback
       if (fallbackAudioUrl && currentAudioUrl !== fallbackAudioUrl) {
@@ -154,9 +225,9 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
       setError(errorMsg);
       onError?.(errorMsg);
     }
-  }, [initializeAudio, currentAudioUrl, fallbackAudioUrl, onError, setLoadingWithDebounce]);
+  }, [initializeAudio, currentAudioUrl, fallbackAudioUrl, onError, setLoadingWithDebounce, songId, pauseAllExcept]);
 
-  // Memoize the pause function
+  // Enhanced pause function
   const pauseAudio = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -175,19 +246,23 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     }
   }, [isPlaying, playAudio, pauseAudio]);
 
-  // Audio event listeners - only attach when audio is initialized
+  // Audio event listeners with improved cleanup
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      if (!hasStartedPlaying && audio.currentTime > 0) {
-        setHasStartedPlaying(true);
+      if (isMountedRef.current) {
+        setCurrentTime(audio.currentTime);
+        if (!hasStartedPlaying && audio.currentTime > 0) {
+          setHasStartedPlaying(true);
+        }
       }
     };
 
     const handleLoadedMetadata = () => {
+      if (!isMountedRef.current) return;
+      
       if (!isStreamUrl) {
         setDuration(audio.duration);
       }
@@ -196,17 +271,22 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     };
 
     const handleCanPlay = () => {
-      setLoadingWithDebounce(false);
-      setIsAudioLoaded(true);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setIsAudioLoaded(true);
+      }
     };
 
     const handleCanPlayThrough = () => {
-      setLoadingWithDebounce(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+      }
     };
 
     const handleWaiting = () => {
-      if (isSafari) {
-        // În Safari, să fim mai conservatori cu waiting - doar dacă nu suntem în playing stabil
+      if (!isMountedRef.current) return;
+      
+      if (audioManager.isSafari) {
         if (!isStablePlaying) {
           setLoadingWithDebounce(true);
         }
@@ -216,27 +296,33 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     };
 
     const handlePlaying = () => {
-      setLoadingWithDebounce(false);
-      setError(null);
-      setIsStablePlaying(true);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setError(null);
+        setIsStablePlaying(true);
+      }
     };
 
     const handlePause = () => {
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+      }
     };
 
     const handleEnded = () => {
-      // Nu apela onPlayPause() automat când se termină audio-ul
-      // Lăsăm utilizatorul să decidă dacă vrea să pornească din nou
-      setCurrentTime(0);
-      setHasStartedPlaying(false);
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
-      audioManager.clearCurrentPlayer({ pause: () => audio.pause() });
+      if (isMountedRef.current) {
+        setCurrentTime(0);
+        setHasStartedPlaying(false);
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+        audioManager.clearCurrentPlayer({ pause: () => audio.pause() });
+      }
     };
 
     const handleError = (e) => {
+      if (!isMountedRef.current) return;
+      
       console.error('Audio error:', e);
       const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
       setError(errorMsg);
@@ -246,13 +332,16 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
     };
 
     const handleAbort = () => {
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+      }
     };
 
     const handleStalled = () => {
-      if (isSafari) {
-        // În Safari, să fim mai conservatori cu stalled - doar dacă nu suntem în playing stabil
+      if (!isMountedRef.current) return;
+      
+      if (audioManager.isSafari) {
         if (!isStablePlaying) {
           setLoadingWithDebounce(true);
         }
@@ -288,23 +377,33 @@ export default function LazyAudioPlayer({ audioUrl, isPlaying, onPlayPause, onEr
       audio.removeEventListener('abort', handleAbort);
       audio.removeEventListener('stalled', handleStalled);
     };
-  }, [currentAudioUrl, isPlaying, onPlayPause, onError, isStreamUrl, hasStartedPlaying]);
+  }, [currentAudioUrl, onError, isStreamUrl, hasStartedPlaying, setLoadingWithDebounce]);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
+    
     return () => {
+      isMountedRef.current = false;
+      
       const audio = audioRef.current;
       if (audio) {
         audio.pause();
         audioManager.clearCurrentPlayer({ pause: () => audio.pause() });
       }
+      
+      if (songId) {
+        unregisterAudioElement(songId);
+      }
+      
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
       }
+      
       // Trigger cache cleanup
       audioManager.cleanupCache();
     };
-  }, []);
+  }, [songId, unregisterAudioElement]);
 
   const handleSeek = (e) => {
     const audio = audioRef.current;
