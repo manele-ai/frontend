@@ -6,6 +6,7 @@ import ExampleSongsList from '../components/ExampleSongsList';
 import ShareSongButton from '../components/ShareSongButton';
 import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
+import { useAudioState } from '../hooks/useAudioState';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 
 import { getDownloadURL, ref } from 'firebase/storage';
@@ -21,6 +22,9 @@ export default function ResultPage() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData, latestGenerationData, hasTimedOut } = useGlobalSongStatus();
+
+  // Use centralized audio state
+  const { playingSongId, playSong, stopSong } = useAudioState();
 
   const mounted = useRef(true);
   
@@ -66,7 +70,6 @@ export default function ResultPage() {
 
   const [songData, setSongData] = useState(null);
   const [songsData, setSongsData] = useState([]);
-  const [playingSongId, setPlayingSongId] = useState(null);
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -262,24 +265,14 @@ export default function ResultPage() {
     }
   };
 
-  // Handle play/pause for specific song
+  // Handle play/pause for specific song using centralized state
   const handlePlayPauseForSong = (songId) => {
     if (playingSongId === songId) {
-      // Dacă aceeași piesă este deja în play, o oprește
-      setPlayingSongId(null);
+      stopSong();
     } else {
-      // Dacă o piesă diferită este în play, o oprește pe cea veche și pornește pe cea nouă
-      setPlayingSongId(songId);
+      playSong(songId);
     }
   };
-
-
-
-
-
-
-  
-
 
   // Show error state
   if (error) {
@@ -460,6 +453,7 @@ export default function ResultPage() {
                   isPlaying={playingSongId === song.id}
                   onPlayPause={() => handlePlayPauseForSong(song.id)}
                   onError={(error) => setError(error)}
+                  songId={song.id}
                 />
               </div>
               

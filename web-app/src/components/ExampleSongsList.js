@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { styles } from '../data/stylesData';
+import { useAudioState } from '../hooks/useAudioState';
 import '../styles/ExampleSongsList.css';
 import LazyAudioPlayer from './LazyAudioPlayer';
 
@@ -8,64 +9,74 @@ const EXAMPLE_SONGS = [
     title: 'Manele Trapanele',
     artist: 'Manele AI',
     audioUrl: '/music/trapanele.mp3',
-    imageUrl: null,
+    style: 'trapanele',
   },
   {
     id: 'ex-2',
     title: 'Muzică Populară',
     artist: 'Manele AI',
     audioUrl: '/music/muzica-populara.mp3',
-    imageUrl: null,
+    style: 'populara',
   },
   {
     id: 'ex-3',
     title: 'Manele Orientale',
     artist: 'Manele AI',
     audioUrl: '/music/manele-orientale.mp3',
-    imageUrl: null,
+    style: 'orientale',
   },
   {
     id: 'ex-4',
     title: 'Manele Live',
     artist: 'Manele AI',
     audioUrl: '/music/manele-live.mp3',
-    imageUrl: null,
+    style: 'manele-live',
   },
   {
     id: 'ex-5',
     title: 'Manele de Pahar',
     artist: 'Manele AI',
     audioUrl: '/music/manele-de-pahar.mp3',
-    imageUrl: null,
+    style: 'de-pahar',
   },
   {
     id: 'ex-6',
     title: 'Manele de Opulență',
     artist: 'Manele AI',
     audioUrl: '/music/manele-de-opulenta.mp3',
-    imageUrl: null,
+    style: 'opulenta',
   },
   {
     id: 'ex-7',
     title: 'Lăutărești',
     artist: 'Manele AI',
     audioUrl: '/music/lautaresti.mp3',
-    imageUrl: null,
+    style: 'lautaresti',
   },
   {
     id: 'ex-8',
     title: 'Jale',
     artist: 'Manele AI',
     audioUrl: '/music/jale.mp3',
-    imageUrl: null,
+    style: 'jale',
   },
 ];
 
 const ExampleSongsList = () => {
-  const [currentPlayingId, setCurrentPlayingId] = useState(null);
+  // Use centralized audio state
+  const { playingSongId, playSong, stopSong } = useAudioState();
+
+  const getStyleImage = (styleValue) => {
+    const style = styles.find(s => s.value === styleValue);
+    return style ? style.image : null;
+  };
 
   const handlePlayPause = (songId) => {
-    setCurrentPlayingId((prev) => (prev === songId ? null : songId));
+    if (playingSongId === songId) {
+      stopSong();
+    } else {
+      playSong(songId);
+    }
   };
 
   return (
@@ -75,7 +86,13 @@ const ExampleSongsList = () => {
         {EXAMPLE_SONGS.map((song) => (
           <div key={song.id} className="exlist-card">
             <div className="exlist-left">
-              {/* <div className="exlist-cover" /> */}
+              <div className="exlist-cover">
+                <img 
+                  src={getStyleImage(song.style)} 
+                  alt={song.title}
+                  className="exlist-cover-image"
+                />
+              </div>
               <div className="exlist-info">
                 <div className="exlist-artist">{song.artist}</div>
                 <div className="exlist-name">{song.title}</div>
@@ -85,9 +102,10 @@ const ExampleSongsList = () => {
               <LazyAudioPlayer
                 audioUrl={song.audioUrl}
                 fallbackAudioUrl={song.audioUrl}
-                isPlaying={currentPlayingId === song.id}
+                isPlaying={playingSongId === song.id}
                 onPlayPause={() => handlePlayPause(song.id)}
                 onError={() => {}}
+                songId={song.id}
               />
             </div>
           </div>

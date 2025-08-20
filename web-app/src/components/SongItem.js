@@ -1,5 +1,5 @@
 import { getDownloadURL, ref } from 'firebase/storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { storage } from '../services/firebase';
 import '../styles/SongItem.css';
 import AudioPlayer from './AudioPlayer';
@@ -7,9 +7,10 @@ import AudioPlayer from './AudioPlayer';
 export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel }) {
   const [error, setError] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
+  const [isResolvingUrl, setIsResolvingUrl] = useState(false);
 
-  // Get the appropriate audio URL based on availability
-  const getAudioUrl = () => {
+  // Memoize the audio URL to prevent unnecessary re-computations
+  const rawAudioUrl = useMemo(() => {
     if (song.storage?.url) {
       return song.storage.url;
     }
@@ -21,34 +22,56 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       return song.apiData.streamAudioUrl;
     }
     return null;
-  };
+  }, [song?.storage?.url, song?.apiData?.audioUrl, song?.apiData?.streamAudioUrl]);
 
+  // Resolve audio URL with proper cleanup
   useEffect(() => {
-    const raw = getAudioUrl();
-    if (!raw) {
-      setAudioUrl(null);
-      return;
-    }
-
-    // Resolve gs:// URLs to temporary HTTPS URLs
+    let isMounted = true;
+    
     const resolveUrl = async () => {
+      if (!rawAudioUrl) {
+        if (isMounted) {
+          setAudioUrl(null);
+          setIsResolvingUrl(false);
+        }
+        return;
+      }
+
+      setIsResolvingUrl(true);
+      
       try {
-        if (raw.startsWith('gs://')) {
-          const storageRef = ref(storage, raw);
+        // Resolve gs:// URLs to temporary HTTPS URLs
+        if (rawAudioUrl.startsWith('gs://')) {
+          const storageRef = ref(storage, rawAudioUrl);
           const httpsUrl = await getDownloadURL(storageRef);
-          setAudioUrl(httpsUrl);
+          if (isMounted) {
+            setAudioUrl(httpsUrl);
+            setError(null);
+          }
         } else {
-          setAudioUrl(raw);
+          if (isMounted) {
+            setAudioUrl(rawAudioUrl);
+            setError(null);
+          }
         }
       } catch (e) {
-        setError('Failed to resolve audio URL');
-        setAudioUrl(null);
+        if (isMounted) {
+          setError('Failed to resolve audio URL');
+          setAudioUrl(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsResolvingUrl(false);
+        }
       }
     };
 
     resolveUrl();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [song?.storage?.url, song?.apiData?.audioUrl, song?.apiData?.streamAudioUrl]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [rawAudioUrl]);
 
   return (
     <div className="song-item song-row-layout">
@@ -74,11 +97,15 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
             isPlaying={isActive}
             onPlayPause={() => onPlayPause(song)}
             onError={setError}
+            songId={song.id}
           />
         </div>
       )}
-      {(!audioUrl) && (
+      {(!audioUrl && !isResolvingUrl) && (
         <p className="status-message">Piesa ta este aproape gata! Mai așteaptă puțin...</p>
+      )}
+      {isResolvingUrl && (
+        <p className="status-message">Se încarcă audio...</p>
       )}
       {error && isActive && (
         <div className="error-message">{error}</div>
