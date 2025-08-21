@@ -64,6 +64,7 @@ export async function generateLyrics(data : Requests.GenerateSong): Promise<{ ly
     // Extract the response text safely
     const responseText = findTextContentInResponse(chatgptResponse.data);
     logger.info("[OPENAI][generateLyrics] Found response text from OpenAI API");
+    logger.info("[OPENAI][generateLyrics] Response text: " + responseText);
     
     // Parse and validate the response format
     const lyrics = parseResponseText(responseText); 
