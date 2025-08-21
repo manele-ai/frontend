@@ -13,6 +13,7 @@ import { usePostHog } from 'posthog-js/react';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
+import { cleanupAudioOnAppUnmount, setupAudioVisibilityHandling } from './utils/audioCleanup';
 import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 import AuthPage from './pages/AuthPage';
@@ -55,6 +56,22 @@ function AppContent() {
       setupGlobalErrorHandling(posthog);
     }
   }, [posthog]);
+  
+  // Setup audio visibility handling for mobile
+  useEffect(() => {
+    const cleanupVisibility = setupAudioVisibilityHandling();
+    
+    return () => {
+      cleanupVisibility();
+    };
+  }, []);
+  
+  // Cleanup audio on app unmount
+  useEffect(() => {
+    return () => {
+      cleanupAudioOnAppUnmount();
+    };
+  }, []);
   
   // Track page views when location changes
   useEffect(() => {

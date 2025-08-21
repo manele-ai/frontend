@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAudioState } from '../hooks/useAudioState';
 import '../styles/SongItem.css';
 
-// Global audio manager to prevent multiple simultaneous playbacks
+// Enhanced AudioManager with better mobile support
 class AudioManager {
   constructor() {
     this.currentPlayer = null;
+    this.audioPool = new Map();
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   }
 
   setCurrentPlayer(player) {
-    // Pause previous player
     if (this.currentPlayer && this.currentPlayer !== player) {
       this.currentPlayer.pause();
     }
@@ -20,11 +23,47 @@ class AudioManager {
       this.currentPlayer = null;
     }
   }
+
+  getAudioElement(audioUrl) {
+    if (!this.audioPool.has(audioUrl)) {
+      const audio = new Audio();
+      audio.preload = 'metadata';
+      audio.crossOrigin = 'anonymous';
+      
+      // Mobile-specific settings
+      if (this.isMobile) {
+        audio.muted = false;
+      }
+      
+      this.audioPool.set(audioUrl, audio);
+    }
+    return this.audioPool.get(audioUrl);
+  }
+
+  disposeAudioElement(audioUrl) {
+    const audio = this.audioPool.get(audioUrl);
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+      audio.load();
+      this.audioPool.delete(audioUrl);
+    }
+  }
+
+  cleanup() {
+    this.audioPool.forEach((audio, url) => {
+      audio.pause();
+      audio.src = '';
+      audio.load();
+    });
+    this.audioPool.clear();
+    this.currentPlayer = null;
+  }
 }
 
 const audioManager = new AudioManager();
 
-export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError }) {
+export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError, songId }) {
   const audioRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -35,12 +74,13 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
   const [lastAudioUrl, setLastAudioUrl] = useState(null);
   const [isStablePlaying, setIsStablePlaying] = useState(false);
   const loadingTimeoutRef = useRef(null);
+  const isMountedRef = useRef(true);
+  
+  // Use centralized audio state
+  const { registerAudioElement, unregisterAudioElement, pauseAllExcept } = useAudioState();
   
   // Detect if we're using a stream URL
   const isStreamUrl = audioUrl?.includes('stream');
-  
-  // Detect Safari browser
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   
   // Debounced loading state setter
   const setLoadingWithDebounce = useCallback((loading) => {
@@ -49,37 +89,106 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     }
     
     loadingTimeoutRef.current = setTimeout(() => {
-      setIsLoading(loading);
-    }, isSafari ? 200 : 50); // Longer delay for Safari to prevent flickering
-  }, [isSafari]);
+      if (isMountedRef.current) {
+        setIsLoading(loading);
+      }
+    }, audioManager.isSafari ? 200 : 50);
+  }, []);
 
-  // Memoize the play function to prevent unnecessary re-renders
+  // Initialize audio element with improved lifecycle management
+  const initializeAudio = useCallback(() => {
+    if (!audioUrl) return null;
+    
+    // Check if we already have a valid audio element
+    if (audioRef.current && audioRef.current.src && audioRef.current.src.endsWith(audioUrl)) {
+      return audioRef.current;
+    }
+    
+    // Get or create audio element
+    const audio = audioManager.getAudioElement(audioUrl);
+    
+    // Reset audio element if source changed
+    if (audio.src && !audio.src.endsWith(audioUrl)) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.src = audioUrl;
+      audio.load();
+    } else if (!audio.src) {
+      audio.src = audioUrl;
+      audio.load();
+    }
+    
+    audioRef.current = audio;
+    
+    // Register with global state manager
+    if (songId) {
+      registerAudioElement(songId, audio);
+    }
+    
+    return audio;
+  }, [audioUrl, songId, registerAudioElement]);
+
+  // Enhanced play function with mobile support
   const playAudio = useCallback(async () => {
-    if (!audioRef.current || !isAudioLoaded) return;
+    const audio = audioRef.current || initializeAudio();
+    if (!audio || !isAudioLoaded) return;
     
     try {
-      audioManager.setCurrentPlayer({ pause: () => audioRef.current.pause() });
+      audioManager.setCurrentPlayer({ pause: () => audio.pause() });
       setLoadingWithDebounce(true);
-      await audioRef.current.play();
-      // Don't set loading to false here - let the audio events handle it
+      
+      // Mobile-specific handling
+      if (audioManager.isMobile) {
+        // Ensure audio context is resumed on mobile
+        if (audio.audioContext && audio.audioContext.state === 'suspended') {
+          await audio.audioContext.resume();
+        }
+        
+        // For iOS Safari, we need to handle autoplay restrictions
+        if (audioManager.isSafari) {
+          audio.playsInline = true;
+        }
+      }
+      
+      // Pause all other audio elements
+      if (songId) {
+        pauseAllExcept(songId);
+      }
+      
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+      }
+      
+      setError(null);
     } catch (err) {
       setLoadingWithDebounce(false);
-      const errorMsg = 'Nu s-a putut porni redarea. Încearcă din nou.';
-      setError(errorMsg);
-      onError?.(errorMsg);
+      
+      // Handle mobile-specific errors
+      if (err.name === 'NotAllowedError') {
+        const errorMsg = 'Trebuie să dai tap pe buton pentru a porni audio-ul';
+        setError(errorMsg);
+        onError?.(errorMsg);
+      } else {
+        const errorMsg = 'Nu s-a putut porni redarea. Încearcă din nou.';
+        setError(errorMsg);
+        onError?.(errorMsg);
+      }
     }
-  }, [isAudioLoaded, onError, setLoadingWithDebounce]);
+  }, [isAudioLoaded, onError, setLoadingWithDebounce, songId, pauseAllExcept, initializeAudio]);
 
-  // Memoize the pause function
+  // Enhanced pause function
   const pauseAudio = useCallback(() => {
-    if (!audioRef.current) return;
-    audioRef.current.pause();
-    audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
+    const audio = audioRef.current;
+    if (!audio) return;
+    
+    audio.pause();
+    audioManager.clearCurrentPlayer({ pause: () => audio.pause() });
     setLoadingWithDebounce(false);
     setIsStablePlaying(false);
   }, [setLoadingWithDebounce]);
 
-  // Handle audio URL changes
+  // Handle audio URL changes with proper cleanup
   useEffect(() => {
     if (!audioUrl || audioUrl === lastAudioUrl) return;
     
@@ -114,19 +223,23 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     }
   }, [isPlaying, isAudioLoaded, playAudio, pauseAudio]);
 
-  // Audio event listeners
+  // Audio event listeners with improved cleanup
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      if (!hasStartedPlaying && audio.currentTime > 0) {
-        setHasStartedPlaying(true);
+      if (isMountedRef.current) {
+        setCurrentTime(audio.currentTime);
+        if (!hasStartedPlaying && audio.currentTime > 0) {
+          setHasStartedPlaying(true);
+        }
       }
     };
 
     const handleLoadedMetadata = () => {
+      if (!isMountedRef.current) return;
+      
       if (!isStreamUrl) {
         setDuration(audio.duration);
       }
@@ -135,20 +248,25 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     };
 
     const handleCanPlay = () => {
-      setLoadingWithDebounce(false);
-      
-      if (isPlaying && isAudioLoaded) {
-        playAudio();
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        
+        if (isPlaying && isAudioLoaded) {
+          playAudio();
+        }
       }
     };
 
     const handleCanPlayThrough = () => {
-      setLoadingWithDebounce(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+      }
     };
 
     const handleWaiting = () => {
-      if (isSafari) {
-        // În Safari, să fim mai conservatori cu waiting - doar dacă nu suntem în playing stabil
+      if (!isMountedRef.current) return;
+      
+      if (audioManager.isSafari) {
         if (!isStablePlaying) {
           setLoadingWithDebounce(true);
         }
@@ -158,27 +276,33 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     };
 
     const handlePlaying = () => {
-      setLoadingWithDebounce(false);
-      setError(null);
-      setIsStablePlaying(true);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setError(null);
+        setIsStablePlaying(true);
+      }
     };
 
     const handlePause = () => {
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+      }
     };
 
     const handleEnded = () => {
-      audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
-      // Nu apela onPlayPause() automat când se termină audio-ul
-      // Lăsăm utilizatorul să decidă dacă vrea să pornească din nou
-      setCurrentTime(0);
-      setHasStartedPlaying(false);
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
+      if (isMountedRef.current) {
+        audioManager.clearCurrentPlayer({ pause: () => audio.pause() });
+        setCurrentTime(0);
+        setHasStartedPlaying(false);
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+      }
     };
 
     const handleError = (e) => {
+      if (!isMountedRef.current) return;
+      
       const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
       setError(errorMsg);
       setLoadingWithDebounce(false);
@@ -187,13 +311,16 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
     };
 
     const handleAbort = () => {
-      setLoadingWithDebounce(false);
-      setIsStablePlaying(false);
+      if (isMountedRef.current) {
+        setLoadingWithDebounce(false);
+        setIsStablePlaying(false);
+      }
     };
 
     const handleStalled = () => {
-      if (isSafari) {
-        // În Safari, să fim mai conservatori cu stalled - doar dacă nu suntem în playing stabil
+      if (!isMountedRef.current) return;
+      
+      if (audioManager.isSafari) {
         if (!isStablePlaying) {
           setLoadingWithDebounce(true);
         }
@@ -229,21 +356,30 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError 
       audio.removeEventListener('abort', handleAbort);
       audio.removeEventListener('stalled', handleStalled);
     };
-  }, [isPlaying, isAudioLoaded, playAudio, onPlayPause, onError, isStreamUrl]);
+  }, [isPlaying, isAudioLoaded, playAudio, onError, isStreamUrl, hasStartedPlaying, setLoadingWithDebounce]);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
+    
     return () => {
+      isMountedRef.current = false;
+      
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = '';
         audioManager.clearCurrentPlayer({ pause: () => audioRef.current.pause() });
       }
+      
+      if (songId) {
+        unregisterAudioElement(songId);
+      }
+      
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
       }
     };
-  }, []);
+  }, [songId, unregisterAudioElement]);
 
   const handleSeek = (e) => {
     if (isStreamUrl || !audioRef.current) return;
