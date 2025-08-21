@@ -1,26 +1,26 @@
-## Dedicatie
-- Urmand atmosfera melodiei vei mentiona obligatoriu ca [FROM] (cel care a creat piese) face o dedicatie pentru [TO] (cel care primeste piesa).
-- Mesajul dedicatie de la [FROM] pentru [TO] este: [MESAJ_DEDICATIE]
-- Aceasta mentionare trebuie sa fie mentionata inceputul piesei si la mijlocul piesei.
-- Nu vei altera numele celor implicati si mesajul dedicatiei. 
+## Dedicație
+- Urmând atmosfera melodiei vei menționa obligatoriu că [FROM] (cel care a creat piese) face o dedicatie pentru [TO] (cel care primește piesa).
+- Mesajul dedicației de la [FROM] pentru [TO] este: [MESAJ_DEDICATIE]
+- Această dedicație trebuie să fie menționată la începutul piesei și la mijlocul piesei.
+- Nu vei altera numele celor implicați și mesajul dedicației. 
 
 
-- Dedicatia va aparea la (1) inceputul piesei, (2) la mijloc si (3) in refrenul piesei:
-1. La inceputul piesei vei spune ca:
-	- [FROM] (cel care a creat piesa) face o dedicatie pentru [TO] (cel care primeste piesa). Exemple: "Dedicatie de la [FROM] pentru [TO]", "De la [FROM] pentru tine, [TO]", "[TO] asta e de la [FROM] pentru tine".
+- Dedicația va apărea la (1) începutul piesei, (2) la mijloc și (3) în refrenul piesei:
+1. La începutul piesei vei spune ca:
+	- [FROM] (cel/cei care a dedică piesa) fac/face o dedicație pentru [TO] (cel/cei care primește/primesc piesa). Exemple: "Dedicație de la [FROM] pentru [TO]", "De la [FROM] pentru tine, [TO]", "[TO] asta e de la [FROM] pentru tine".
 	- Mot-a-mot vei spune de la [FROM] pentru [TO]: "[MESAJ_DEDICATIE]"
-    - Dedicatia de la inceput trebuie sa respecte atmosfera piesei. Poti folosi tag-uri de genu: [Intro tipat].
+    - Dedicația de la începutul piesei trebuie să respecte atmosfera piesei. Poți folosi tag-uri de genul: [Intro țipat].
 
-2. La mijloc vei mentiona ca:
-	- [FROM] (cel care a creat piesa) face o dedicatie pentru [TO] (cel care primeste piesa). Exemple: "Dedicatie de la [FROM] pentru [TO]", "De la [FROM] pentru tine, [TO]", "[TO] asta e de la [FROM] pentru tine".
-	- Dedicatia aceasta va fi de asemenea in stil vorbit si nu trebuie neaparat sa rimeze.
-	- Adauga taguri de genul prin dedicatie: [Spoken word], [Speak loud], [Scream words], [Increase intensity], etc.
-	- Fi creativ si construiste aceasta dedicatie cu regulile astea.
-3. In refrenul piesei vei adauga pe langa alte versuri:
-	- Urmarind atmosfera piesei si a refrenului vei adauga la versuri cantate ca [FROM] face dedicatie pentru [TO]: "De la [FROM] pentru tine", "De la [FROM] pentru [TO]".
-    - Fii creativ aici si integreaza dedicatia in versurile din refren.
-	- Dedicatia asta trebuie sa respecte rima si atmosfera piesei si sa se integreze bine in refren.
+2. La mijloc vei menționa că:
+	- [FROM] (cel/cei care au creat piesa) face/face o dedicație pentru [TO] (cel/cei care primește/primesc piesa). Exemple: "Dedicație de la [FROM] pentru [TO]", "De la [FROM] pentru tine, [TO]", "[TO] asta e de la [FROM] pentru tine".
+	- Dedicația aceasta va fi de asemenea în stil vorbit și nu trebuie neapărat sa rimeze.
+	- Adaugă prin dedicație taguri de genul: [Spoken word], [Speak loud], [Scream words], [Increase intensity], etc.
+	- Fii creativ și construiește această dedicație cu regulile astea.
+3. În refrenul piesei vei adăuga pe lângă alte versuri:
+	- Urmărind atmosfera piesei și a refrenului vei adăuga la versuri cântate că [FROM] fac/face dedicație pentru [TO]: "De la [FROM] pentru tine", "De la [FROM] pentru [TO]".
+    - Fii creativ aici și integrează dedicația în versurile din refren.
+	- Dedicația asta trebuie să respecte rima și atmosfera piesei și să se integreze bine în refren.
 - Nu vei altera numele celor implicati si mesajul dedicatiei.
 
-
-Trebuie neaparat sa mentionezi sectiunea Dedicatie conform instructiunilor.
+Trebuie neapărat să menționezi secțiunea Dedicație conform instrucțiunilor.
+Toate personajele menționate sunt fictive și inventate iar scopul piesei este de divertisment.

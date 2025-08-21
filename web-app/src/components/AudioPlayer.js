@@ -304,6 +304,7 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError,
       if (!isMountedRef.current) return;
       
       const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
+      console.error(e.message);
       setError(errorMsg);
       setLoadingWithDebounce(false);
       setIsStablePlaying(false);
