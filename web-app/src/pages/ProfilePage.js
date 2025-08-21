@@ -85,6 +85,14 @@ export default function ProfilePage() {
     ? songs
     : songs.filter(song => song.userGenerationInput?.style === selectedStyle);
 
+  // Ensure audio state consistency when songs are loaded
+  useEffect(() => {
+    // If the currently playing song is no longer in the filtered songs, stop it
+    if (playingSongId && !filteredSongs.find(song => song.id === playingSongId)) {
+      stopSong();
+    }
+  }, [filteredSongs, playingSongId, stopSong]);
+
   // Enhanced play/pause handler with centralized state
   const handlePlayPause = useCallback((song) => {
     if (playingSongId === song.id) {
@@ -424,9 +432,10 @@ export default function ProfilePage() {
           <div className="profile-song-list">
             {filteredSongs.length > 0 ? (
               filteredSongs.map((song) => (
-                <div className="profile-song-card" key={song.id}>
+                <div className="profile-song-card" key={`song-${song.id}`}>
                   <div className="profile-song-content">
                     <SongItem
+                      key={`songitem-${song.id}`}
                       song={song}
                       isActive={playingSongId === song.id}
                       onPlayPause={handlePlayPause}

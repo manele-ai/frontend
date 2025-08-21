@@ -37,6 +37,12 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
         return;
       }
 
+      // Don't resolve if we already have the same URL
+      if (audioUrl === rawAudioUrl) {
+        setIsResolvingUrl(false);
+        return;
+      }
+
       setIsResolvingUrl(true);
       
       try {
@@ -71,7 +77,7 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
     return () => {
       isMounted = false;
     };
-  }, [rawAudioUrl]);
+  }, [rawAudioUrl, audioUrl]);
 
   return (
     <div className="song-item song-row-layout">
@@ -93,6 +99,7 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       {audioUrl && (
         <div className="song-playback-inline song-playback-left">
           <AudioPlayer
+            key={`audio-${song.id}-${audioUrl}`}
             audioUrl={audioUrl}
             isPlaying={isActive}
             onPlayPause={() => onPlayPause(song)}
