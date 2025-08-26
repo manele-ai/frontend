@@ -83,8 +83,8 @@ export function useLeaderboardData() {
           const usersRef = collection(db, 'usersPublic');
           const q = query(
             usersRef,
-            where('stats.creditsBalance', '<', 500),
-            orderBy('stats.creditsBalance', 'asc'),
+            where('creditsBalance', '<', 500),
+            orderBy('creditsBalance', 'asc'),
             orderBy(`stats.${fieldName}`, 'desc'), 
             limit(10)
           );
