@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
 
@@ -82,7 +82,8 @@ export function useLeaderboardData() {
         const fetchAllTimeStats = async (fieldName) => {
           const usersRef = collection(db, 'usersPublic');
           const q = query(
-            usersRef, 
+            usersRef,
+            where('stats.creditsBalance', '<', 500),
             orderBy(`stats.${fieldName}`, 'desc'), 
             limit(10)
           );
