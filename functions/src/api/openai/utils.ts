@@ -1,3 +1,24 @@
+export interface ChatCompletionMessage {
+  role: string;
+  content: string | null;
+}
+
+export interface ChatCompletionResponse {
+  choices: {
+    message: ChatCompletionMessage;
+  }[];
+}
+
+export function findTextContentInResponse(response: ChatCompletionResponse): string {
+  if (response.choices && response.choices.length > 0) {
+    const message = response.choices[0].message;
+    if (message && message.content) {
+      return message.content;
+    }
+  }
+  throw new Error("No text content found in OpenAI response");
+}
+
 export function formatMoneyRON(value: number): string {
     if (!Number.isInteger(value) || value <= 0) {
       throw new Error("Value must be a positive integer");
@@ -62,5 +83,5 @@ export function formatMoneyRON(value: number): string {
       : "milioane";
   
     return `${countWord} ${millionWord}`;
-  }
+}
   

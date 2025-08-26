@@ -8,15 +8,15 @@ process.chdir(path.join(__dirname, '../functions/src'));
 
 // Sample data to generate prompts
 const sampleData: Requests.GenerateSong = {
-  title: "Ksamil venim", //"[TITLE]",
+  title: "Muie Mihnea", //"[TITLE]",
   style: "", // will be filled in for each style
-  from: "", //"[FROM]",
-  to: "", //"[TO]",
-  dedication: "", //"[MESAJ_DEDICATIE]",
-  wantsDedication: false,
+  from: "Radone", //"[FROM]",
+  to: "Mihnea", //"[TO]",
+  dedication: "Muie Mihnea!", //"[MESAJ_DEDICATIE]",
+  wantsDedication: true,
   wantsDonation: false,
   donationAmount: 0,
-  lyricsDetails: "Albania venim retarzii sunt pe drum, Răzvan, Robert și Andreea și nu ultimul dar cel din urmă grec, Alexandros. Ne am îmbătat, ne am distrat, a venit managerul să ne dea afară și Răzvan aka retard with document i a spus go to homeb", //"[DETALII]"
+  lyricsDetails: "Mihnea e mare spritza si cand se imbata o ia in gura", //"[DETALII]"
 };
 
 // Get all style directories
