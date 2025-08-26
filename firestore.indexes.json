@@ -45,7 +45,7 @@
       "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "creditsBalance", "order": "ASCENDING" },
         { "fieldPath": "stats.numSongsGenerated", "order": "DESCENDING" }
       ]
     },
@@ -53,7 +53,7 @@
       "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "creditsBalance", "order": "ASCENDING" },
         { "fieldPath": "stats.numDedicationsGiven", "order": "DESCENDING" }
       ]
     },
@@ -61,7 +61,7 @@
       "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "creditsBalance", "order": "ASCENDING" },
         { "fieldPath": "stats.sumDonationsTotal", "order": "DESCENDING" }
       ]
     }
