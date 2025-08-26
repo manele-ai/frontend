@@ -42,7 +42,7 @@
       ]
     },
     {
-      "collectionGroup": "usersPublic",
+      "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
@@ -50,7 +50,7 @@
       ]
     },
     {
-      "collectionGroup": "usersPublic",
+      "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
@@ -58,7 +58,7 @@
       ]
     },
     {
-      "collectionGroup": "usersPublic",
+      "collectionId": "usersPublic",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
