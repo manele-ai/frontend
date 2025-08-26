@@ -8,15 +8,15 @@ process.chdir(path.join(__dirname, '../functions/src'));
 
 // Sample data to generate prompts
 const sampleData: Requests.GenerateSong = {
-  title: "Mihnea printul", //"[TITLE]",
+  title: "Ksamil venim", //"[TITLE]",
   style: "", // will be filled in for each style
-  from: "Radone", //"[FROM]",
-  to: "Mihnea printul", //"[TO]",
-  dedication: "Te pup sefule spor la bani!", //"[MESAJ_DEDICATIE]",
-  wantsDedication: true,
-  wantsDonation: true,
-  donationAmount: 1000,
-  lyricsDetails: "Mihnea printul este cel mai smeker Constantean si a mostenit un imperiu de doctori", //"[DETALII]"
+  from: "", //"[FROM]",
+  to: "", //"[TO]",
+  dedication: "", //"[MESAJ_DEDICATIE]",
+  wantsDedication: false,
+  wantsDonation: false,
+  donationAmount: 0,
+  lyricsDetails: "Albania venim retarzii sunt pe drum, Răzvan, Robert și Andreea și nu ultimul dar cel din urmă grec, Alexandros. Ne am îmbătat, ne am distrat, a venit managerul să ne dea afară și Răzvan aka retard with document i a spus go to homeb", //"[DETALII]"
 };
 
 // Get all style directories
@@ -48,26 +48,17 @@ styles.forEach(style => {
     
     // Generate the prompts using existing functions
     const { systemPrompt, userPrompt } = buildLyricsPrompts(styleData);
-    
-    // Create the full output
-    const output = `# ${style.toUpperCase()} Style Prompts
-
-## System Prompt
-\`\`\`
-${systemPrompt}
-\`\`\`
-
-## User Prompt
-\`\`\`
-${userPrompt}
-\`\`\`
-`;
-    
+      
     // Write to file
-    const outputPath = path.join(outputDir, `${style}.md`);
-    fs.writeFileSync(outputPath, output, 'utf8');
-    
-    console.log(`Generated prompt file for ${style} at ${outputPath}`);
+    const outPathSystemPrompt = path.join(outputDir, style, 'SYSTEM_PROMPT.md');
+    fs.mkdirSync(path.join(outputDir, style), { recursive: true });
+    fs.writeFileSync(outPathSystemPrompt, systemPrompt, 'utf8');
+
+    const outPathUserPrompt = path.join(outputDir, style, 'USER_PROMPT.md');
+    fs.mkdirSync(path.join(outputDir, style), { recursive: true });
+    fs.writeFileSync(outPathUserPrompt, userPrompt, 'utf8');
+
+    console.log(`Generated prompt file for ${style} at ${outPathSystemPrompt} + ${outPathUserPrompt}`);
   } catch (error) {
     console.error(`Error generating prompts for style ${style}:`, error);
   }
