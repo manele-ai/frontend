@@ -34,11 +34,19 @@
       ]
     },
     {
-      "collectionGroup": "generationRequests",
+      "collectionId": "generationRequests",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionId": "generationRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "createdAt", "order": "DESCENDING" },
+        { "fieldPath": "userId", "order": "DESCENDING" }
       ]
     },
     {
