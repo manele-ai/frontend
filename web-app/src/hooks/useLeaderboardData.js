@@ -84,6 +84,7 @@ export function useLeaderboardData() {
           const q = query(
             usersRef,
             where('stats.creditsBalance', '<', 500),
+            orderBy('stats.creditsBalance', 'asc'),
             orderBy(`stats.${fieldName}`, 'desc'), 
             limit(10)
           );
