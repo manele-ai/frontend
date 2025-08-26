@@ -71,6 +71,9 @@ export const createUserIfNotExists = onCall(
           numDedicationsGiven: 0,
           sumDonationsTotal: 0,
         },
+        creditsBalance: 0,
+        dedicationBalance: 0,
+        aruncaCuBaniBalance: 0,
       };
 
       const userPublicData: Database.UserPublic = {
@@ -83,6 +86,9 @@ export const createUserIfNotExists = onCall(
           numDedicationsGiven: 0,
           sumDonationsTotal: 0,
         },
+        creditsBalance: 0,
+        dedicationBalance: 0,
+        aruncaCuBaniBalance: 0,
       };
 
       // Write both docs atomically within transaction
