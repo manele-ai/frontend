@@ -32,6 +32,38 @@
         { "fieldPath": "externalStatus", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "generationRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "usersPublic",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "stats.numSongsGenerated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "usersPublic",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "stats.numDedicationsGiven", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "usersPublic",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stats.creditsBalance", "order": "ASCENDING" },
+        { "fieldPath": "stats.sumDonationsTotal", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

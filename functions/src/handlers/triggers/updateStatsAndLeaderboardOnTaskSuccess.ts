@@ -76,6 +76,12 @@ export const updateStatsAndLeaderboardOnTaskSuccess = onDocumentWritten(
         return;
       }
 
+      const userData = userDoc.data() as Database.User;
+      if (userData.creditsBalance && userData.creditsBalance > 500) {
+        logger.info(`User ${taskStatusAfter.userId} has more than 1000 credits, skipping stats update`);
+        return;
+      }
+
       await db.runTransaction(async (transaction) => {
         const taskStatusDoc = await transaction.get(taskStatuskRef);
         if (!taskStatusDoc.exists) {
