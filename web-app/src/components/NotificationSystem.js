@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import '../styles/NotificationSystem.css';
+import SoundWave from './ui/SoundWave';
 
 const NotificationIcon = ({ type }) => {
   const icons = {
@@ -14,7 +15,7 @@ const NotificationIcon = ({ type }) => {
   return (
     <div className={`notification-icon notification-icon-${type}`}>
       {type === 'loading' ? (
-        <span className="loading-spinner">{icons[type]}</span>
+        <SoundWave size="medium" color="#FFF" speed={1.2} bars={6} />
       ) : (
         <span>{icons[type]}</span>
       )}
