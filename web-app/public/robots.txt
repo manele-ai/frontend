@@ -1,3 +1,56 @@
 # https://www.robotstxt.org/robotstxt.html
+# SEO-Optimized robots.txt for Manele IO
+
+# Allow all search engines
 User-agent: *
-Disallow:
+
+# Allow important content pages
+Allow: /
+Allow: /generate
+Allow: /exemple
+Allow: /leaderboard
+Allow: /tarife
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+
+# Disallow technical and unnecessary files
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /build/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /scripts/
+Disallow: /src/
+Disallow: /webpack/
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.map$
+Disallow: /*.txt$
+Disallow: /*.xml$
+Disallow: /*.json$
+Disallow: /*.ico$
+Disallow: /*.png$
+Disallow: /*.jpg$
+Disallow: /*.jpeg$
+Disallow: /*.gif$
+Disallow: /*.svg$
+Disallow: /*.woff$
+Disallow: /*.woff2$
+Disallow: /*.ttf$
+Disallow: /*.eot$
+
+# Allow specific asset types that might be important for SEO
+Allow: /photos/
+Allow: /music/
+Allow: /icons/
+Allow: /backgrounds/
+
+# Sitemap location for efficient crawling
+Sitemap: https://manele.io/sitemap.xml
+
+# Crawl delay for server optimization
+Crawl-delay: 1
+
+# Additional SEO directives
+# Host: https://manele.io
