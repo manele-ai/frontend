@@ -39,27 +39,17 @@ class GlobalAudioStateManager {
 
   pauseAllExcept(songId) {
     this.audioElements.forEach((audioElement, id) => {
-      if (id !== songId && audioElement && typeof audioElement.pause === 'function') {
-        try {
-          if (!audioElement.paused) {
-            audioElement.pause();
-          }
-        } catch (error) {
-          console.error('Error pausing audio element:', error);
-        }
+      if (id !== songId && audioElement && !audioElement.paused) {
+        audioElement.pause();
       }
     });
   }
 
   cleanup() {
     this.audioElements.forEach((audioElement) => {
-      if (audioElement && typeof audioElement.pause === 'function') {
-        try {
-          audioElement.pause();
-          audioElement.src = '';
-        } catch (error) {
-          console.error('Error cleaning up audio element:', error);
-        }
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
       }
     });
     this.audioElements.clear();
