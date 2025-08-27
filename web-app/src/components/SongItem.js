@@ -2,6 +2,7 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { useEffect, useMemo, useState } from 'react';
 import { storage } from '../services/firebase';
 import '../styles/SongItem.css';
+import audioDebugger from '../utils/audioDebugger';
 import AudioPlayer from './AudioPlayer';
 
 export default function SongItem({ song, isActive, onPlayPause, onDownload, styleLabel }) {
@@ -11,6 +12,7 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
 
   // Memoize the audio URL to prevent unnecessary re-computations
   const rawAudioUrl = useMemo(() => {
+    // Priority order: permanent URL > temporary stream URL
     if (song.storage?.url) {
       return song.storage.url;
     }
@@ -18,7 +20,7 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       return song.apiData.audioUrl;
     }
     if (song.apiData?.streamAudioUrl) {
-      console.log("song.apiData.streamAudioUrl", song.apiData.streamAudioUrl);
+      console.log("Using stream URL:", song.apiData.streamAudioUrl);
       return song.apiData.streamAudioUrl;
     }
     return null;
@@ -46,21 +48,33 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       setIsResolvingUrl(true);
       
       try {
+        // Debug URL resolution
+        console.log(`🔗 [${song.id}] Resolving URL:`, rawAudioUrl);
+        
         // Resolve gs:// URLs to temporary HTTPS URLs
         if (rawAudioUrl.startsWith('gs://')) {
           const storageRef = ref(storage, rawAudioUrl);
           const httpsUrl = await getDownloadURL(storageRef);
           if (isMounted) {
+            console.log(`✅ [${song.id}] Resolved to:`, httpsUrl);
             setAudioUrl(httpsUrl);
             setError(null);
+            
+            // Test URL accessibility
+            audioDebugger.testAudioUrl(httpsUrl);
           }
         } else {
           if (isMounted) {
+            console.log(`✅ [${song.id}] Using direct URL:`, rawAudioUrl);
             setAudioUrl(rawAudioUrl);
             setError(null);
+            
+            // Test URL accessibility
+            audioDebugger.testAudioUrl(rawAudioUrl);
           }
         }
       } catch (e) {
+        console.error(`❌ [${song.id}] Error resolving audio URL:`, e);
         if (isMounted) {
           setError('Failed to resolve audio URL');
           setAudioUrl(null);
@@ -99,7 +113,7 @@ export default function SongItem({ song, isActive, onPlayPause, onDownload, styl
       {audioUrl && (
         <div className="song-playback-inline song-playback-left">
           <AudioPlayer
-            key={`audio-${song.id}-${audioUrl}`}
+            key={`audio-${song.id}`}
             audioUrl={audioUrl}
             isPlaying={isActive}
             onPlayPause={() => onPlayPause(song)}
