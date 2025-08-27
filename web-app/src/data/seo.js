@@ -6,10 +6,10 @@
 export const SEO_CONFIG = {
   // Default/Home page metadata
   home: {
-    title: 'Manele IO - Generează Muzică Personalizată cu AI',
+    title: 'Manele IO - Generează Manele cu AI',
     description: 'Creează manele personalizate cu AI. Începe să creezi acum!',
     keywords: 'manele, generează manele, generate manele, generează, generate, muzică românească, AI, generare muzică, versuri personalizate, melodii, muzică personalizată, România',
-    ogTitle: 'Manele IO - Generează Muzică Personalizată cu AI',
+    ogTitle: 'Manele IO - Generează Manele cu AI',
     ogDescription: 'Creează manele personalizate cu AI. Începe să creezi acum!',
     ogImage: '/photos/HeroSectionHomePage.jpeg',
     ogUrl: 'https://manele.io',
@@ -29,7 +29,7 @@ export const SEO_CONFIG = {
 
   // Generate page metadata
   generate: {
-    title: 'Generează Muzică - Manele IO',
+    title: 'Generează Manele - Manele IO',
     description: 'Alege stilul muzical și generează muzică personalizată cu AI. Stiluri disponibile: manele livem de pahar, jale, lautărești, opulentă, orientală, muzică populară, trapanele.',
     keywords: 'manele, generează manele, generate manele, generează, generate, muzică românească, AI, generare muzică, versuri personalizate, melodii, muzică personalizată, România, generează muzică, AI muzică, stiluri muzicale, manele personalizate, versuri AI, melodii AI',
     ogTitle: 'Generează Muzică Personalizată - Manele IO',
@@ -48,7 +48,7 @@ export const SEO_CONFIG = {
 
   // Leaderboard page metadata
   leaderboard: {
-    title: 'Topul Utilizatorilor - Manele IO',
+    title: 'Topul Maneliștilor - Manele IO',
     description: 'Vezi topul utilizatorilor cu cele mai multe generări de muzică. Competiție și clasament pentru creatorii de muzică.',
     keywords: 'manele, top utilizatori, clasament, competiție, generări muzică, ranking, muzică',
     ogTitle: 'Topul Utilizatorilor - Manele IO',
@@ -82,17 +82,17 @@ export const SEO_CONFIG = {
 
   // Profile page metadata
   profile: {
-    title: 'Profil Utilizator - Manele IO',
+    title: 'Profilul Meu - Manele IO',
     description: 'Gestionează profilul tău, vezi istoricul generărilor și setează preferințele pentru generarea de muzică.',
     keywords: 'profil utilizator, cont, setări, istoric generări, preferințe',
-    ogTitle: 'Profil Utilizator - Manele IO',
+    ogTitle: 'Profilul Meu - Manele IO',
     ogDescription: 'Gestionează profilul tău și preferințele pentru generarea de muzică.',
     ogImage: '/photos/user.png',
     ogUrl: 'https://manele.io/profile',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'ProfilePage',
-      name: 'Profil Utilizator Manele IO',
+      name: 'Profilul Meu Manele IO',
       description: 'Pagina de profil pentru utilizatorii platformei'
     }
   },
@@ -133,7 +133,7 @@ export const SEO_CONFIG = {
 
   // Auth page metadata
   auth: {
-    title: 'Autentificare - Manele IO',
+    title: 'Login - Manele IO',
     description: 'Conectează-te sau creează un cont pentru a începe să generezi muzică personalizată cu AI.',
     keywords: 'autentificare, login, înregistrare, cont utilizator, conectare',
     ogTitle: 'Autentificare - Manele IO',
