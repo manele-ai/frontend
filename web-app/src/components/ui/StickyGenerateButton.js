@@ -33,7 +33,7 @@ export default function StickyGenerateButton() {
   }, [isDesktop]);
 
   const handleClick = () => {
-    navigate('/select-style');
+    navigate('/generate');
   };
 
   if (!isDesktop) return null;

@@ -486,7 +486,7 @@ export default function ProfilePage() {
       <div className="profile-button-container">
             <button
               className="action-button hero-btn"
-              onClick={() => navigate('/select-style')}
+              onClick={() => navigate('/generate')}
             >
               <span className="hero-btn-text">Generează manea</span>
             </button>
