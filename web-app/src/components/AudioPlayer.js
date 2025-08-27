@@ -1,14 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAudioState } from '../hooks/useAudioState';
 import '../styles/SongItem.css';
+import audioDebugger from '../utils/audioDebugger';
 
-// Enhanced AudioManager with better mobile support
+// Enhanced AudioManager with better mobile support and improved caching
 class AudioManager {
   constructor() {
     this.currentPlayer = null;
     this.audioPool = new Map();
     this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    this.cleanupInterval = null;
+    
+    // Start cleanup interval
+    this.startCleanupInterval();
+  }
+
+  startCleanupInterval() {
+    // Clean up unused audio elements every 2 minutes
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupUnusedAudio();
+    }, 2 * 60 * 1000);
+  }
+
+  cleanupUnusedAudio() {
+    this.audioPool.forEach((audio, url) => {
+      if (audio.paused && audio.currentTime === 0 && !audio.src) {
+        audio.src = '';
+        this.audioPool.delete(url);
+      }
+    });
   }
 
   setCurrentPlayer(player) {
@@ -25,19 +46,36 @@ class AudioManager {
   }
 
   getAudioElement(audioUrl) {
-    if (!this.audioPool.has(audioUrl)) {
-      const audio = new Audio();
-      audio.preload = 'metadata';
-      audio.crossOrigin = 'anonymous';
-      
-      // Mobile-specific settings
-      if (this.isMobile) {
-        audio.muted = false;
+    if (!audioUrl) return null;
+    
+    // Check if we already have an audio element for this URL
+    if (this.audioPool.has(audioUrl)) {
+      const audio = this.audioPool.get(audioUrl);
+      // Verify the audio element is still valid
+      if (audio && audio.src && audio.src.endsWith(audioUrl)) {
+        return audio;
+      } else {
+        // Remove invalid audio element
+        this.audioPool.delete(audioUrl);
       }
-      
-      this.audioPool.set(audioUrl, audio);
     }
-    return this.audioPool.get(audioUrl);
+    
+    // Create new audio element
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.crossOrigin = 'anonymous';
+    
+    // Mobile-specific settings
+    if (this.isMobile) {
+      audio.muted = false;
+    }
+    
+    // Set the source immediately
+    audio.src = audioUrl;
+    audio.load();
+    
+    this.audioPool.set(audioUrl, audio);
+    return audio;
   }
 
   disposeAudioElement(audioUrl) {
@@ -51,6 +89,11 @@ class AudioManager {
   }
 
   cleanup() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    
     this.audioPool.forEach((audio, url) => {
       audio.pause();
       audio.src = '';
@@ -99,26 +142,15 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError,
   const initializeAudio = useCallback(() => {
     if (!audioUrl) return null;
     
-    // Check if we already have a valid audio element
-    if (audioRef.current && audioRef.current.src && audioRef.current.src.endsWith(audioUrl)) {
-      return audioRef.current;
-    }
-    
     // Get or create audio element
     const audio = audioManager.getAudioElement(audioUrl);
-    
-    // Reset audio element if source changed
-    if (audio.src && !audio.src.endsWith(audioUrl)) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.src = audioUrl;
-      audio.load();
-    } else if (!audio.src) {
-      audio.src = audioUrl;
-      audio.load();
-    }
+    if (!audio) return null;
     
     audioRef.current = audio;
+    
+    // Debug audio element
+    audioDebugger.validateAudioElement(audio);
+    audioDebugger.monitorAudioEvents(audio, songId);
     
     // Register with global state manager
     if (songId) {
@@ -303,8 +335,28 @@ export default function AudioPlayer({ audioUrl, isPlaying, onPlayPause, onError,
     const handleError = (e) => {
       if (!isMountedRef.current) return;
       
-      const errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
-      console.error(e.message);
+      console.error('Audio error:', e);
+      
+      let errorMsg = 'Eroare la redarea audio. Verifică conexiunea la internet.';
+      
+      // Provide more specific error messages
+      if (e.target && e.target.error) {
+        const error = e.target.error;
+        switch (error.code) {
+          case MediaError.MEDIA_ERR_NETWORK:
+            errorMsg = 'Eroare de rețea. Verifică conexiunea la internet.';
+            break;
+          case MediaError.MEDIA_ERR_DECODE:
+            errorMsg = 'Fișierul audio nu poate fi redat.';
+            break;
+          case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            errorMsg = 'Formatul audio nu este suportat.';
+            break;
+          default:
+            errorMsg = 'Eroare la redarea audio. Încearcă din nou.';
+        }
+      }
+      
       setError(errorMsg);
       setLoadingWithDebounce(false);
       setIsStablePlaying(false);
