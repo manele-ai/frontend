@@ -12,6 +12,10 @@ const Footer = () => {
     navigate('/privacy-policy');
   };
 
+  const handleFeedbackClick = () => {
+    navigate('/feedback');
+  };
+
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -32,6 +36,13 @@ const Footer = () => {
               onClick={handlePrivacyClick}
             >
               Politica de confidentialitate
+            </span>
+            {' | '}
+            <span 
+              className="footer-link" 
+              onClick={handleFeedbackClick}
+            >
+              Feedback
             </span>
           </div>
           <div className="footer-copyright">
