@@ -70,8 +70,8 @@ export default function Header() {
             <span className="desktop-nav-text">ACASA</span>
           </button>
           <button 
-            className={`desktop-nav-btn generate-btn ${isActive('/select-style') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/select-style')}
+            className={`desktop-nav-btn generate-btn ${isActive('/generate') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/generate')}
           >
             <span className="desktop-nav-text">GENEREAZA</span>
           </button>
@@ -111,8 +111,8 @@ export default function Header() {
         
         <div ref={menuRef} className={`mobile-dropdown ${isMenuOpen ? 'open' : ''}`}>
           <button 
-            className={`mobile-nav-btn generate-nav-btn ${isActive('/select-style') ? 'active' : ''}`}
-            onClick={() => handleNavigation('/select-style')}
+            className={`mobile-nav-btn generate-nav-btn ${isActive('/generate') ? 'active' : ''}`}
+            onClick={() => handleNavigation('/generate')}
           >
                 <span className="mobile-nav-text">
                 <span className="nav-emoji">💎</span>

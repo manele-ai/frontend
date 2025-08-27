@@ -497,7 +497,7 @@ export default function ResultPage() {
         <Button
           className="hero-btn"
           style={{ marginTop: 20 }}
-          onClick={() => navigate('/select-style')}
+          onClick={() => navigate('/generate')}
         >
           <span className="hero-btn-text gen-btn">Generează manea nouă</span>
         </Button>

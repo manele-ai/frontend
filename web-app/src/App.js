@@ -10,6 +10,7 @@ import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
 // import Marquee from './components/ui/Marquee';
 import { usePostHog } from 'posthog-js/react';
+import { SEOManager } from './components/seo';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
@@ -17,7 +18,6 @@ import { cleanupAudioOnAppUnmount, setupAudioVisibilityHandling } from './utils/
 import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 import AuthPage from './pages/AuthPage';
-import ExemplePage from './pages/ExemplePage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
@@ -44,7 +44,7 @@ function App() {
 function AppContent() {
   // Initialize global song status monitoring
   useGlobalSongStatus();
-  
+    
   // Initialize PostHog tracking
   const { trackPageView } = usePostHogTracking();
   const posthog = usePostHog();
@@ -80,17 +80,18 @@ function AppContent() {
   }, [location.pathname, trackPageView]);
 
   return (
-    <div className="App">
-      <Header />
-      {/* <Marquee /> */}
-      <NotificationSystem />
-      <CookieConsent />
+    <>
+      {/* SEO metadata is now handled by SEOManager component */}
+      <SEOManager />
+      <div className="App">
+        <Header />
+        {/* <Marquee /> */}
+        <NotificationSystem />
+        <CookieConsent />
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="/exemple" element={<ExemplePage />} />
-        <Route path="/select-style" element={<GeneratePage />} />
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/tarife" element={<TarifePage />} />
@@ -118,7 +119,8 @@ function AppContent() {
       <StickyGenerateButton />
       <BottomMenu />
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }
 
