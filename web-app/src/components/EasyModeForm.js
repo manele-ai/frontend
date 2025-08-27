@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePostHogTracking } from 'utils/posthog';
 import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
@@ -19,6 +20,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   const { user, isAuthenticated } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
+  const { captureGenerateClick, captureSongGenerationStarted } = usePostHogTracking();
 
   // State pentru Easy Mode
   const [selectedStyle, setSelectedStyle] = useState(preSelectedStyle || null);
@@ -220,6 +222,15 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
       };
 
       const response = await createGenerationRequest(params);
+
+      captureSongGenerationStarted({
+        style: selectedStyle,
+        hasLyricsDetails: false,
+        hasDedication: false,
+        hasDonation: false,
+        mode: 'easy',
+        price: calculatePrice()
+      });
       
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] EasyMode: Creare notificare loading cu requestId:', response.requestId);
@@ -279,6 +290,8 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   };
 
   const handleGenerateOrGoToPay = async () => {
+    captureGenerateClick('easy');
+
     setHasAttemptedSubmit(true);
 
     const basicValidation = !selectedStyle || !songName.trim();

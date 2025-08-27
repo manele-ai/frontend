@@ -45,15 +45,5 @@ if (useEmulators) {
     console.log('⚠️ Emulators already connected or not available:', error.message);
   }
 } else {
-  console.log('🚀 Using Firebase Production Services');
-  console.log('Production config:', {
-    projectId: firebaseConfig.projectId,
-    authDomain: firebaseConfig.authDomain,
-    NODE_ENV: process.env.NODE_ENV,
-    hostname: window.location.hostname
-  });
+  console.log('🚀 Using Production Services');
 }
-
-console.log('Firebase initialized with project:', firebaseConfig.projectId);
-console.log('Using emulators:', useEmulators);
-console.log('Auth domain:', firebaseConfig.authDomain); 

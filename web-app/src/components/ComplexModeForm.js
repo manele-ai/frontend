@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePostHogTracking } from 'utils/posthog';
 import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
@@ -77,6 +78,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
+  const { captureGenerateClick, captureSongGenerationStarted } = usePostHogTracking();
   
   // State pentru player-ele de exemplu
   const [activeDedicationPlayer, setActiveDedicationPlayer] = useState(false);
@@ -345,6 +347,15 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
         mode: 'hard'
       };
       const response = await createGenerationRequest(params);
+
+      captureSongGenerationStarted({
+        style: selectedStyle,
+        hasLyricsDetails: !!songDetails,
+        hasDedication: wantsDedication,
+        hasDonation: wantsDonation,
+        mode: 'hard',
+        price: calculatePrice()
+      });
       
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] ComplexMode: Creare notificare loading cu requestId:', response.requestId);
@@ -404,6 +415,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   };
 
   const handleGenerateOrGoToPay = async () => {
+    captureGenerateClick('complex');
+
     setHasAttemptedSubmit(true);
 
     const basicValidation = !selectedStyle || !songName.trim();
