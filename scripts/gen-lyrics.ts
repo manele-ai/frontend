@@ -62,12 +62,10 @@ async function generateLyrics(options: GenerateLyricsOptions): Promise<string> {
         { role: "system", content: prompts.systemPrompt },
         { role: "user", content: prompts.userPrompt }
       ],
-    //   temperature: 1.0,
-    //   max_tokens: 1000,
-    reasoning: {
-        "effort": "minimal",
-        "summary": "auto",
-    },
+      reasoning: {
+          "effort": "minimal",
+          "summary": "auto",
+      },
     });
     const content = response.output_text;
     if (!content) {
