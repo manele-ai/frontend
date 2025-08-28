@@ -4,11 +4,13 @@
   "description": "Scripts for manele.ai project",
   "scripts": {
     "get-prompts": "ts-node get-prompts.ts",
-    "gen-lyrics": "ts-node gen-lyrics.ts"
+    "gen-lyrics": "ts-node gen-lyrics.ts",
+    "fix-billing-stripe": "ts-node fix-billing-stripe.ts"
   },
   "dependencies": {
     "dotenv": "^16.5.0",
     "openai": "5.16.0",
+    "stripe": "^18.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
