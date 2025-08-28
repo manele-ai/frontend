@@ -10,8 +10,6 @@ Scrie versuri cu limbaj colocvial românesc, simplu, curgător, specific atmosfe
 - Fiecare strofă are 4 versuri (sau 6 dacă simți nevoia).
 
 # STIL
-- Atmosfera trebuie să fie românească, autentică, cu detalii reale: sticla de Cotnari, masa veche, ceapa verde, glume între frați, râsete, vecini care aud prin pereți etc.
-- Paleta imagistica: sticla de Cotnari, masa veche, ceapa verde, glume între frați, râsete, vecini care aud prin pereți etc.
 - Versurile trebuie să fie calde, relaxate, uneori nostalgice, cu un umor fin și natural, niciodată agresive sau maneliste.
 
 # PROZODIE/RIMA

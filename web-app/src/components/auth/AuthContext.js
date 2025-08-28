@@ -50,44 +50,9 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const recaptchaVerifier = useRef(null);
   const recaptchaContainerRef = useRef(null);
-  // Resolver ref
-  const readyResolvers = useRef([]);
   
   // Initialize PostHog tracking
-  const { trackAuth } = usePostHogTracking();
-
-  // /**
-  //  * Wait until auth + user doc creation finishes, or timeout expires.
-  //  * @param timeoutMs – how many milliseconds to wait before auto‐failing (resolves to false).
-  //  * @returns Promise<boolean> – true if succeeded, false if failed or timed out.
-  //  */
-  // const waitForUserDocCreation = (timeoutMs = 10000) => {
-  //   return new Promise((resolve) => {
-  //     // Check if already settled
-  //     if (['failed', 'created'].includes(userDocStatus)) {
-  //       return resolve(userDocStatus);
-  //     }
-  //     // Otherwise, add resolver to queue
-  //     const resolver = (docCreationStatus) => {
-  //       clearTimeout(timer);
-  //       resolve(docCreationStatus);
-  //     };
-  //     readyResolvers.current.push(resolver);
-
-  //     // Start the timeout
-  //     const timer = setTimeout(() => {
-  //       // Remove this resolver so it doesn’t fire later
-  //       readyResolvers.current = readyResolvers.current.filter(r => r !== resolver);
-  //       // Timeout is treated as “failed to get ready”
-  //       resolve(false);
-  //     }, timeoutMs);
-  //   });
-  // };
-
-  // function flushUserDocCreationResolvers(status) {
-  //   readyResolvers.current.forEach((res) => res(status));
-  //   readyResolvers.current = [];
-  // }
+  const { captureSignUp, captureSignIn, identifyUser, resetUserIdentity } = usePostHogTracking();
 
   const fetchOrCreateUserProfile = async (firebaseUser) => {
     try {
@@ -159,11 +124,12 @@ export function AuthProvider({ children }) {
       // Update display name in Firebase Auth and wait for it to complete
       await updateProfile(user, { displayName });
       await fetchOrCreateUserProfile(user);
-      trackAuth('email_signup', true);
+
+      captureSignUp('email', true, user.metadata.creationTime);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
-      trackAuth('email_signup', false);
+      captureSignUp('email', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -178,11 +144,12 @@ export function AuthProvider({ children }) {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       await fetchOrCreateUserProfile(user);
-      trackAuth('email_signin', true);
+
+      captureSignIn('email', true, user.metadata.creationTime);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
-      trackAuth('email_signin', false);
+      captureSignIn('email', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -201,11 +168,12 @@ export function AuthProvider({ children }) {
         displayName: user.displayName,
       });
       await fetchOrCreateUserProfile(user);
-      trackAuth('google_signin', true);
+
+      captureSignIn('google', true, user.metadata.creationTime);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
-      trackAuth('google_signin', false);
+      captureSignIn('google', false);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
@@ -337,8 +305,11 @@ export function AuthProvider({ children }) {
         });
       }
       await fetchOrCreateUserProfile(user);
+
+      captureSignIn('phone', true, user.metadata.creationTime);
     } catch (error) {
       console.error('Phone verification error:', error);
+      captureSignIn('phone', false);
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
       throw new Error(errorMessage);
@@ -355,6 +326,8 @@ export function AuthProvider({ children }) {
     unsub = onAuthStateChanged(auth, async (user) => {
       // Logged out
       if (!user) {
+        resetUserIdentity();
+  
         setUser(null);
         setUserProfile(null);
         setLoading(false);
@@ -362,6 +335,7 @@ export function AuthProvider({ children }) {
       }
       // Logged in
       setUser(user);
+      identifyUser(user.uid, user.email, user.displayName);
       try {
         const userProfile = await fetchUserProfile(user.uid);
         if (userProfile) {
