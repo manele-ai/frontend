@@ -1062,6 +1062,14 @@
     font-size: 16px;
   }
 
+  .feedback-btn {
+    height: 42px;
+  }
+
+  .feedback-btn-text {
+    font-size: 13px;
+  }
+
   .song-style-section,
   .song-lyrics-section {
     padding: 16px;
@@ -1304,4 +1312,58 @@
   .back-button .hero-btn-text {
     font-size: 12px;
   }
+
+  .feedback-btn {
+    height: 40px;
+  }
+
+  .feedback-btn-text {
+    font-size: 12px;
+  }
+}
+
+/* Feedback Button Styles - cu gradient auriu */
+.feedback-btn {
+  box-sizing: border-box;
+  width: 130px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 4150.876px;
+  border: 2px solid #B8860B;
+  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.feedback-btn:hover {
+  background: linear-gradient(135deg, #FFE135 0%, #FFD700 30%, #FFE135 50%, #FFD700 70%, #FFE135 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.feedback-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.feedback-btn-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.2px;
+  text-align: center;
+  color: #000000;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
 } 

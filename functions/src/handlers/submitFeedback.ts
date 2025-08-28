@@ -1,10 +1,11 @@
-import { logger } from 'firebase-functions';
+import { config, logger } from 'firebase-functions';
 import { onCall } from 'firebase-functions/v2/https';
 import { google } from 'googleapis';
+import { GOOGLE_SHEETS_CONFIG } from '../config/google-sheets';
 
 // Configure Google Sheets API
 const auth = new google.auth.GoogleAuth({
-  keyFile: './service-account-key.json', // You'll need to add this file
+  keyFile: GOOGLE_SHEETS_CONFIG.SERVICE_ACCOUNT_KEY_PATH,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
@@ -27,8 +28,13 @@ export const submitFeedback = onCall<FeedbackData>(async (request) => {
       throw new Error('Toate câmpurile obligatorii trebuie completate');
     }
 
-    // Google Sheets ID - replace with your actual sheet ID
-    const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+    // Use configured Google Sheets ID from Firebase config or fallback
+    const spreadsheetId = config().google?.sheets_id || GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID;
+    
+    // Validate spreadsheet ID
+    if (!spreadsheetId || spreadsheetId === 'YOUR_SPREADSHEET_ID_HERE' || spreadsheetId === 'YOUR_ACTUAL_SHEET_ID_HERE') {
+      throw new Error('Google Sheets ID not configured. Please set google.sheets_id in Firebase config.');
+    }
     
     // Prepare data for Google Sheets
     const values = [
@@ -45,7 +51,7 @@ export const submitFeedback = onCall<FeedbackData>(async (request) => {
     // Append data to Google Sheets
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!A:F', // Adjust range as needed
+      range: `${GOOGLE_SHEETS_CONFIG.SHEET_NAME}!${GOOGLE_SHEETS_CONFIG.RANGE}`,
       valueInputOption: 'RAW',
       insertDataOption: 'INSERT_ROWS',
       requestBody: {

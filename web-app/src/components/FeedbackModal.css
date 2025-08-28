@@ -1,75 +1,153 @@
-/* FeedbackPage.css - stiluri pentru pagina de feedback */
+/* FeedbackModal.css - Stiluri pentru componenta FeedbackModal */
 
-.feedback-wrapper {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  color: #eab111;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow-y: auto;
-  padding-bottom: 150px; /* Extra space for bottom menu */
-}
-
-/* Overlay pentru fundal - exact ca în HomePage */
-.feedback-wrapper::before {
-  content: '';
-  position: absolute;
+/* Modal Overlay */
+.feedback-modal-overlay {
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgb(19, 20, 20, 1);
-  opacity: 0.95;
-  z-index: 1;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Asigură-te că conținutul este deasupra overlay-ului */
-.feedback-wrapper > * {
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Modal Container */
+.feedback-modal {
+  background-color: #23242b;
+  border-radius: 18px;
+  padding: 25px;
+  width: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
   position: relative;
-  z-index: 2;
+  z-index: 10000;
+  animation: modalSlideIn 0.3s ease-out;
 }
 
-/* Container rotunjit, opac și transparent pentru conținut */
-.feedback-container {
-  max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 2.5rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  color: white;
-  line-height: 1.6;
+/* Modal slide-in animation */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.feedback-heading {
+/* Close button */
+.feedback-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  color: #eab111;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.feedback-modal-close:hover {
+  transform: scale(1.2);
+  color: #ffe270;
+}
+
+.feedback-modal-close:active {
+  transform: scale(0.95);
+}
+
+/* Modal Content */
+.feedback-modal-content {
+  margin-bottom: 12px;
+}
+
+.feedback-modal-title {
   background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-  margin-top: 0;
-  font-weight: 600;
-  font-size: 2rem;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
   text-align: center;
+  letter-spacing: 1px;
 }
 
-.feedback-subtitle {
+.feedback-modal-subtitle {
+  color: #a2a5bd;
+  font-size: 14px;
+  line-height: 1.4;
   text-align: center;
-  color: #E0E0E0;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
-.feedback-form {
+/* User Info Display */
+.user-info-display {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.user-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.user-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.user-info-label {
+  color: #ffe270;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.user-info-value {
+  color: #e2e2e1;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Form Styles */
+.feedback-modal-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -87,7 +165,6 @@
   font-size: 1rem;
 }
 
-.form-input,
 .form-textarea {
   padding: 12px 16px;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -97,14 +174,15 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
 }
 
-.form-input::placeholder,
 .form-textarea::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.form-input:focus,
 .form-textarea:focus {
   outline: none;
   border-color: #ffe270;
@@ -112,18 +190,12 @@
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.form-input:disabled,
 .form-textarea:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.form-textarea {
-  resize: vertical;
-  min-height: 120px;
-  font-family: inherit;
-}
-
+/* Rating Styles */
 .rating-container {
   display: flex;
   align-items: center;
@@ -165,6 +237,7 @@
   font-weight: 500;
 }
 
+/* Submit Button */
 .submit-button {
   background: linear-gradient(135deg, #ffe270 0%, #f7d23e 100%);
   color: #1a1a1a;
@@ -192,6 +265,7 @@
   box-shadow: none;
 }
 
+/* Status Messages */
 .success-message {
   background-color: rgba(76, 175, 80, 0.2);
   border: 1px solid rgba(76, 175, 80, 0.5);
@@ -214,21 +288,21 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .feedback-wrapper {
+  .feedback-modal-overlay {
     padding: 10px;
   }
   
-  .feedback-container {
-    padding: 1.5rem;
-    margin: 0 10px;
+  .feedback-modal {
+    padding: 20px;
+    max-width: 95vw;
   }
   
-  .feedback-heading {
-    font-size: 1.5rem;
+  .feedback-modal-title {
+    font-size: 20px;
   }
   
-  .feedback-subtitle {
-    font-size: 1rem;
+  .feedback-modal-subtitle {
+    font-size: 13px;
   }
   
   .star-button {
@@ -238,22 +312,27 @@
   .rating-container {
     gap: 0.5rem;
   }
+  
+  .user-info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
 }
 
 @media (max-width: 480px) {
-  .feedback-container {
-    padding: 1rem;
+  .feedback-modal {
+    padding: 15px;
   }
   
-  .feedback-heading {
-    font-size: 1.3rem;
+  .feedback-modal-title {
+    font-size: 18px;
   }
   
-  .feedback-subtitle {
-    font-size: 0.9rem;
+  .feedback-modal-subtitle {
+    font-size: 12px;
   }
   
-  .form-input,
   .form-textarea {
     padding: 10px 12px;
     font-size: 0.9rem;

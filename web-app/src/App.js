@@ -18,7 +18,6 @@ import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 import AuthPage from './pages/AuthPage';
 import ExemplePage from './pages/ExemplePage';
-import FeedbackPage from './pages/FeedbackPage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
@@ -91,7 +90,6 @@ function AppContent() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/exemple" element={<ExemplePage />} />
-        <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/select-style" element={<GeneratePage />} />
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />

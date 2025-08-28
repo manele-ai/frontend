@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
+import FeedbackModal from '../components/FeedbackModal';
 import ShareSongButton from '../components/ShareSongButton';
 import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
@@ -77,6 +78,8 @@ export default function ResultPage() {
   // Timeout state now comes from useGlobalSongStatus hook
 
   const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [selectedSongForFeedback, setSelectedSongForFeedback] = useState(null);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -414,6 +417,16 @@ export default function ResultPage() {
     }
   };
 
+  const handleOpenFeedbackModal = (song) => {
+    setSelectedSongForFeedback(song);
+    setShowFeedbackModal(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
+    setSelectedSongForFeedback(null);
+  };
+
   return (
     <div 
       className="result-page"
@@ -488,6 +501,16 @@ export default function ResultPage() {
                   </p>
                 </div>
               )}
+              
+              {/* Buton pentru feedback */}
+              <div style={{ marginTop: 12 }}>
+                <Button
+                  className="feedback-btn"
+                  onClick={() => handleOpenFeedbackModal(song)}
+                >
+                  <span className="feedback-btn-text">Lasa recenzie</span>
+                </Button>
+              </div>
             </div>
           );
         })}
@@ -502,6 +525,13 @@ export default function ResultPage() {
           <span className="hero-btn-text gen-btn">Generează manea nouă</span>
         </Button>
       </div>
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={handleCloseFeedbackModal}
+        songTitle={selectedSongForFeedback?.apiData?.title || ''}
+      />
     </div>
   );
 } 
