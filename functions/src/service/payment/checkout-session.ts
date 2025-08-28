@@ -72,6 +72,11 @@ export const createSongCheckoutSession = async ({
           userId: userId,
           generationRequestId: requestId,
         },
+        billing_address_collection: 'required',
+        customer_update: {
+          name: 'auto',
+          address: 'auto',
+        },
       });
 }
 
