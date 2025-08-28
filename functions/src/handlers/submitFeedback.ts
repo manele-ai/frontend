@@ -1,6 +1,7 @@
 import { config, logger } from 'firebase-functions';
 import { onCall } from 'firebase-functions/v2/https';
 import { google } from 'googleapis';
+import { REGION } from '../config';
 import { GOOGLE_SHEETS_CONFIG } from '../config/google-sheets';
 
 // Configure Google Sheets API
@@ -19,9 +20,20 @@ interface FeedbackData {
   feedback: string;
 }
 
-export const submitFeedback = onCall<FeedbackData>(async (request) => {
+export const submitFeedback = onCall<FeedbackData>(
+  {
+    region: REGION,
+    enforceAppCheck: true,
+  },
+  async (request) => {
   try {
-    const { name, email, songTitle, rating, feedback } = request.data;
+    const { data, auth } = request;
+    
+    if (!auth || !auth.uid) {
+      throw new Error('Trebuie să fii autentificat pentru a trimite feedback.');
+    }
+    
+    const { name, email, songTitle, rating, feedback } = data;
 
     // Validate required fields
     if (!name || !email || !rating || !feedback) {
