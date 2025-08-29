@@ -96,6 +96,13 @@ export const frontendBaseUrl = defineString(
   },
 );
 
+export const GOOGLE_SHEET_SA_JSON = defineString(
+  "GOOGLE_SHEET_SA_JSON",
+  {
+    description: "Credentials for Google Sheets",
+  },
+);
+
 export const db = admin.firestore();
 export const storage = admin.storage();
 export const songsBucket = storage.bucket();

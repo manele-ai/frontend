@@ -1,16 +1,18 @@
 import { config, logger } from 'firebase-functions';
 import { onCall } from 'firebase-functions/v2/https';
 import { google } from 'googleapis';
-import { REGION } from '../config';
+import { GOOGLE_SHEET_SA_JSON, REGION } from '../config';
 import { GOOGLE_SHEETS_CONFIG } from '../config/google-sheets';
+const credentials = JSON.parse(GOOGLE_SHEET_SA_JSON.value() || '{}');
 
 // Configure Google Sheets API
 const auth = new google.auth.GoogleAuth({
-  keyFile: GOOGLE_SHEETS_CONFIG.SERVICE_ACCOUNT_KEY_PATH,
+  credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
 const sheets = google.sheets({ version: 'v4', auth });
+
 
 interface FeedbackData {
   name: string;
