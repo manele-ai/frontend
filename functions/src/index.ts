@@ -1,6 +1,7 @@
 // Export functions to be deployed
 export { createGenerationRequest } from './handlers/createGenerationRequest';
 export { createUserIfNotExists } from './handlers/createUserIfNotExists';
+export { submitFeedback } from './handlers/submitFeedback';
 export { syncGenerationStatusForUser } from './handlers/syncGenerationStatus';
 export { updateUserProfile } from './handlers/updateUserProfile';
 

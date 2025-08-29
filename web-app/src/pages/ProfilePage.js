@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { downloadFile } from 'utils';
 import { useAuth } from '../components/auth/AuthContext';
+import FeedbackModal from '../components/FeedbackModal';
 import ShareSongButton from '../components/ShareSongButton';
 import SongItem from '../components/SongItem';
+import Button from '../components/ui/Button';
 import { styles } from '../data/stylesData';
 import { useAudioState } from '../hooks/useAudioState';
 import { useSongs } from '../hooks/useSongs';
@@ -32,6 +34,8 @@ export default function ProfilePage() {
   const { songs, loading: songsLoading, loadingMore, error: songsError, hasMore, loadMoreSongs } = useSongs();
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [userData, setUserData] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [selectedSongForFeedback, setSelectedSongForFeedback] = useState(null);
 
   // Use centralized audio state
   const { playingSongId, playSong, stopSong } = useAudioState();
@@ -120,6 +124,16 @@ export default function ProfilePage() {
       console.error('Error downloading song:', err);
       alert('Eroare la descărcarea melodiei');
     }
+  };
+
+  const handleOpenFeedbackModal = (song) => {
+    setSelectedSongForFeedback(song);
+    setShowFeedbackModal(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
+    setSelectedSongForFeedback(null);
   };
 
   const handleInputChange = (e) => {
@@ -454,6 +468,12 @@ export default function ProfilePage() {
                             Descarcă
                           </button>
                           <ShareSongButton song={song} />
+                          <Button
+                            className="feedback-btn"
+                            onClick={() => handleOpenFeedbackModal(song)}
+                          >
+                            <span className="feedback-btn-text">Lasa recenzie</span>
+                          </Button>
                         </>
                       ) : (
                         <div className="download-button-disabled" aria-label="Piesa este în curs de generare">
@@ -584,6 +604,13 @@ export default function ProfilePage() {
             </div>
         </div>
       )}
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={handleCloseFeedbackModal}
+        songTitle={selectedSongForFeedback?.apiData?.title || ''}
+      />
     </div>
   );
 } 
