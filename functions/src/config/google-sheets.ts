@@ -1,7 +1,7 @@
 // Google Sheets Configuration
 export const GOOGLE_SHEETS_CONFIG = {
   // Replace with your actual Google Sheet ID
-  SPREADSHEET_ID: process.env.GOOGLE_SHEETS_ID || '1SOg7jhcaAeQcDC38WH_04-YvxMJpRCr9FqjKddgAtT0',
+  SPREADSHEET_ID: process.env.GOOGLE_SHEETS_ID,
   
   // Sheet name and range
   SHEET_NAME: 'Sheet1',
