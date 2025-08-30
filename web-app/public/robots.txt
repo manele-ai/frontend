@@ -23,22 +23,8 @@ Disallow: /node_modules/
 Disallow: /scripts/
 Disallow: /src/
 Disallow: /webpack/
-Disallow: /*.js$
-Disallow: /*.css$
 Disallow: /*.map$
-Disallow: /*.txt$
-Disallow: /*.xml$
-Disallow: /*.json$
-Disallow: /*.ico$
-Disallow: /*.png$
-Disallow: /*.jpg$
-Disallow: /*.jpeg$
-Disallow: /*.gif$
-Disallow: /*.svg$
-Disallow: /*.woff$
-Disallow: /*.woff2$
-Disallow: /*.ttf$
-Disallow: /*.eot$
+
 
 # Allow specific asset types that might be important for SEO
 Allow: /photos/
