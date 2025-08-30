@@ -7,8 +7,8 @@ export const GOOGLE_SHEETS_CONFIG = {
   SHEET_NAME: 'Sheet1',
   RANGE: 'A:F',
   
-  // Service account key path
-  SERVICE_ACCOUNT_KEY_PATH: './service-account-key.json',
+  // Service account key path (no longer used - credentials are in environment variable)
+  SERVICE_ACCOUNT_KEY_PATH: null,
   
   // Column headers (for reference)
   COLUMNS: {
