@@ -1,7 +1,6 @@
 import { styles } from '../data/stylesData';
-import { useAudioState } from '../hooks/useAudioState';
 import '../styles/ExampleSongsList.css';
-import LazyAudioPlayer from './LazyAudioPlayer';
+import AudioPlayer from './audio/AudioPlayer';
 
 const EXAMPLE_SONGS = [
   {
@@ -63,20 +62,10 @@ const EXAMPLE_SONGS = [
 ];
 
 const ExampleSongsList = () => {
-  // Use centralized audio state
-  const { playingSongId, playSong, stopSong } = useAudioState();
 
   const getStyleImage = (styleValue) => {
     const style = styles.find(s => s.value === styleValue);
     return style ? style.image : null;
-  };
-
-  const handlePlayPause = (songId) => {
-    if (playingSongId === songId) {
-      stopSong();
-    } else {
-      playSong(songId);
-    }
   };
 
   return (
@@ -87,8 +76,8 @@ const ExampleSongsList = () => {
           <div key={song.id} className="exlist-card">
             <div className="exlist-left">
               <div className="exlist-cover">
-                <img 
-                  src={getStyleImage(song.style)} 
+                <img
+                  src={getStyleImage(song.style)}
                   alt={song.title}
                   className="exlist-cover-image"
                 />
@@ -99,12 +88,8 @@ const ExampleSongsList = () => {
               </div>
             </div>
             <div className="exlist-right">
-              <LazyAudioPlayer
-                audioUrl={song.audioUrl}
-                fallbackAudioUrl={song.audioUrl}
-                isPlaying={playingSongId === song.id}
-                onPlayPause={() => handlePlayPause(song.id)}
-                onError={() => {}}
+              <AudioPlayer
+                urls={{ audioUrl: song.audioUrl }}
                 songId={song.id}
               />
             </div>
