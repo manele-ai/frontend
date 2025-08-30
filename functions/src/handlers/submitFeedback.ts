@@ -1,4 +1,4 @@
-import { config, logger } from 'firebase-functions';
+import { logger } from 'firebase-functions';
 import { onCall } from 'firebase-functions/v2/https';
 import { google } from 'googleapis';
 import { GOOGLE_SHEET_SA_JSON, REGION } from '../config';
@@ -31,8 +31,19 @@ export const submitFeedback = onCall<FeedbackData>(
   try {
     const { data, auth } = request;
     
+    logger.info('Feedback submission started', { 
+      hasAuth: !!auth, 
+      hasCredentials: !!credentials.type,
+      spreadsheetId: GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID 
+    });
+    
     if (!auth || !auth.uid) {
       throw new Error('Trebuie să fii autentificat pentru a trimite feedback.');
+    }
+    
+    // Validate credentials
+    if (!credentials.type || !credentials.private_key || !credentials.client_email) {
+      throw new Error('Invalid Google Sheets service account credentials');
     }
     
     const { name, email, songTitle, rating, feedback } = data;
@@ -42,12 +53,12 @@ export const submitFeedback = onCall<FeedbackData>(
       throw new Error('Toate câmpurile obligatorii trebuie completate');
     }
 
-    // Use configured Google Sheets ID from Firebase config or fallback
-    const spreadsheetId = config().google?.sheets_id || GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID;
+    // Use configured Google Sheets ID from environment
+    const spreadsheetId = GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID;
     
     // Validate spreadsheet ID
-    if (!spreadsheetId || spreadsheetId === 'YOUR_SPREADSHEET_ID_HERE' || spreadsheetId === 'YOUR_ACTUAL_SHEET_ID_HERE') {
-      throw new Error('Google Sheets ID not configured. Please set google.sheets_id in Firebase config.');
+    if (!spreadsheetId) {
+      throw new Error('Google Sheets ID not configured. Please set GOOGLE_SHEETS_ID environment variable.');
     }
     
     // Prepare data for Google Sheets
