@@ -12,11 +12,9 @@ import Header from './components/ui/Header';
 import { usePostHog } from 'posthog-js/react';
 import { SEOManager } from './components/seo';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
+import { AudioProvider } from './context/AudioContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
-import { cleanupAudioOnAppUnmount, setupAudioVisibilityHandling } from './utils/audioCleanup';
-import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
-
 import AuthPage from './pages/AuthPage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
@@ -28,6 +26,7 @@ import ResultPage from './pages/ResultPage';
 import TarifePage from './pages/TarifePage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 import './styles/App.css';
+import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
 function App() {
   return (
@@ -57,22 +56,6 @@ function AppContent() {
     }
   }, [posthog]);
   
-  // Setup audio visibility handling for mobile
-  useEffect(() => {
-    const cleanupVisibility = setupAudioVisibilityHandling();
-    
-    return () => {
-      cleanupVisibility();
-    };
-  }, []);
-  
-  // Cleanup audio on app unmount
-  useEffect(() => {
-    return () => {
-      cleanupAudioOnAppUnmount();
-    };
-  }, []);
-  
   // Track page views when location changes
   useEffect(() => {
     const pageName = location.pathname === '/' ? 'home' : location.pathname.replace('/', '');
@@ -84,41 +67,43 @@ function AppContent() {
       {/* SEO metadata is now handled by SEOManager component */}
       <SEOManager />
       <div className="App">
-        <Header />
-        {/* <Marquee /> */}
-        <NotificationSystem />
-        <CookieConsent />
-      <Routes>
-        {/* Public routes */}
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/generate" element={<GeneratePage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/tarife" element={<TarifePage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
-        
-        {/* Protected routes */}
-        <Route path="/result" element={
-          <ProtectedRoute>
-            <ResultPage />
-          </ProtectedRoute>
-        } />
+        <AudioProvider>
+          <Header />
+          {/* <Marquee /> */}
+          <NotificationSystem />
+          <CookieConsent />
+          <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/generate" element={<GeneratePage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/tarife" element={<TarifePage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+            
+            {/* Protected routes */}
+            <Route path="/result" element={
+              <ProtectedRoute>
+                <ResultPage />
+              </ProtectedRoute>
+            } />
 
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        } />
-        <Route path="/payment-success" element={
-          <ProtectedRoute>
-            <PaymentSuccessPage />
-          </ProtectedRoute>
-        } />
-      </Routes>
-      <StickyGenerateButton />
-      <BottomMenu />
-      <Footer />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/payment-success" element={
+              <ProtectedRoute>
+                <PaymentSuccessPage />
+              </ProtectedRoute>
+            } />
+          </Routes>
+          <StickyGenerateButton />
+          <BottomMenu />
+          <Footer />
+        </AudioProvider>
       </div>
     </>
   );
