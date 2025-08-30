@@ -15,7 +15,7 @@ export const db = getFirestore(app);
 export const functions = getFunctions(app, 'europe-central2');
 export const storage = getStorage(app);
 
-if (useEmulators) {
+if (useEmulators || process.env.NODE_ENV === 'development') {
   // @ts-ignore
   window.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckSiteKey;
 }

@@ -1,13 +1,12 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref as storageRef, uploadString } from 'firebase/storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { downloadFile } from 'utils';
 import { useAuth } from '../components/auth/AuthContext';
 import ShareSongButton from '../components/ShareSongButton';
 import SongItem from '../components/SongItem';
 import { styles } from '../data/stylesData';
-import { useAudioState } from '../hooks/useAudioState';
 import { useSongs } from '../hooks/useSongs';
 import { db, storage } from '../services/firebase';
 import '../styles/ProfilePage.css';
@@ -15,7 +14,7 @@ import '../styles/ProfilePage.css';
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, userProfile, updateUserProfile, loading, signOut } = useAuth();
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     displayName: userProfile?.displayName || user?.providerData?.[0]?.displayName || user?.displayName || '',
@@ -32,9 +31,6 @@ export default function ProfilePage() {
   const { songs, loading: songsLoading, loadingMore, error: songsError, hasMore, loadMoreSongs } = useSongs();
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [userData, setUserData] = useState(null);
-
-  // Use centralized audio state
-  const { playingSongId, playSong, stopSong } = useAudioState();
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -84,15 +80,6 @@ export default function ProfilePage() {
   const filteredSongs = selectedStyle === 'all'
     ? songs
     : songs.filter(song => song.userGenerationInput?.style === selectedStyle);
-
-  // Enhanced play/pause handler with centralized state
-  const handlePlayPause = useCallback((song) => {
-    if (playingSongId === song.id) {
-      stopSong();
-    } else {
-      playSong(song.id);
-    }
-  }, [playingSongId, playSong, stopSong]);
 
   const handleDownload = async (song) => {
     try {
@@ -282,7 +269,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div 
+      <div
         className="profile-page"
         style={{
           backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -303,7 +290,7 @@ export default function ProfilePage() {
   const displayName = userData?.displayName || 'Utilizator';
 
   return (
-    <div 
+    <div
       className="profile-page"
       style={{
         backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -317,8 +304,8 @@ export default function ProfilePage() {
         <div className="profile-header">
           <div className="profile-avatar profile-avatar-large">
             {userData?.photoURL ? (
-              <img 
-                src={avatarPreview || userData.photoURL} 
+              <img
+                src={avatarPreview || userData.photoURL}
                 alt=""
                 className="avatar-image avatar-image-large"
               />
@@ -349,20 +336,20 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-info">
-                          <div className="profile-user-details">
-                <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
-                <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
-                <div className="profile-mini-actions">
-                  <div className="action-wrapper">
-                    <a className="edit-profile-button" href="https://billing.stripe.com/p/login/9B6dR9cOp84R5xRfmK6oo00" target="_blank" rel="noopener noreferrer">Abonamentul meu</a>
-                  </div>
-                  <div className="action-wrapper">
-                    <button className="edit-profile-button" onClick={onEditProfileClick}>Editeaza profilul</button>
-                  </div>
-                  <div className="action-wrapper">
-                    <button className="text-link soft-red-text" onClick={handleLogout}>Log Out</button>
-                  </div>
+            <div className="profile-user-details">
+              <div className="profile-username gold-text">{user?.displayName || user?.providerData?.[0]?.displayName || 'User Anonim'}</div>
+              <div className="profile-email-text gold-text">{user?.email || user?.providerData?.[0]?.phoneNumber}</div>
+              <div className="profile-mini-actions">
+                <div className="action-wrapper">
+                  <a className="edit-profile-button" href="https://billing.stripe.com/p/login/9B6dR9cOp84R5xRfmK6oo00" target="_blank" rel="noopener noreferrer">Abonamentul meu</a>
                 </div>
+                <div className="action-wrapper">
+                  <button className="edit-profile-button" onClick={onEditProfileClick}>Editeaza profilul</button>
+                </div>
+                <div className="action-wrapper">
+                  <button className="text-link soft-red-text" onClick={handleLogout}>Log Out</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -428,9 +415,6 @@ export default function ProfilePage() {
                   <div className="profile-song-content">
                     <SongItem
                       song={song}
-                      isActive={playingSongId === song.id}
-                      onPlayPause={handlePlayPause}
-                      onDownload={handleDownload}
                       styleLabel={styles.find(s => s.value === song.userGenerationInput?.style)?.title || song.userGenerationInput?.style}
                     />
                     <div className="profile-song-actions">
@@ -442,9 +426,24 @@ export default function ProfilePage() {
                             onClick={() => handleDownload(song)}
                             aria-label="Descarcă melodia"
                           >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              style={{ marginRight: '6px' }}
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7,10 12,15 17,10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
                             Descarcă
                           </button>
-                          <ShareSongButton song={song} />
+                          <ShareSongButton song={song} className="hero-btn" />
                         </>
                       ) : (
                         <div className="download-button-disabled" aria-label="Piesa este în curs de generare">
@@ -460,7 +459,7 @@ export default function ProfilePage() {
                 <p>Nu există piese pentru acest stil.</p>
               </div>
             )}
-            
+
             {/* Buton pentru încărcarea mai multor piese */}
             {hasMore && filteredSongs.length > 0 && (
               <div className="load-more-container">
@@ -484,95 +483,95 @@ export default function ProfilePage() {
         )}
       </div>
       <div className="profile-button-container">
-            <button
-              className="action-button hero-btn"
-              onClick={() => navigate('/generate')}
-            >
-              <span className="hero-btn-text">Generează manea</span>
-            </button>
+        <button
+          className="action-button hero-btn"
+          onClick={() => navigate('/generate')}
+        >
+          <span className="hero-btn-text">Generează manea</span>
+        </button>
       </div>
 
       {isEditing && (
         <div className="modal-overlay" onClick={handleCancel} role="dialog" aria-modal="true">
-            <div className="profile-actions" onClick={(e) => e.stopPropagation()}>
-              <form onSubmit={handleSave} className="edit-form">
-                <button
-                  type="button"
-                  aria-label="Închide"
-                  className="modal-close-btn"
-                  onClick={handleCancel}
+          <div className="profile-actions" onClick={(e) => e.stopPropagation()}>
+            <form onSubmit={handleSave} className="edit-form">
+              <button
+                type="button"
+                aria-label="Închide"
+                className="modal-close-btn"
+                onClick={handleCancel}
+              >
+                ×
+              </button>
+
+              <div className="form-group">
+                <label htmlFor="displayName">Nume</label>
+                <input
+                  type="text"
+                  id="displayName"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              {/* Avatar uploader (drag & drop) */}
+              <div className="form-group">
+                <label>Poză profil</label>
+                <div
+                  className={`avatar-dropzone${isDragging ? ' active' : ''}`}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleAvatarChange({ target: { files: [f] } }); }}
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
                 >
-                  ×
-                </button>
-
-                <div className="form-group">
-                  <label htmlFor="displayName">Nume</label>
-                  <input
-                    type="text"
-                    id="displayName"
-                    name="displayName"
-                    value={formData.displayName}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                  />
-                </div>
-
-                {/* Avatar uploader (drag & drop) */}
-                <div className="form-group">
-                  <label>Poză profil</label>
-                  <div
-                    className={`avatar-dropzone${isDragging ? ' active' : ''}`}
-                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleAvatarChange({ target: { files: [f] } }); }}
-                    onClick={() => fileInputRef.current?.click()}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
-                  >
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Previzualizare avatar" className="avatar-image avatar-image-large" />
-                    ) : (
-                      <div className="dropzone-desc">
-                        <span>Trage și plasează aici imaginea</span>
-                        <small>Sau folosește butonul de mai jos</small>
-                      </div>
-                    )}
-                  </div>
-                  {avatarError && (
-                    <div className="upload-error">{avatarError}</div>
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="Previzualizare avatar" className="avatar-image avatar-image-large" />
+                  ) : (
+                    <div className="dropzone-desc">
+                      <span>Trage și plasează aici imaginea</span>
+                      <small>Sau folosește butonul de mai jos</small>
+                    </div>
                   )}
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    style={{ display: 'none' }}
-                  />
-                  <div className="dropzone-actions">
-                    <button
-                      type="button"
-                      className="edit-profile-button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={saveLoading}
-                    >
-                      Alege un fișier
-                    </button>
-                  </div>
                 </div>
-
-                <div className="form-actions single">
+                {avatarError && (
+                  <div className="upload-error">{avatarError}</div>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  style={{ display: 'none' }}
+                />
+                <div className="dropzone-actions">
                   <button
-                    type="submit"
-                    className="save-button"
+                    type="button"
+                    className="edit-profile-button"
+                    onClick={() => fileInputRef.current?.click()}
                     disabled={saveLoading}
                   >
-                    {saveLoading ? 'Se salvează...' : 'Salvează'}
+                    Alege un fișier
                   </button>
                 </div>
-              </form>
-            </div>
+              </div>
+
+              <div className="form-actions single">
+                <button
+                  type="submit"
+                  className="save-button"
+                  disabled={saveLoading}
+                >
+                  {saveLoading ? 'Se salvează...' : 'Salvează'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

@@ -1,10 +1,10 @@
+import AudioPlayer from 'components/audio/AudioPlayer';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { redirectToSubscriptionCheckout } from 'services/stripe/subscription';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
-import LazyAudioPlayer from '../components/LazyAudioPlayer';
 import Button from '../components/ui/Button';
 import SoundWave from '../components/ui/SoundWave';
 import { styles } from '../data/stylesData';
@@ -44,12 +44,12 @@ function ReusableCard({ background, title, subtitle, styleValue, audioUrl }) {
           <h2 className="style-example-title">{title}</h2>
         </div>
         <div className="style-example-audio-player">
-          <LazyAudioPlayer 
-            audioUrl={audioUrl}
-            fallbackAudioUrl={fallbackAudioUrl}
-            isPlaying={isPlaying}
-            onPlayPause={handlePlayPause}
-            onError={() => console.error('Audio playback error')}
+          <AudioPlayer 
+            urls={{
+              streamAudioUrl: audioUrl,
+              audioUrl: audioUrl,
+              storageUrl: audioUrl,
+            }}
             songId={`style-${styleValue}`}
           />
         </div>
