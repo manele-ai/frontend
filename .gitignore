@@ -204,3 +204,4 @@ firebase-debug.*.log
 .runtimeconfig.json
 **/service-account.json
 **/firebase-adminsdk.json
+.vercel

@@ -1,0 +1,101 @@
+/* ShareSongButton Component Styles */
+
+.share-song-button {
+    background: none;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    min-width: 40px;
+    height: 38px;
+    /* Match download button height */
+    align-self: center;
+    /* Center vertically in the flex container */
+}
+
+.share-song-button:hover {
+    transform: scale(1.1);
+}
+
+.share-song-button:active {
+    transform: scale(0.95);
+}
+
+.share-song-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.share-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.share-icon path {
+    transition: opacity 0.2s ease;
+}
+
+.share-loading {
+    font-size: 12px;
+    color: #ffeecd;
+    font-weight: 500;
+}
+
+/* Ensure proper text styling for share button */
+.share-song-button .hero-btn-text {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    text-align: center;
+    background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* Result share button - styled like download button */
+.result-page .result-share-btn.hero-btn.button {
+    min-width: 120px;
+    max-width: 180px;
+    width: auto !important;
+    /* Override the fixed 300px width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* Center the button */
+    border: 0.5px solid #F4F1E4;
+    /* Add the same border as the download button */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .share-song-button {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    .share-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .share-song-button {
+        min-width: 180px;
+    }
+
+    .share-icon {
+        width: 16px;
+        height: 16px;
+    }
+}

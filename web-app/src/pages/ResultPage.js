@@ -1,20 +1,13 @@
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import AudioPlayer from '../components/AudioPlayer';
 import ExampleSongsList from '../components/ExampleSongsList';
-import FeedbackModal from '../components/FeedbackModal';
-import ShareSongButton from '../components/ShareSongButton';
+import SongResultCard from '../components/SongResultCard';
 import Button from '../components/ui/Button';
 import { useNotification } from '../context/NotificationContext';
-import { useAudioState } from '../hooks/useAudioState';
 import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
-
-import { getDownloadURL, ref } from 'firebase/storage';
-import { styles } from '../data/stylesData';
-import { db, storage } from '../services/firebase';
+import { db } from '../services/firebase';
 import '../styles/ResultPage.css';
-import { downloadFile } from '../utils';
 
 const GIF = '/NeTf.gif';
 
@@ -24,11 +17,8 @@ export default function ResultPage() {
   const { showNotification } = useNotification();
   const { setupGenerationListener, activeRequestId, activeTaskId, activeSongId, latestTaskData, latestGenerationData, hasTimedOut } = useGlobalSongStatus();
 
-  // Use centralized audio state
-  const { playingSongId, playSong, stopSong } = useAudioState();
-
   const mounted = useRef(true);
-  
+
   // Initialize loading progress from localStorage or 0
   const [loadingProgress, setLoadingProgress] = useState(() => {
     const saved = localStorage.getItem('resultPageLoadingProgress');
@@ -73,13 +63,10 @@ export default function ResultPage() {
   const [songsData, setSongsData] = useState([]);
   const [statusMsg, setStatusMsg] = useState('Se verifică statusul generării...');
   const [error, setError] = useState(null);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   // Timeout state now comes from useGlobalSongStatus hook
 
   const [currentSongLyrics, setCurrentSongLyrics] = useState(null);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [selectedSongForFeedback, setSelectedSongForFeedback] = useState(null);
 
   // Cleanup function for component unmount
   useEffect(() => {
@@ -96,7 +83,7 @@ export default function ResultPage() {
       setStatusMsg('Generarea piesei este în curs...');
     }
   }, [activeTaskId, taskId]);
- 
+
   // Consume global task data instead of a local listener
   useEffect(() => {
     if (!latestTaskData) return;
@@ -156,10 +143,10 @@ export default function ResultPage() {
             doc(db, 'songsPublic', songId),
             (docSnap) => {
               if (!mounted.current) return;
-              
+
               if (docSnap.exists()) {
                 const songData = docSnap.data();
-                
+
                 setSongsData(prev => {
                   const existing = prev.find(song => song.id === songId);
                   if (existing) {
@@ -168,12 +155,12 @@ export default function ResultPage() {
                     return [...prev, { id: songId, ...songData }];
                   }
                 });
-                
+
                 // Keep first song for backward compatibility
                 if (songId === idsToUse[0]) {
                   setSongData(songData);
                 }
-                
+
                 // Clear localStorage items when any song is complete
                 if (songData && songData.apiData && songData.apiData.title) {
                   localStorage.removeItem('resultPageLoadingProgress');
@@ -214,11 +201,11 @@ export default function ResultPage() {
       localStorage.removeItem('resultPageLoadingProgress');
       return;
     }
-    
+
     const duration = 120000; // 2 minute în milisecunde
     const interval = 100; // Actualizează la fiecare 100ms pentru animație fluidă
     const increment = (interval / duration) * 100;
-    
+
     const timer = setInterval(() => {
       setLoadingProgress(prev => {
         const newProgress = prev + increment;
@@ -258,29 +245,10 @@ export default function ResultPage() {
     }
   }, [latestGenerationData]);
 
-  // Test audio URL accessibility
-  const testAudioUrl = async (url) => {
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      return response.ok;
-    } catch (error) {
-      return false;
-    }
-  };
-
-  // Handle play/pause for specific song using centralized state
-  const handlePlayPauseForSong = (songId) => {
-    if (playingSongId === songId) {
-      stopSong();
-    } else {
-      playSong(songId);
-    }
-  };
-
   // Show error state
   if (error) {
     return (
-      <div 
+      <div
         className="result-page"
         style={{
           backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -295,12 +263,12 @@ export default function ResultPage() {
             <p className="error-message">{error}</p>
             <div className="error-reassurance">
               <p className="reassurance-text">
-                <strong>Nu te îngrijora!</strong> Nu ți-ai pierdut creditele. 
+                <strong>Nu te îngrijora!</strong> Nu ți-ai pierdut creditele.
                 Poți încerca din nou să generezi maneaua fără să plătești nimic.
               </p>
             </div>
             <div className="error-actions">
-              <button 
+              <button
                 className="hero-btn"
                 onClick={() => navigate('/generate')}
                 style={{ marginBottom: '10px' }}
@@ -317,7 +285,7 @@ export default function ResultPage() {
   // Show loading state while waiting for songs or status
   if (songsData.length === 0 && !songData) {
     return (
-      <div 
+      <div
         className="result-page"
         style={{
           backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -337,16 +305,16 @@ export default function ResultPage() {
               <div className="loading-bar-container">
                 <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
               </div>
-              
+
               <h1 className="title">Se generează maneaua...</h1>
               <p className="subtitle">
                 Generarea durează între 2 - 5 minute. Te rugăm să ai răbdare!
               </p>
-              
+
               <p className="status-message">{statusMsg}</p>
             </div>
           </div>
-          
+
           <ExampleSongsList />
         </div>
       </div>
@@ -355,80 +323,9 @@ export default function ResultPage() {
 
   // Get all songs data - use songsData if available, otherwise fallback to single songData
   const allSongsData = songsData.length > 0 ? songsData : (songData ? [{ id: songId, ...songData }] : []);
-  
-  // Helper function to get song style
-  const getSongStyleForSong = (song) => {
-    if (!song?.userGenerationInput?.style) return null;
-    return styles.find(s => s.value === song.userGenerationInput.style);
-  };
-
-  // Helper function to get song lyrics
-  const getSongLyricsForSong = (song) => {
-    // Pentru toate piesele, folosește versurile din currentSongLyrics dacă există
-    // (versurile sunt generate o singură dată pentru ambele piese)
-    if (currentSongLyrics) {
-      return currentSongLyrics;
-    }
-    
-    // Fallback pentru versurile din song data
-    const lyrics = song?.apiData?.lyrics || 
-                   song?.lyrics || 
-                   song?.userGenerationInput?.lyrics ||
-                   null;
-    
-    return lyrics;
-  };
-
-  // Helper function to check if song can be downloaded
-  const canDownloadSong = (song) => {
-    return song.storage?.url || song.apiData?.audioUrl;
-  };
-
-  // Handle download for specific song
-  const handleDownloadForSong = async (song) => {
-    const rawUrl = song?.storage?.url || song?.apiData?.audioUrl || song?.apiData?.streamAudioUrl;
-
-    if (!rawUrl) {
-      setError("Nu s-a găsit URL-ul pentru descărcare.");
-      return;
-    }
-
-    setIsDownloading(true);
-    try {
-      let resolvedUrl = rawUrl;
-
-      // Dacă este un URL de tip gs://, obține un URL temporar de descărcare
-      if (resolvedUrl.startsWith('gs://')) {
-        const storageRef = ref(storage, resolvedUrl);
-        resolvedUrl = await getDownloadURL(storageRef);
-      }
-
-      // Test URL accessibility
-      const isAccessible = await testAudioUrl(resolvedUrl);
-      if (!isAccessible) {
-        throw new Error('URL-ul nu este accesibil');
-      }
-
-      await downloadFile(resolvedUrl, `${song.apiData?.title || 'manea'}.mp3`);
-    } catch (error) {
-      setError("Nu s-a putut descărca piesa. Încearcă din nou.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handleOpenFeedbackModal = (song) => {
-    setSelectedSongForFeedback(song);
-    setShowFeedbackModal(true);
-  };
-
-  const handleCloseFeedbackModal = () => {
-    setShowFeedbackModal(false);
-    setSelectedSongForFeedback(null);
-  };
 
   return (
-    <div 
+    <div
       className="result-page"
       style={{
         backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -438,84 +335,16 @@ export default function ResultPage() {
       }}
     >
       <div className="result-container">
-  
-       
         <div className="songs-container">
           {allSongsData.map((song, index) => {
-            const songStyle = getSongStyleForSong(song);
-            const songLyrics = getSongLyricsForSong(song);
-            const canDownload = canDownloadSong(song);
-            
-
-            
-            return (
-              <div key={song.id || index} className="player-box">
-              <img
-                src={song.apiData?.imageUrl || 'https://via.placeholder.com/150'}
-                alt="Song artwork"
-                className="song-artwork"
-              />
-              <h2 className="player-song-title">{song.apiData?.title || 'Piesa ta e gata!'}</h2>
-              <h4 className="song-style-name">{songStyle?.title || 'Manele'}</h4>
-              
-              {/* Player audio pentru această piesă */}
-              <div className="result-player-container">
-                <AudioPlayer
-                  key={`audio-${song.id || index}`}
-                  audioUrl={song.apiData?.streamAudioUrl || song.apiData?.audioUrl || song.storage?.url}
-                  isPlaying={playingSongId === song.id}
-                  onPlayPause={() => handlePlayPauseForSong(song.id)}
-                  onError={(error) => setError(error)}
-                  songId={song.id}
-                />
-              </div>
-              
-              {/* Versurile piesei */}
-              {songLyrics && (
-                <div className="song-lyrics-standalone">
-                  <div className="song-lyrics-standalone-content">
-                    <p className="song-lyrics-standalone-text">{songLyrics}</p>
-                  </div>
-                </div>
-              )}
-              
-              {/* Spațiu între versuri și butoane */}
-              <div style={{ marginBottom: 16 }} />
-              
-              {/* Butoane de download și share pentru această piesă */}
-              {canDownload ? (
-                <div className="result-song-actions">
-                  <Button
-                    className="hero-btn result-download-btn"
-                    onClick={() => handleDownloadForSong(song)}
-                    disabled={isDownloading}
-                  >
-                    <span className="hero-btn-text">{isDownloading ? 'Se descarcă...' : 'Descarcă'}</span>
-                  </Button>
-                  <ShareSongButton song={song} />
-                </div>
-              ) : (
-                <div>
-                  <p className="song-lyrics-standalone-text">
-                    Vei putea downloada piesa în curând! Mai așteaptă puțin...
-                  </p>
-                </div>
-              )}
-              
-              {/* Buton pentru feedback */}
-              <div style={{ marginTop: 12 }}>
-                <Button
-                  className="feedback-btn"
-                  onClick={() => handleOpenFeedbackModal(song)}
-                >
-                  <span className="feedback-btn-text">Lasa recenzie</span>
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+            return <SongResultCard
+              key={song.id || index}
+              song={song}
+              lyrics={currentSongLyrics}
+              index={index}
+            />;
+          })}
         </div>
-        
         {/* Buton pentru generarea unei piese noi */}
         <Button
           className="hero-btn"
@@ -525,13 +354,6 @@ export default function ResultPage() {
           <span className="hero-btn-text gen-btn">Generează manea nouă</span>
         </Button>
       </div>
-      
-      {/* Feedback Modal */}
-      <FeedbackModal
-        isOpen={showFeedbackModal}
-        onClose={handleCloseFeedbackModal}
-        songTitle={selectedSongForFeedback?.apiData?.title || ''}
-      />
     </div>
   );
 } 

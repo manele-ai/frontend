@@ -5,8 +5,10 @@
   background-color: #1a1a1a;
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  padding-top: 80px; /* Compensate for header */
-  padding-bottom: 150px; /* Extra space for bottom menu */
+  padding-top: 80px;
+  /* Compensate for header */
+  padding-bottom: 150px;
+  /* Extra space for bottom menu */
 }
 
 /* Overlay pentru fundal */
@@ -23,7 +25,7 @@
 }
 
 /* Asigură-te că conținutul este deasupra overlay-ului */
-.result-page > * {
+.result-page>* {
   position: relative;
   z-index: 2;
 }
@@ -209,6 +211,7 @@
   transform: translateY(0);
   box-shadow: -1px 1px 0px 0px #000;
 }
+
 .result-page .hero-btn-text {
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
@@ -231,7 +234,8 @@
 
 .back-button {
   position: absolute;
-  top: 80px; /* Adjusted for header */
+  top: 80px;
+  /* Adjusted for header */
   left: 20px;
   box-sizing: border-box;
   width: 190.8px;
@@ -287,7 +291,7 @@
   align-items: center;
   gap: 20px;
   border-radius: 20px;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   padding-top: 20px;
   padding-bottom: 24px;
 }
@@ -314,7 +318,7 @@
   pointer-events: none;
 }
 
-.result-page .result-container > * {
+.result-page .result-container>* {
   position: relative;
   z-index: 2;
 }
@@ -419,8 +423,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-container {
@@ -533,7 +542,7 @@
     flex-direction: column;
     align-items: center;
   }
-  
+
   .player-box {
     width: 100%;
     max-width: 350px;
@@ -909,77 +918,34 @@
   text-align: center;
 }
 
-.result-page .share-song-button {
-  background: none;
-  border: none;
-  padding: 8px 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  min-width: 40px;
-  height: 38px; /* Match download button height */
-  align-self: center; /* Center vertically in the flex container */
-}
 
-.result-page .share-song-button:hover {
-  transform: scale(1.1);
-}
-
-.result-page .share-song-button:active {
-  transform: scale(0.95);
-}
-
-.result-page .share-song-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.result-page .share-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.result-page .share-icon path {
-  transition: opacity 0.2s ease;
-}
-
-.result-page .share-loading {
-  font-size: 12px;
-  color: #ffeecd;
-  font-weight: 500;
-}
 
 /* Result song actions container */
 .result-page .result-song-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 20px;
   margin-bottom: 16px;
   max-width: 100%;
-  padding: 0 20px; /* Add padding to prevent share button from being at edge */
-}
-
-/* Invisible spacer to help center the download button */
-.result-page .result-song-actions::before {
-  content: '';
-  width: 40px; /* Same width as share button */
-  height: 40px;
+  padding: 0 20px;
+  /* Add padding to prevent buttons from being at edge */
 }
 
 /* Result download button - centered in the container */
 .result-page .result-download-btn.hero-btn.button {
   min-width: 120px;
   max-width: 180px;
-  width: auto !important; /* Override the fixed 300px width */
+  width: auto !important;
+  /* Override the fixed 300px width */
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin: 0 auto; /* Center the button */
+  /* Center the button */
 }
+
+
 
 @media (max-width: 768px) {
   .result-page {
@@ -1366,4 +1332,4 @@
   color: #000000;
   text-transform: uppercase;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-} 
+}

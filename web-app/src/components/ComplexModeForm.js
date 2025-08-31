@@ -5,9 +5,9 @@ import { useNotification } from '../context/NotificationContext';
 import { styles } from '../data/stylesData';
 import { createGenerationRequest } from '../services/firebase/functions';
 import '../styles/GeneratePage.css';
+import AudioPlayer from './audio/AudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
-import LazyAudioPlayer from './LazyAudioPlayer';
 import GenerateButton from './ui/GenerateButton';
 
 // Constante pentru localStorage - Complex Mode
@@ -79,10 +79,6 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   const [userCredits, setUserCredits] = useState(0);
   const [pendingGenerationParams, setPendingGenerationParams] = useState(null);
   const { captureGenerateClick, captureSongGenerationStarted } = usePostHogTracking();
-  
-  // State pentru player-ele de exemplu
-  const [activeDedicationPlayer, setActiveDedicationPlayer] = useState(false);
-  const [activeDonationPlayer, setActiveDonationPlayer] = useState(false);
   const [userData, setUserData] = useState(null);
 
   // Funcții pentru persistența formularului
@@ -99,7 +95,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       donorName,
       donationAmount
     };
-    
+
     Object.entries(formData).forEach(([key, value]) => {
       const keyMapping = {
         'selectedStyle': 'SELECTED_STYLE',
@@ -113,10 +109,10 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
         'donorName': 'DONOR_NAME',
         'donationAmount': 'DONATION_AMOUNT'
       };
-      
+
       const mappedKey = keyMapping[key];
       const storageKey = mappedKey ? COMPLEX_FORM_DATA_KEYS[mappedKey] : undefined;
-      
+
       if (storageKey) {
         if (typeof value === 'string') {
           localStorage.setItem(storageKey, value);
@@ -130,15 +126,15 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
 
   const loadFormData = useCallback(() => {
     const isActive = localStorage.getItem(COMPLEX_FORM_DATA_KEYS.IS_ACTIVE) === 'true';
-    
+
     if (!isActive) return false;
-    
+
     try {
       const safeParse = (key, defaultValue) => {
         try {
           const value = localStorage.getItem(key);
           if (value === null || value === undefined) return defaultValue;
-          
+
           if (key === COMPLEX_FORM_DATA_KEYS.SELECTED_STYLE) {
             try {
               return JSON.parse(value);
@@ -146,19 +142,19 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
               return value;
             }
           }
-          
+
           return JSON.parse(value);
         } catch (error) {
           console.warn(`Eroare la parsarea ${key}:`, error);
           return defaultValue;
         }
       };
-      
+
       const safeGetString = (key, defaultValue = '') => {
         const value = localStorage.getItem(key);
         return value !== null && value !== undefined ? value : defaultValue;
       };
-      
+
       const loadedStyle = safeParse(COMPLEX_FORM_DATA_KEYS.SELECTED_STYLE, null);
       const loadedSongName = safeGetString(COMPLEX_FORM_DATA_KEYS.SONG_NAME, '');
       const loadedSongDetails = safeGetString(COMPLEX_FORM_DATA_KEYS.SONG_DETAILS, '');
@@ -169,25 +165,25 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       const loadedWantsDonation = safeParse(COMPLEX_FORM_DATA_KEYS.WANTS_DONATION, false);
       const loadedDonorName = safeGetString(COMPLEX_FORM_DATA_KEYS.DONOR_NAME, '');
       const loadedDonationAmount = safeGetString(COMPLEX_FORM_DATA_KEYS.DONATION_AMOUNT, '');
-      
-            // Verifică dacă există date reale pentru a încărca
-      const hasRealData = loadedStyle || 
-                         (loadedSongName && loadedSongName.trim()) ||
-                         (loadedSongDetails && loadedSongDetails.trim()) ||
-                         (loadedWantsDedication && (loadedFromName && loadedFromName.trim() && loadedToName && loadedToName.trim() && loadedDedication && loadedDedication.trim())) ||
-                         (loadedWantsDonation && (loadedDonorName && loadedDonorName.trim() && loadedDonationAmount && loadedDonationAmount.trim())) ||
-                         (loadedFromName && loadedFromName.trim()) ||
-                         (loadedToName && loadedToName.trim()) ||
-                         (loadedDedication && loadedDedication.trim()) ||
-                         (loadedDonorName && loadedDonorName.trim()) ||
-                         (loadedDonationAmount && loadedDonationAmount.trim());
-      
+
+      // Verifică dacă există date reale pentru a încărca
+      const hasRealData = loadedStyle ||
+        (loadedSongName && loadedSongName.trim()) ||
+        (loadedSongDetails && loadedSongDetails.trim()) ||
+        (loadedWantsDedication && (loadedFromName && loadedFromName.trim() && loadedToName && loadedToName.trim() && loadedDedication && loadedDedication.trim())) ||
+        (loadedWantsDonation && (loadedDonorName && loadedDonorName.trim() && loadedDonationAmount && loadedDonationAmount.trim())) ||
+        (loadedFromName && loadedFromName.trim()) ||
+        (loadedToName && loadedToName.trim()) ||
+        (loadedDedication && loadedDedication.trim()) ||
+        (loadedDonorName && loadedDonorName.trim()) ||
+        (loadedDonationAmount && loadedDonationAmount.trim());
+
       if (!hasRealData) {
         // Dacă nu există date reale, șterge IS_ACTIVE și nu încărca nimic
         localStorage.removeItem(COMPLEX_FORM_DATA_KEYS.IS_ACTIVE);
         return false;
       }
-      
+
       setSelectedStyle(loadedStyle);
       setSongName(loadedSongName);
       setSongDetails(loadedSongDetails);
@@ -198,7 +194,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       setWantsDonation(loadedWantsDonation);
       setDonorName(loadedDonorName);
       setDonationAmount(loadedDonationAmount);
-      
+
       return true;
     } catch (error) {
       console.error('Eroare la încărcarea datelor formularului:', error);
@@ -248,16 +244,16 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
 
   // Salvare automată a datelor formularului (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
-    const hasRealData = (songName && songName.trim()) || 
-                       (songDetails && songDetails.trim()) ||
-                       (wantsDedication && (fromName && fromName.trim() && toName && toName.trim() && dedication && dedication.trim())) ||
-                       (wantsDonation && (donorName && donorName.trim() && donationAmount && donationAmount.trim())) ||
-                       (fromName && fromName.trim()) ||
-                       (toName && toName.trim()) ||
-                       (dedication && dedication.trim()) ||
-                       (donorName && donorName.trim()) ||
-                       (donationAmount && donationAmount.trim());
-    
+    const hasRealData = (songName && songName.trim()) ||
+      (songDetails && songDetails.trim()) ||
+      (wantsDedication && (fromName && fromName.trim() && toName && toName.trim() && dedication && dedication.trim())) ||
+      (wantsDonation && (donorName && donorName.trim() && donationAmount && donationAmount.trim())) ||
+      (fromName && fromName.trim()) ||
+      (toName && toName.trim()) ||
+      (dedication && dedication.trim()) ||
+      (donorName && donorName.trim()) ||
+      (donationAmount && donationAmount.trim());
+
     if (hasRealData && !dataLoadedFromStorage) {
       saveFormData();
     }
@@ -319,10 +315,10 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       }
     }, 50);
   };
-  
+
   const handleDonationAmountChange = (e) => {
     const value = e.target.value;
-    
+
     // Permite doar numere întregi și câmpul gol
     if (value === '' || /^\d+$/.test(value)) {
       setDonationAmount(value);
@@ -356,13 +352,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
         mode: 'hard',
         price: calculatePrice()
       });
-      
+
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] ComplexMode: Creare notificare loading cu requestId:', response.requestId);
-        
+
         // Șterge datele formularului când generarea începe cu succes
         clearFormData();
-        
+
         // Show loading notification with requestId
         const notificationId = showNotification({
           type: 'loading',
@@ -372,13 +368,13 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           requestId: response.requestId
         });
         console.log('[NOTIF-DEBUG] ComplexMode: Notificare loading creată cu id:', notificationId);
-        
+
         // Save requestId separately for persistence across redirects
         localStorage.setItem('activeGenerationRequestId', response.requestId);
         console.log('[NOTIF-DEBUG] ComplexMode: requestId salvat în localStorage:', response.requestId);
-        
+
         // Generation started, go to loading page
-        navigate('/result', { 
+        navigate('/result', {
           state: { requestId: response.requestId, songId: null }
         });
       } else {
@@ -422,8 +418,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
     const basicValidation = !selectedStyle || !songName.trim();
     const dedicationValidation = wantsDedication && (!fromName.trim() || !toName.trim() || !dedication.trim());
     const donationValidation = wantsDonation && (
-      !donorName.trim() || 
-      !donationAmount.trim() || 
+      !donorName.trim() ||
+      !donationAmount.trim() ||
       (donationAmount.trim() && parseInt(donationAmount) <= 0)
     );
 
@@ -476,50 +472,50 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
 
   const calculatePrice = () => {
     let basePrice = 24.99;
-    
+
     // If dedication is checked, add 10 RON
     if (wantsDedication) {
       basePrice += 10.00;
     }
-    
+
     // If donation is checked, add the donation amount
     if (wantsDonation && donationAmount) {
       basePrice += parseFloat(donationAmount) || 0;
     }
-    
+
     // Apply subscription discount of 10 RON if user has active subscription
     if (userData?.isSubscribed) {
       // This indicates user has subscription (credits but not unlimited)
       basePrice = Math.max(0, basePrice - 10.00);
     }
-    
+
     return basePrice;
   };
 
   return (
     <div className="complex-mode-form">
       {/* Style Selection */}
-              <div className="style-selection-container">
-          <label className="input-label">Alege stilul:</label>
-          <div className="style-cards-grid">
-            {styles.map((style) => (
-              <div
-                key={style.value}
-                className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
-                onClick={() => {
-                  setSelectedStyle(style.value);
-                  resetErrors();
-                }}
-              >
-                <div className="style-mini-card-content">
-                  <h3 className="style-mini-card-title">{style.title}</h3>
-                  <p className="style-mini-card-description">{style.subtitle}</p>
-                </div>
+      <div className="style-selection-container">
+        <label className="input-label">Alege stilul:</label>
+        <div className="style-cards-grid">
+          {styles.map((style) => (
+            <div
+              key={style.value}
+              className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
+              onClick={() => {
+                setSelectedStyle(style.value);
+                resetErrors();
+              }}
+            >
+              <div className="style-mini-card-content">
+                <h3 className="style-mini-card-title">{style.title}</h3>
+                <p className="style-mini-card-description">{style.subtitle}</p>
               </div>
-            ))}
-          </div>
-          {fieldErrors.style && <div className="field-error">{fieldErrors.style}</div>}
+            </div>
+          ))}
         </div>
+        {fieldErrors.style && <div className="field-error">{fieldErrors.style}</div>}
+      </div>
 
       {/* Song Name */}
       <div className="input-group">
@@ -543,8 +539,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       <div className="input-group">
         <label className="input-label">Detalii versuri:</label>
         <p className="checkbox-explanation">
-            Spune-ne despre ce să fie versurile manelei, dă-ne detalii.
-          </p>
+          Spune-ne despre ce să fie versurile manelei, dă-ne detalii.
+        </p>
         <input
           className="input"
           type="text"
@@ -594,7 +590,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       {wantsDedication && (
         <>
 
-        {/* From Name */}{/* Example Player for Dedication */}
+          {/* From Name */}{/* Example Player for Dedication */}
           <div className="example-player-container">
             <div className="example-player-header">
               <span className="example-player-label">Exemplu</span>
@@ -614,15 +610,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <LazyAudioPlayer
-                  audioUrl={EXAMPLE_SONGS.dedication.storage.url}
-                  fallbackAudioUrl={EXAMPLE_SONGS.dedication.apiData.audioUrl}
-                  isPlaying={activeDedicationPlayer}
-                  onPlayPause={() => {
-                    setActiveDedicationPlayer(!activeDedicationPlayer);
-                    setActiveDonationPlayer(false); // Pause other player
-                  }}
-                  onError={() => {}}
+                <AudioPlayer
+                  songId={EXAMPLE_SONGS.dedication.id}
+                  urls={{ audioUrl: EXAMPLE_SONGS.dedication.storage.url }}
                 />
               </div>
             </div>
@@ -678,8 +668,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <div className="char-counter">{dedication.length}/100</div>
             {fieldErrors.dedication && <div className="field-error">{fieldErrors.dedication}</div>}
           </div>
-          
-          
+
+
         </>
       )}
 
@@ -720,7 +710,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       {/* Donation Fields */}
       {wantsDonation && (
         <>
-        {/* Example Player for Donation */}{/* Example Player for Donation */}
+          {/* Example Player for Donation */}{/* Example Player for Donation */}
           <div className="example-player-container">
             <div className="example-player-header">
               <span className="example-player-label">Exemplu</span>
@@ -740,15 +730,9 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
                 </div>
               </div>
               <div className="example-player-controls">
-                <LazyAudioPlayer
-                  audioUrl={EXAMPLE_SONGS.aruncaCuBani.storage.url}
-                  fallbackAudioUrl={EXAMPLE_SONGS.aruncaCuBani.apiData.audioUrl}
-                  isPlaying={activeDonationPlayer}
-                  onPlayPause={() => {
-                    setActiveDonationPlayer(!activeDonationPlayer);
-                    setActiveDedicationPlayer(false); // Pause other player
-                  }}
-                  onError={() => {}}
+                <AudioPlayer
+                  songId={EXAMPLE_SONGS.aruncaCuBani.id}
+                  urls={{ audioUrl: EXAMPLE_SONGS.aruncaCuBani.storage.url }}
                 />
               </div>
             </div>
@@ -785,8 +769,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             />
             {fieldErrors.donationAmount && <div className="field-error">{fieldErrors.donationAmount}</div>}
           </div>
-          
-          
+
+
         </>
       )}
 
@@ -794,7 +778,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       <div className="price-container-wrapper">
         <div className="price-container">
           <div className="price-card">
-            <h3 className="price-title">Preț final <br/><i>(două manele la preț de una)</i></h3>
+            <h3 className="price-title">Preț final <br /><i>(două manele la preț de una)</i></h3>
             <div className="price-amount">
               <span className="price-value">{calculatePrice().toFixed(2)}</span>
               <span className="price-currency">RON</span>
