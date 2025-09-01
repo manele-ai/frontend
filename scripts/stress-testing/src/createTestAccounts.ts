@@ -124,7 +124,9 @@ async function createTestAccountsWithRetry(accounts: TestAccount[]): Promise<Tes
  * Save results to JSON file
  */
 function saveResults(results: TestAccountResult[], filename: string): void {
-  const outputDir = path.join(__dirname, '..', 'output');
+  // Get test folder from environment variable
+  const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+  const outputDir = path.join(__dirname, '..', 'output', testFolder);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
@@ -239,9 +241,8 @@ async function main(): Promise<void> {
     // Generate summary
     generateSummaryReport(allResults);
     
-    // Save results
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    saveResults(allResults, `test-accounts-${timestamp}.json`);
+    // Save results (timestamp is now in folder name)
+    saveResults(allResults, 'test-accounts.json');
     
     // Save successful accounts for stress testing
     const successfulAccounts = allResults
@@ -251,7 +252,7 @@ async function main(): Promise<void> {
     if (successfulAccounts.length > 0) {
       saveResults(
         successfulAccounts.map(account => ({ success: true, account, duration: 0 })),
-        `successful-accounts-${timestamp}.json`
+        'successful-accounts.json'
       );
       logWithTimestamp(`💾 Saved ${successfulAccounts.length} successful accounts for stress testing`);
     }

@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
+import * as path from 'path';
 import { firebaseConfig } from './config';
 import { TestAccount } from './types';
 import { logWithTimestamp, sleep } from './utils';
@@ -46,29 +47,24 @@ class TestAccountCleaner {
    */
   private async loadTestAccounts(): Promise<void> {
     try {
-      const outputDir = './output';
+      // Get test folder from environment variable
+      const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+      const outputDir = path.join('./output', testFolder);
       
       if (!fs.existsSync(outputDir)) {
-        logWithTimestamp('❌ No output directory found. Run create-accounts first.', 'ERROR');
+        logWithTimestamp('❌ Test folder not found. Run create-accounts first.', 'ERROR');
         process.exit(1);
       }
 
-      // Find the most recent test-accounts file
-      const files = fs.readdirSync(outputDir)
-        .filter(file => file.startsWith('test-accounts-') && file.endsWith('.json'))
-        .sort()
-        .reverse(); // Most recent first
-
-      if (files.length === 0) {
+      const accountsPath = path.join(outputDir, 'test-accounts.json');
+      
+      if (!fs.existsSync(accountsPath)) {
         logWithTimestamp('⚠️ No test accounts file found, trying to clean up by email pattern...', 'WARN');
         await this.cleanupByEmailPattern();
         return;
       }
-
-      const latestFile = files[0];
-      const accountsPath = `${outputDir}/${latestFile}`;
       
-      logWithTimestamp(`📂 Loading accounts from: ${latestFile}`);
+      logWithTimestamp(`📂 Loading accounts from: test-accounts.json`);
       
       const accountsData = fs.readFileSync(accountsPath, 'utf8');
       const results = JSON.parse(accountsData);
@@ -205,6 +201,9 @@ class TestAccountCleaner {
       logWithTimestamp(`❌ Failed to delete: ${failureCount} accounts`);
       logWithTimestamp(`📊 Total processed: ${testAccounts.length} accounts`);
       
+      // Save cleanup results
+      this.saveCleanupResults(successCount, failureCount, testAccounts.length);
+      
       if (failureCount === 0) {
         logWithTimestamp('🎉 All test accounts cleaned up successfully!');
       } else {
@@ -215,6 +214,43 @@ class TestAccountCleaner {
     } catch (error) {
       logWithTimestamp(`❌ Failed to cleanup by email pattern: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
       throw error;
+    }
+  }
+
+  /**
+   * Save cleanup results to file
+   */
+  private saveCleanupResults(successCount: number, failureCount: number, totalCount: number): void {
+    try {
+      // Get test folder from environment variable
+      const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+      const outputDir = path.join(__dirname, '..', 'output', testFolder);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      
+      const now = new Date();
+      
+      const cleanupResults = {
+        timestamp: now.toISOString(),
+        summary: {
+          totalAccounts: totalCount,
+          successfullyDeleted: successCount,
+          failedToDelete: failureCount,
+          successRate: totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 0
+        },
+        details: {
+          deletedAccounts: this.accounts.slice(0, successCount).map(acc => acc.email),
+          failedAccounts: this.accounts.slice(successCount).map(acc => acc.email)
+        }
+      };
+      
+      const filePath = path.join(outputDir, 'cleanup-results.json');
+      fs.writeFileSync(filePath, JSON.stringify(cleanupResults, null, 2));
+      logWithTimestamp(`💾 Cleanup results saved to: ${filePath}`);
+      
+    } catch (error) {
+      logWithTimestamp(`❌ Failed to save cleanup results: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
     }
   }
 
@@ -264,13 +300,23 @@ class TestAccountCleaner {
 
     // Clean up the accounts file
     try {
-      const outputDir = './output';
-      const files = fs.readdirSync(outputDir)
-        .filter(file => file.startsWith('test-accounts-') && file.endsWith('.json'));
+      // Get test folder from environment variable
+      const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+      const outputDir = path.join('./output', testFolder);
       
-      for (const file of files) {
-        fs.unlinkSync(`${outputDir}/${file}`);
-        logWithTimestamp(`✅ Deleted test accounts file: ${file}`);
+      if (fs.existsSync(outputDir)) {
+        const testAccountsFile = path.join(outputDir, 'test-accounts.json');
+        const successfulAccountsFile = path.join(outputDir, 'successful-accounts.json');
+        
+        if (fs.existsSync(testAccountsFile)) {
+          fs.unlinkSync(testAccountsFile);
+          logWithTimestamp(`✅ Deleted test accounts file: test-accounts.json`);
+        }
+        
+        if (fs.existsSync(successfulAccountsFile)) {
+          fs.unlinkSync(successfulAccountsFile);
+          logWithTimestamp(`✅ Deleted successful accounts file: successful-accounts.json`);
+        }
       }
     } catch (error) {
       logWithTimestamp(`⚠️ Could not delete test accounts files: ${error instanceof Error ? error.message : 'Unknown error'}`, 'WARN');
@@ -283,6 +329,9 @@ class TestAccountCleaner {
     logWithTimestamp(`✅ Successfully deleted: ${successCount} accounts`);
     logWithTimestamp(`❌ Failed to delete: ${failureCount} accounts`);
     logWithTimestamp(`📊 Total processed: ${this.accounts.length} accounts`);
+    
+    // Save cleanup results
+    this.saveCleanupResults(successCount, failureCount, this.accounts.length);
     
     if (failureCount === 0) {
       logWithTimestamp('🎉 All test accounts cleaned up successfully!');

@@ -14,9 +14,15 @@ config();
 class FullStressTestRunner {
   private requestCount: number;
   private totalStartTime: number = 0;
+  private testFolder: string;
 
   constructor(requestCount: number = 10) {
     this.requestCount = requestCount;
+    // Create timestamped test folder
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '-'); // HH-MM-SS
+    this.testFolder = `test-${dateStr}_${timeStr}`;
   }
 
   /**
@@ -28,7 +34,11 @@ class FullStressTestRunner {
       
       const child = spawn('npm', ['run', command, ...args], {
         stdio: 'inherit',
-        shell: true
+        shell: true,
+        env: {
+          ...process.env,
+          STRESS_TEST_FOLDER: this.testFolder
+        }
       });
 
       child.on('close', (code) => {
@@ -56,31 +66,25 @@ class FullStressTestRunner {
       const fs = require('fs');
       const path = require('path');
       
-      // Find the most recent performance report
-      const outputDir = './output';
+      // Find the performance report in the test folder
+      const outputDir = path.join('./output', this.testFolder);
       if (!fs.existsSync(outputDir)) {
-        logWithTimestamp('⚠️ No output directory found for performance summary', 'WARN');
+        logWithTimestamp('⚠️ No test folder found for performance summary', 'WARN');
         return;
       }
 
-      const files = fs.readdirSync(outputDir)
-        .filter((file: string) => file.startsWith('performance-report-') && file.endsWith('.json'))
-        .sort()
-        .reverse(); // Most recent first
-
-      if (files.length === 0) {
+      const reportPath = path.join(outputDir, 'performance-report.json');
+      
+      if (!fs.existsSync(reportPath)) {
         logWithTimestamp('⚠️ No performance report found for summary', 'WARN');
         return;
       }
-
-      const latestFile = files[0];
-      const reportPath = path.join(outputDir, latestFile);
       
       const reportData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
       
       logWithTimestamp('\n📊 FINAL PERFORMANCE SUMMARY');
       logWithTimestamp('============================================================');
-      logWithTimestamp(`📈 Test Results from: ${latestFile}`);
+      logWithTimestamp(`📈 Test Results from: ${this.testFolder}/performance-report.json`);
       logWithTimestamp('============================================================');
       logWithTimestamp(`📊 Total Requests: ${reportData.totalRequests}`);
       logWithTimestamp(`✅ Successful: ${reportData.successfulRequests} (${((reportData.successfulRequests / reportData.totalRequests) * 100).toFixed(1)}%)`);
@@ -142,8 +146,62 @@ class FullStressTestRunner {
       
       logWithTimestamp('============================================================');
       
+      // Save final summary to file
+      this.saveFinalSummary(reportData, grade, totalScore);
+      
     } catch (error) {
       logWithTimestamp(`⚠️ Could not display performance summary: ${error instanceof Error ? error.message : 'Unknown error'}`, 'WARN');
+    }
+  }
+
+  /**
+   * Save final summary to a timestamped file
+   */
+  private saveFinalSummary(reportData: any, grade: string, totalScore: number): void {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const outputDir = path.join('./output', this.testFolder);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      
+      const now = new Date();
+      
+      const finalSummary = {
+        timestamp: now.toISOString(),
+        testFolder: this.testFolder,
+        summary: {
+          totalRequests: reportData.totalRequests,
+          successfulRequests: reportData.successfulRequests,
+          failedRequests: reportData.failedRequests,
+          successRate: ((reportData.successfulRequests / reportData.totalRequests) * 100).toFixed(1) + '%',
+          errorRate: reportData.errorRate.toFixed(1) + '%',
+          requestsPerSecond: reportData.requestsPerSecond.toFixed(2),
+          averageResponseTime: reportData.averageResponseTime.toFixed(0) + 'ms',
+          minResponseTime: reportData.minResponseTime.toFixed(0) + 'ms',
+          maxResponseTime: reportData.maxResponseTime.toFixed(0) + 'ms',
+          testDuration: Math.round(reportData.duration / 1000) + 's'
+        },
+        performance: {
+          overallGrade: grade,
+          totalScore: `${totalScore}/9`,
+          assessment: {
+            errorRate: reportData.errorRate < 5 ? 'EXCELLENT' : reportData.errorRate < 10 ? 'GOOD' : 'NEEDS ATTENTION',
+            responseTime: reportData.averageResponseTime < 2000 ? 'EXCELLENT' : reportData.averageResponseTime < 5000 ? 'ACCEPTABLE' : 'NEEDS OPTIMIZATION',
+            throughput: reportData.requestsPerSecond > 1.5 ? 'EXCELLENT' : reportData.requestsPerSecond > 1.0 ? 'ACCEPTABLE' : 'NEEDS INVESTIGATION'
+          }
+        }
+      };
+      
+      const filename = 'full-test-summary.json';
+      const filePath = path.join(outputDir, filename);
+      fs.writeFileSync(filePath, JSON.stringify(finalSummary, null, 2));
+      logWithTimestamp(`💾 Final summary saved to: ${filePath}`);
+      
+    } catch (error) {
+      logWithTimestamp(`❌ Failed to save final summary: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
     }
   }
 
@@ -156,6 +214,7 @@ class FullStressTestRunner {
     logWithTimestamp('🎯 Starting Full Stress Test Workflow');
     logWithTimestamp('============================================================');
     logWithTimestamp(`📊 Target: ${this.requestCount} concurrent requests`);
+    logWithTimestamp(`📁 Test Folder: ${this.testFolder}`);
     logWithTimestamp('============================================================');
 
     let step = 1;

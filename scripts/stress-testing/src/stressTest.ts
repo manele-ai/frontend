@@ -19,6 +19,8 @@ if (admin.apps.length === 0) {
   });
 }
 
+
+
 class StressTester {
   private performanceMonitor: PerformanceMonitor;
   private testDataGenerator: TestDataGenerator;
@@ -52,15 +54,19 @@ class StressTester {
     try {
       logWithTimestamp('📂 Loading test accounts...');
       
-      const outputDir = path.join(__dirname, '..', 'output');
-      const files = fs.readdirSync(outputDir);
-      const successfulAccountsFile = files.find(file => file.startsWith('successful-accounts-'));
+      // Get test folder from environment variable
+      const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+      const outputDir = path.join(__dirname, '..', 'output', testFolder);
       
-      if (!successfulAccountsFile) {
-        throw new Error('No successful accounts file found. Run create-accounts first.');
+      if (!fs.existsSync(outputDir)) {
+        throw new Error('Test folder not found. Run create-accounts first.');
       }
       
-      const filePath = path.join(outputDir, successfulAccountsFile);
+      const filePath = path.join(outputDir, 'successful-accounts.json');
+      
+      if (!fs.existsSync(filePath)) {
+        throw new Error('No successful accounts file found. Run create-accounts first.');
+      }
       const fileContent = fs.readFileSync(filePath, 'utf-8');
       const results = JSON.parse(fileContent);
       
@@ -98,6 +104,17 @@ class StressTester {
    * This bypasses Cloud Functions and App Check for stress testing
    */
   private async makeGenerationRequest(
+    account: TestAccount, 
+    request: GenerationRequest
+  ): Promise<StressTestResult> {
+    return this.makeFirestoreRequest(account, request);
+  }
+
+  /**
+   * Simulate a generation request by directly creating data in Firestore
+   * This bypasses Cloud Functions and App Check for stress testing
+   */
+  private async makeFirestoreRequest(
     account: TestAccount, 
     request: GenerationRequest
   ): Promise<StressTestResult> {
@@ -167,6 +184,8 @@ class StressTester {
       return stressResult;
     }
   }
+
+
 
   /**
    * Run stress test with specified number of requests
@@ -240,14 +259,15 @@ class StressTester {
    */
   private saveResults(): void {
     try {
-      const outputDir = path.join(__dirname, '..', 'output');
+      // Get test folder from environment variable
+      const testFolder = process.env.STRESS_TEST_FOLDER || 'default';
+      const outputDir = path.join(__dirname, '..', 'output', testFolder);
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
       
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const resultsFile = path.join(outputDir, `stress-test-results-${timestamp}.json`);
-      const metricsFile = path.join(outputDir, `performance-report-${timestamp}.json`);
+      const resultsFile = path.join(outputDir, 'stress-test-results.json');
+      const metricsFile = path.join(outputDir, 'performance-report.json');
       
       // Save detailed results
       const results = this.performanceMonitor.getResults();
