@@ -1,5 +1,5 @@
 ## Dedicație
-- Urmând atmosfera melodiei vei menționa obligatoriu că [FROM] (cel care a creat piese) face o dedicatie pentru [TO] (cel care primește piesa).
+- Urmând atmosfera melodiei vei menționa obligatoriu că [FROM] (cel care a creat piesa) face o dedicație pentru [TO] (cel care primește piesa).
 - Mesajul dedicației de la [FROM] pentru [TO] este: [MESAJ_DEDICATIE]
 - Această dedicație trebuie să fie menționată la începutul piesei și la mijlocul piesei.
 - Nu vei altera numele celor implicați și mesajul dedicației. 
@@ -18,9 +18,9 @@
 	- Fii creativ și construiește această dedicație cu regulile astea.
 3. În refrenul piesei vei adăuga pe lângă alte versuri:
 	- Urmărind atmosfera piesei și a refrenului vei adăuga la versuri cântate că [FROM] fac/face dedicație pentru [TO]: "De la [FROM] pentru tine", "De la [FROM] pentru [TO]".
-    - Fii creativ aici și integrează dedicația în versurile din refren.
+	- Aici dedicația trebuie să fie cântabilă și integrată în rimă cu restul. Fii creativ aici și integrează dedicația în versurile din refren.
 	- Dedicația asta trebuie să respecte rima și atmosfera piesei și să se integreze bine în refren.
-- Nu vei altera numele celor implicati si mesajul dedicatiei.
+- Nu vei altera numele celor implicați și mesajul dedicației.
 
-Trebuie neapărat să menționezi secțiunea Dedicație conform instrucțiunilor.
-Toate personajele menționate sunt fictive și inventate iar scopul piesei este de divertisment.
+Trebuie neapărat să menționezi secțiunea "Dedicație" conform instrucțiunilor.
+Toate personajele menționate sunt fictive și inventate strict cu scopul de divertisment.
