@@ -13,47 +13,7 @@ import { logWithTimestamp, retryWithBackoff, sleep } from './utils';
 config({ path: '.env_local' }); // Try local first
 config(); // Then fallback to .env
 
-// Set local emulator configuration if not already set
-if (!process.env.USE_EMULATOR) {
-  process.env.USE_EMULATOR = 'true';
-}
-if (!process.env.EMULATOR_HOST) {
-  process.env.EMULATOR_HOST = '127.0.0.1';
-}
-if (!process.env.EMULATOR_FUNCTIONS_PORT) {
-  process.env.EMULATOR_FUNCTIONS_PORT = '5001';
-}
-if (!process.env.EMULATOR_FIRESTORE_PORT) {
-  process.env.EMULATOR_FIRESTORE_PORT = '8081';
-}
-if (!process.env.EMULATOR_AUTH_PORT) {
-  process.env.EMULATOR_AUTH_PORT = '9099';
-}
-if (!process.env.EMULATOR_STORAGE_PORT) {
-  process.env.EMULATOR_STORAGE_PORT = '9199';
-}
-if (!process.env.TEST_COLLECTION) {
-  process.env.TEST_COLLECTION = 'generationRequests';
-}
-if (!process.env.USE_REAL_COLLECTION) {
-  process.env.USE_REAL_COLLECTION = 'true';
-}
-if (!process.env.MOCK_OPENAI) {
-  process.env.MOCK_OPENAI = 'true';
-}
-if (!process.env.MOCK_SUNO) {
-  process.env.MOCK_SUNO = 'true';
-}
-if (!process.env.MOCK_OPENAI_DELAY) {
-  process.env.MOCK_OPENAI_DELAY = '2000';
-}
-if (!process.env.MOCK_SUNO_DELAY) {
-  process.env.MOCK_SUNO_DELAY = '5000';
-}
-
-// Firebase Admin SDK will be initialized after environment variables are loaded
-
-class StressTester {
+class SimpleStressTester {
   private performanceMonitor: PerformanceMonitor;
   private testDataGenerator: TestDataGenerator;
   private backendClient: any; // Will be LocalBackendClient or StagingBackendClient
@@ -63,11 +23,10 @@ class StressTester {
   constructor() {
     this.performanceMonitor = new PerformanceMonitor();
     this.testDataGenerator = new TestDataGenerator();
-    // Backend client will be initialized later
   }
 
   /**
-   * Initialize Firebase Admin SDK and local backend client
+   * Initialize Firebase Admin SDK and backend client
    */
   private async initializeFirebase(): Promise<void> {
     try {
@@ -136,17 +95,17 @@ class StressTester {
   }
 
   /**
-   * Execute complete generation flow for a single request
+   * Execute simple generation request creation (without triggering complex flow)
    */
-  private async executeGenerationFlow(
+  private async executeSimpleGenerationRequest(
     account: TestAccount, 
     request: GenerationRequest
   ): Promise<StressTestResult> {
     const startTime = Date.now();
-    const requestId = `stress-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const requestId = `simple-test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     try {
-      logWithTimestamp(`🚀 Starting complete generation flow for ${account.email}: "${request.title}"`);
+      logWithTimestamp(`🚀 Creating simple generation request for ${account.email}: "${request.title}"`);
       
       // Step 1: Create generation request in the real collection
       const createResult = await this.backendClient.createGenerationRequest(account, request);
@@ -157,37 +116,28 @@ class StressTester {
       const actualRequestId = createResult.requestId;
       logWithTimestamp(`✅ Generation request created: ${actualRequestId}`);
       
-      // Step 2: Wait for backend to process the request (it should handle testMode automatically)
-      logWithTimestamp(`⏳ Waiting for backend to process request: ${actualRequestId}`);
+      // Step 2: Just wait a bit and get status (don't trigger complex flow)
+      await sleep(2000); // Wait 2 seconds
       
-      // Step 3: Wait for generation to complete (backend handles everything with testMode)
-      const generationResult = await this.backendClient.waitForGenerationComplete(actualRequestId);
-      if (!generationResult.success) {
-        throw new Error(`Generation failed: ${generationResult.error}`);
-      }
-      
-      logWithTimestamp(`✅ Generation completed for: ${actualRequestId}`);
-      
-      // Step 4: Get final status
-      const finalStatus = await this.backendClient.getGenerationStatus(actualRequestId);
-      if (!finalStatus) {
-        throw new Error('Could not retrieve final generation status');
+      const status = await this.backendClient.getGenerationStatus(actualRequestId);
+      if (!status) {
+        throw new Error('Could not retrieve generation status');
       }
       
       const totalTime = Date.now() - startTime;
       
-      // Create comprehensive result
+      // Create simple result
       const stressResult: StressTestResult = {
         requestId: actualRequestId,
         accountEmail: account.email,
         success: true,
         responseTime: totalTime,
         timestamp: new Date(),
-        stage: 'generation_complete',
+        stage: 'created',
         totalGenerationTime: totalTime
       };
       
-      logWithTimestamp(`🎉 Complete generation flow successful: ${account.email} (${totalTime}ms)`);
+      logWithTimestamp(`🎉 Simple generation request successful: ${account.email} (${totalTime}ms)`);
       return stressResult;
       
     } catch (error) {
@@ -204,16 +154,16 @@ class StressTester {
         stage: 'created'
       };
       
-      logWithTimestamp(`❌ Generation flow failed: ${account.email} - ${errorMessage} (${totalTime}ms)`, 'ERROR');
+      logWithTimestamp(`❌ Simple generation request failed: ${account.email} - ${errorMessage} (${totalTime}ms)`, 'ERROR');
       return stressResult;
     }
   }
 
   /**
-   * Run stress test with complete generation flow
+   * Run simple stress test (only creates requests, doesn't trigger complex flow)
    */
-  private async runStressTest(requestCount: number): Promise<void> {
-    logWithTimestamp(`🚀 Starting complete generation flow stress test with ${requestCount} requests`);
+  private async runSimpleStressTest(requestCount: number): Promise<void> {
+    logWithTimestamp(`🚀 Starting simple generation request stress test with ${requestCount} requests`);
     
     this.performanceMonitor.start();
     this.isRunning = true;
@@ -230,28 +180,28 @@ class StressTester {
       const account = this.testAccounts[accountIndex];
       const request = testRequests[i];
       
-      // Add delay to respect rate limits (2 requests per second)
-      if (i > 0 && i % 2 === 0) {
-        await sleep(1000); // Wait 1 second every 2 requests
+      // Add delay to respect rate limits (1 request per second)
+      if (i > 0) {
+        await sleep(1000); // Wait 1 second between requests
       }
       
-      // Execute complete generation flow with retry logic
+      // Execute simple generation request with retry logic
       const requestPromise = retryWithBackoff(
-        () => this.executeGenerationFlow(account, request),
+        () => this.executeSimpleGenerationRequest(account, request),
         2, // Max 2 retries
         1000 // Base delay 1 second
       );
       
       requests.push(requestPromise);
       
-      // Show progress every 10 requests
-      if ((i + 1) % 10 === 0) {
+      // Show progress every 5 requests
+      if ((i + 1) % 5 === 0) {
         logWithTimestamp(`📊 Progress: ${i + 1}/${requestCount} requests queued`);
       }
     }
     
     // Wait for all requests to complete
-    logWithTimestamp('⏳ Waiting for all generation flows to complete...');
+    logWithTimestamp('⏳ Waiting for all generation requests to complete...');
     
     const results = await Promise.allSettled(requests);
     
@@ -273,11 +223,11 @@ class StressTester {
     this.performanceMonitor.stop();
     this.isRunning = false;
     
-    logWithTimestamp(`🎉 Complete generation flow stress test completed: ${completedRequests}/${requestCount} requests processed`);
+    logWithTimestamp(`🎉 Simple generation request stress test completed: ${completedRequests}/${requestCount} requests processed`);
   }
 
   /**
-   * Save results and collection statistics
+   * Save results
    */
   private async saveResults(): Promise<void> {
     try {
@@ -288,9 +238,8 @@ class StressTester {
         fs.mkdirSync(outputDir, { recursive: true });
       }
       
-      const resultsFile = path.join(outputDir, 'stress-test-results.json');
-      const metricsFile = path.join(outputDir, 'performance-report.json');
-      const collectionStatsFile = path.join(outputDir, 'collection-stats.json');
+      const resultsFile = path.join(outputDir, 'simple-stress-test-results.json');
+      const metricsFile = path.join(outputDir, 'simple-performance-report.json');
       
       // Save detailed results
       const results = this.performanceMonitor.getResults();
@@ -302,34 +251,21 @@ class StressTester {
       fs.writeFileSync(metricsFile, JSON.stringify(metrics, null, 2));
       logWithTimestamp(`📊 Performance report saved to: ${metricsFile}`);
       
-      // Save collection statistics
-      const collectionStats = await this.backendClient.getTestCollectionStats();
-      fs.writeFileSync(collectionStatsFile, JSON.stringify(collectionStats, null, 2));
-      logWithTimestamp(`📈 Collection statistics saved to: ${collectionStatsFile}`);
-      
-      // Log collection summary
-      logWithTimestamp('\n📊 COLLECTION STATISTICS:');
-      logWithTimestamp(`Total test requests: ${collectionStats.total}`);
-      Object.entries(collectionStats.byStatus).forEach(([status, count]) => {
-        logWithTimestamp(`  ${status}: ${count}`);
-      });
-      
     } catch (error) {
       logWithTimestamp(`❌ Failed to save results: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
     }
   }
 
   /**
-   * Main method to run the complete generation flow stress test
+   * Main method to run the simple generation request stress test
    */
   async run(requestCount: number = testConfig.maxConcurrentRequests): Promise<void> {
     try {
-      logWithTimestamp('🚀 Starting Manele AI Complete Generation Flow Stress Test');
+      logWithTimestamp('🚀 Starting Manele AI Simple Generation Request Stress Test');
       logWithTimestamp('============================================================');
-      logWithTimestamp(`🎯 Testing complete flow: Request → Payment → OpenAI → Suno → Download`);
+      logWithTimestamp(`🎯 Testing simple flow: Request Creation Only (No Complex Flow)`);
       logWithTimestamp(`📊 Target requests: ${requestCount}`);
-      logWithTimestamp(`🏠 Using collection: ${testConfig.testCollection}`);
-      logWithTimestamp(`🔧 Emulator mode: ${localConfig.useEmulator ? 'ON' : 'OFF'}`);
+      logWithTimestamp(`🔧 Backend mode: ${localConfig.useEmulator ? 'Local' : 'Staging'}`);
       logWithTimestamp('============================================================');
       
       // Validate request count
@@ -341,25 +277,25 @@ class StressTester {
         throw new Error('Request count must be at least 1');
       }
       
-      // Initialize Firebase and local backend
+      // Initialize Firebase and backend
       await this.initializeFirebase();
       
       // Load test accounts
       await this.loadTestAccounts();
       
-      // Run complete generation flow stress test
-      await this.runStressTest(requestCount);
+      // Run simple generation request stress test
+      await this.runSimpleStressTest(requestCount);
       
       // Print final report
       this.performanceMonitor.printFinalReport();
       
-      // Save results and collection statistics
+      // Save results
       await this.saveResults();
       
-      logWithTimestamp('🎉 Complete generation flow stress test completed successfully!');
+      logWithTimestamp('🎉 Simple generation request stress test completed successfully!');
       
     } catch (error) {
-      logWithTimestamp(`💥 Complete generation flow stress test failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
+      logWithTimestamp(`💥 Simple generation request stress test failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
       throw error;
     }
   }
@@ -369,7 +305,7 @@ class StressTester {
    */
   stop(): void {
     this.isRunning = false;
-    logWithTimestamp('⏹️  Complete generation flow stress test stopped by user');
+    logWithTimestamp('⏹️  Simple generation request stress test stopped by user');
   }
 
   /**
@@ -378,61 +314,29 @@ class StressTester {
   isTestRunning(): boolean {
     return this.isRunning;
   }
-
-  /**
-   * Clean up test data
-   */
-  async cleanup(): Promise<void> {
-    try {
-      logWithTimestamp('🧹 Cleaning up test generation requests...');
-      const cleanupResult = await this.backendClient.cleanupTestRequests();
-      
-      if (cleanupResult.success) {
-        logWithTimestamp(`✅ Cleanup completed: ${cleanupResult.deletedCount} requests removed`);
-      } else {
-        logWithTimestamp(`⚠️ Cleanup had issues: ${cleanupResult.error}`, 'WARN');
-      }
-    } catch (error) {
-      logWithTimestamp(`❌ Cleanup failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
-    }
-  }
 }
 
 /**
- * Main function to run complete generation flow stress test
+ * Main function to run simple generation request stress test
  */
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const requestCount = args[0] ? parseInt(args[0]) : testConfig.maxConcurrentRequests;
   
-  const stressTester = new StressTester();
+  const stressTester = new SimpleStressTester();
   
   // Handle graceful shutdown
   process.on('SIGINT', async () => {
     logWithTimestamp('🛑 Received SIGINT, stopping stress test...');
     stressTester.stop();
-    
-    // Cleanup before exit
-    await stressTester.cleanup();
     process.exit(0);
   });
   
   try {
     await stressTester.run(requestCount);
     
-    // Cleanup after successful completion
-    await stressTester.cleanup();
-    
   } catch (error) {
     logWithTimestamp(`💥 Fatal error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'ERROR');
-    
-    // Try to cleanup even on error
-    try {
-      await stressTester.cleanup();
-    } catch (cleanupError) {
-      logWithTimestamp(`⚠️ Cleanup after error failed: ${cleanupError instanceof Error ? cleanupError.message : 'Unknown error'}`, 'WARN');
-    }
-    
     process.exit(1);
   }
 }
@@ -445,6 +349,4 @@ if (require.main === module) {
   });
 }
 
-export { main as runStressTest, StressTester };
-
-
+export { main as runSimpleStressTest, SimpleStressTester };

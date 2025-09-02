@@ -5,9 +5,43 @@ import { firebaseConfig, testConfig } from './config';
 import { TestAccount, TestAccountResult } from './types';
 import { generateTestAccounts, logWithTimestamp, retryWithBackoff, sleep } from './utils';
 
+// Set local emulator configuration if not already set
+if (!process.env.USE_EMULATOR) {
+  process.env.USE_EMULATOR = 'true';
+}
+if (!process.env.EMULATOR_HOST) {
+  process.env.EMULATOR_HOST = '127.0.0.1';
+}
+if (!process.env.EMULATOR_FUNCTIONS_PORT) {
+  process.env.EMULATOR_FUNCTIONS_PORT = '5001';
+}
+if (!process.env.EMULATOR_FIRESTORE_PORT) {
+  process.env.EMULATOR_FIRESTORE_PORT = '8081';
+}
+if (!process.env.EMULATOR_AUTH_PORT) {
+  process.env.EMULATOR_AUTH_PORT = '9099';
+}
+
+// Log emulator configuration for debugging
+console.log('🔧 createTestAccounts.ts - Emulator Configuration:');
+console.log(`   USE_EMULATOR: ${process.env.USE_EMULATOR}`);
+console.log(`   EMULATOR_HOST: ${process.env.EMULATOR_HOST}`);
+console.log(`   EMULATOR_FIRESTORE_PORT: ${process.env.EMULATOR_FIRESTORE_PORT}`);
+console.log(`   EMULATOR_AUTH_PORT: ${process.env.EMULATOR_AUTH_PORT}`);
+
 // Initialize Firebase Admin SDK
 function initializeFirebase(): void {
   if (admin.apps.length === 0) {
+    // Set emulator environment variables BEFORE initializing
+    if (process.env.USE_EMULATOR === 'true') {
+      process.env.FIRESTORE_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_FIRESTORE_PORT}`;
+      process.env.FIREBASE_AUTH_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_AUTH_PORT}`;
+      
+      logWithTimestamp(`🔧 Connecting to local emulator:`);
+      logWithTimestamp(`   - Firestore: ${process.env.FIRESTORE_EMULATOR_HOST}`);
+      logWithTimestamp(`   - Auth: ${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
+    }
+    
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: firebaseConfig.projectId,
@@ -16,6 +50,10 @@ function initializeFirebase(): void {
       }),
       projectId: firebaseConfig.projectId,
     });
+    
+    logWithTimestamp('✅ Firebase Admin SDK initialized successfully');
+  } else {
+    logWithTimestamp('✅ Firebase Admin SDK already initialized');
   }
 }
 
@@ -48,7 +86,11 @@ async function createTestAccount(account: TestAccount): Promise<TestAccountResul
       preferences: {
         favoriteStyles: [],
         language: 'ro'
-      }
+      },
+      // Additional fields that backend might expect
+      isActive: true,
+      subscriptionStatus: 'free',
+      testMode: true
     });
     
     const duration = Date.now() - startTime;

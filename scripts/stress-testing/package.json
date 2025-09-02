@@ -11,7 +11,24 @@
     "stress-test": "ts-node src/stressTest.ts",
     "clean-accounts": "ts-node src/cleanTestAccounts.ts",
     "full-test": "ts-node src/fullStressTest.ts",
-    "clean": "rm -rf dist"
+    "local-create-accounts": "USE_EMULATOR=true ts-node src/createTestAccounts.ts",
+    "local-stress-test": "USE_EMULATOR=true ts-node src/stressTest.ts",
+    "local-clean-accounts": "USE_EMULATOR=true ts-node src/cleanTestAccounts.ts",
+    "local-full-test": "USE_EMULATOR=true ts-node src/fullStressTest.ts",
+    "local-test": "TEST_ENVIRONMENT=local ts-node src/stressTest.ts 10",
+    "local-test-small": "TEST_ENVIRONMENT=local ts-node src/stressTest.ts 5",
+    "local-test-medium": "TEST_ENVIRONMENT=local ts-node src/stressTest.ts 25",
+    "local-test-large": "TEST_ENVIRONMENT=local ts-node src/stressTest.ts 50",
+    "staging-test": "TEST_ENVIRONMENT=staging ts-node src/stressTest.ts 10",
+    "staging-test-small": "TEST_ENVIRONMENT=staging ts-node src/stressTest.ts 5",
+    "staging-test-medium": "TEST_ENVIRONMENT=staging ts-node src/stressTest.ts 25",
+    "staging-test-large": "TEST_ENVIRONMENT=staging ts-node src/stressTest.ts 50",
+    "simple-test": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 10",
+    "simple-test-small": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 5",
+    "simple-test-medium": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 25",
+    "simple-test-large": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 50",
+    "clean": "rm -rf dist",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0",
@@ -22,7 +39,7 @@
     "typescript": "^5.0.0",
     "ts-node": "^10.9.0"
   },
-  "keywords": ["stress-testing", "firebase", "manele-ai"],
+  "keywords": ["stress-testing", "firebase", "manele-ai", "emulator", "local-testing"],
   "author": "Manele AI Team",
   "license": "MIT"
 }

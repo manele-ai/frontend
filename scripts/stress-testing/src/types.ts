@@ -44,6 +44,11 @@ export interface StressTestResult {
   responseTime: number;
   error?: string;
   timestamp: Date;
+  // Additional fields for complete flow testing
+  stage?: 'created' | 'payment_success' | 'openai_complete' | 'suno_complete' | 'generation_complete';
+  openaiTime?: number;
+  sunoTime?: number;
+  totalGenerationTime?: number;
 }
 
 export interface PerformanceMetrics {
@@ -58,6 +63,10 @@ export interface PerformanceMetrics {
   startTime: Date;
   endTime: Date;
   duration: number;
+  // Additional metrics for generation flow
+  averageOpenaiTime?: number;
+  averageSunoTime?: number;
+  averageTotalGenerationTime?: number;
 }
 
 export interface FirebaseConfig {
@@ -70,4 +79,46 @@ export interface StagingConfig {
   functionsUrl: string;
   frontendUrl: string;
   projectId: string;
+}
+
+export interface LocalConfig {
+  useEmulator: boolean;
+  emulatorHost: string;
+  emulatorPorts: {
+    functions: number;
+    firestore: number;
+    auth: number;
+    storage: number;
+  };
+  backendUrl: string;
+  projectId: string;
+}
+
+// Mock service interfaces
+export interface MockOpenAIResponse {
+  success: boolean;
+  lyrics?: string;
+  error?: string;
+  delay: number;
+}
+
+export interface MockSunoResponse {
+  success: boolean;
+  audioUrl?: string;
+  error?: string;
+  delay: number;
+}
+
+// Generation request status for testing
+export interface GenerationRequestStatus {
+  id: string;
+  status: 'pending' | 'payment_success' | 'generation_started' | 'openai_complete' | 'suno_complete' | 'generation_complete';
+  paymentStatus: 'pending' | 'success' | 'failed';
+  generationStarted: boolean;
+  generationStartedAt?: Date;
+  openaiCompletedAt?: Date;
+  sunoCompletedAt?: Date;
+  completedAt?: Date;
+  downloadUrl?: string;
+  error?: string;
 }

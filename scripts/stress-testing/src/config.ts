@@ -1,16 +1,42 @@
 import { config } from 'dotenv';
-import { FirebaseConfig, StagingConfig } from './types';
+import * as fs from 'fs';
+import * as path from 'path';
+import { FirebaseConfig, LocalConfig, StagingConfig } from './types';
 
-// Load environment variables
+// Load environment variables - try .env_local first, then .env
+config({ path: '.env_local' });
 config();
+
+// Try to load .env_local directly for Firebase credentials
+let firebasePrivateKey = '';
+let firebaseClientEmail = '';
+
+try {
+  const envLocalPath = path.join(__dirname, '..', '.env_local');
+  if (fs.existsSync(envLocalPath)) {
+    const envLocalContent = fs.readFileSync(envLocalPath, 'utf8');
+    
+    // Parse FIREBASE_PRIVATE_KEY
+    const privateKeyMatch = envLocalContent.match(/FIREBASE_PRIVATE_KEY=(.+)/);
+    if (privateKeyMatch && privateKeyMatch[1]) {
+      try {
+        const parsed = JSON.parse(privateKeyMatch[1]);
+        firebasePrivateKey = parsed.private_key?.replace(/\\n/g, '\n') || '';
+        firebaseClientEmail = parsed.client_email || '';
+        console.log('🔍 Successfully parsed Firebase credentials from .env_local');
+      } catch (error) {
+        console.error('🔍 Failed to parse FIREBASE_PRIVATE_KEY JSON:', error);
+      }
+    }
+  }
+} catch (error) {
+  console.error('🔍 Failed to read .env_local:', error);
+}
 
 export const firebaseConfig: FirebaseConfig = {
   projectId: process.env.FIREBASE_PROJECT_ID || 'manele-io-test',
-  privateKey: process.env.FIREBASE_PRIVATE_KEY ? 
-    (process.env.FIREBASE_PRIVATE_KEY.startsWith('{') ? 
-      JSON.parse(process.env.FIREBASE_PRIVATE_KEY).private_key?.replace(/\\n/g, '\n') || '' :
-      process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')) : '',
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+  privateKey: firebasePrivateKey || process.env.FIREBASE_PRIVATE_KEY || '',
+  clientEmail: firebaseClientEmail || process.env.FIREBASE_CLIENT_EMAIL || '',
 };
 
 export const stagingConfig: StagingConfig = {
@@ -18,6 +44,48 @@ export const stagingConfig: StagingConfig = {
   frontendUrl: process.env.STAGING_FRONTEND_URL || 'https://staging-9bha86vbc1980bca71.manele.io',
   projectId: process.env.FIREBASE_PROJECT_ID || 'manele-io-test',
 };
+
+// Local emulator configuration
+export const localConfig: LocalConfig = {
+  useEmulator: process.env.USE_EMULATOR === 'true' || false,
+  emulatorHost: process.env.EMULATOR_HOST || '127.0.0.1',
+  emulatorPorts: {
+    functions: parseInt(process.env.EMULATOR_FUNCTIONS_PORT || '5001'),
+    firestore: parseInt(process.env.EMULATOR_FIRESTORE_PORT || '8081'),
+    auth: parseInt(process.env.EMULATOR_AUTH_PORT || '9099'),
+    storage: parseInt(process.env.EMULATOR_STORAGE_PORT || '9199'),
+  },
+  backendUrl: process.env.LOCAL_BACKEND_URL || 'http://127.0.0.1:5001',
+  projectId: process.env.LOCAL_PROJECT_ID || 'manele-io-test',
+};
+
+// Environment switching configuration
+export const environmentConfig = {
+  // Set to 'local' for localhost:5001 + emulator, 'staging' for cloud functions
+  current: process.env.TEST_ENVIRONMENT || 'local',
+  
+  // Local environment
+  local: {
+    backendUrl: 'http://localhost:5001',
+    firestoreHost: '127.0.0.1:8081',
+    useEmulator: true
+  },
+  
+  // Staging environment  
+  staging: {
+    backendUrl: 'https://europe-central2-manele-io-test.cloudfunctions.net',
+    firestoreHost: 'production',
+    useEmulator: false
+  }
+};
+
+// Log emulator configuration for debugging
+console.log('🔧 Emulator Configuration:');
+console.log(`   USE_EMULATOR: ${process.env.USE_EMULATOR}`);
+console.log(`   EMULATOR_HOST: ${process.env.EMULATOR_HOST}`);
+console.log(`   EMULATOR_FIRESTORE_PORT: ${process.env.EMULATOR_FIRESTORE_PORT}`);
+console.log(`   EMULATOR_AUTH_PORT: ${process.env.EMULATOR_AUTH_PORT}`);
+console.log(`   localConfig.useEmulator: ${localConfig.useEmulator}`);
 
 export const testConfig = {
   accountsCount: parseInt(process.env.TEST_ACCOUNTS_COUNT || '100'),
@@ -27,6 +95,16 @@ export const testConfig = {
   maxConcurrentRequests: parseInt(process.env.MAX_CONCURRENT_REQUESTS || '50'),
   requestsPerSecond: parseInt(process.env.REQUESTS_PER_SECOND || '2'),
   testDurationSeconds: parseInt(process.env.TEST_DURATION_SECONDS || '300'),
+  // Mock configuration
+  mockOpenAI: process.env.MOCK_OPENAI === 'true' || true,
+  mockSuno: process.env.MOCK_SUNO === 'true' || true,
+  mockDelay: {
+    openai: parseInt(process.env.MOCK_OPENAI_DELAY || '2000'), // 2 seconds
+    suno: parseInt(process.env.MOCK_SUNO_DELAY || '5000'),    // 5 seconds
+  },
+  // Test collection configuration
+  testCollection: process.env.TEST_COLLECTION || 'generationRequests',
+  useRealCollection: process.env.USE_REAL_COLLECTION === 'true' || false,
 };
 
 // Validation

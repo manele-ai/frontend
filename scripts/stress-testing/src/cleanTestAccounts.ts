@@ -9,6 +9,23 @@ import { logWithTimestamp, sleep } from './utils';
 // Load environment variables
 config();
 
+// Set local emulator configuration if not already set
+if (!process.env.USE_EMULATOR) {
+  process.env.USE_EMULATOR = 'true';
+}
+if (!process.env.EMULATOR_HOST) {
+  process.env.EMULATOR_HOST = '127.0.0.1';
+}
+if (!process.env.EMULATOR_FUNCTIONS_PORT) {
+  process.env.EMULATOR_FUNCTIONS_PORT = '5001';
+}
+if (!process.env.EMULATOR_FIRESTORE_PORT) {
+  process.env.EMULATOR_FIRESTORE_PORT = '8081';
+}
+if (!process.env.EMULATOR_AUTH_PORT) {
+  process.env.EMULATOR_AUTH_PORT = '9099';
+}
+
 /**
  * Script to clean up test accounts created for stress testing
  * This will delete both Firebase Auth users and Firestore user documents
@@ -26,6 +43,16 @@ class TestAccountCleaner {
   private initializeFirebase(): void {
     try {
       if (!admin.apps.length) {
+        // Set emulator environment variables BEFORE initializing
+        if (process.env.USE_EMULATOR === 'true') {
+          process.env.FIRESTORE_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_FIRESTORE_PORT}`;
+          process.env.FIREBASE_AUTH_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_AUTH_PORT}`;
+          
+          logWithTimestamp(`🔧 Connecting to local emulator:`);
+          logWithTimestamp(`   - Firestore: ${process.env.FIRESTORE_EMULATOR_HOST}`);
+          logWithTimestamp(`   - Auth: ${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
+        }
+        
         admin.initializeApp({
           credential: admin.credential.cert({
             projectId: firebaseConfig.projectId,
