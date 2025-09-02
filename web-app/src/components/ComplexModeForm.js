@@ -356,8 +356,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] ComplexMode: Creare notificare loading cu requestId:', response.requestId);
 
-        // Șterge datele formularului când generarea începe cu succes
-        clearFormData();
+        // Don't clear form data yet - wait for actual success
+        // clearFormData();
 
         // Show loading notification with requestId
         const notificationId = showNotification({

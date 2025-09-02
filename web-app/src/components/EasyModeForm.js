@@ -43,16 +43,16 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
       selectedStyle,
       songName
     };
-    
+
     Object.entries(formData).forEach(([key, value]) => {
       const keyMapping = {
         'selectedStyle': 'SELECTED_STYLE',
         'songName': 'SONG_NAME'
       };
-      
+
       const mappedKey = keyMapping[key];
       const storageKey = mappedKey ? EASY_FORM_DATA_KEYS[mappedKey] : undefined;
-      
+
       if (storageKey) {
         if (typeof value === 'string') {
           localStorage.setItem(storageKey, value);
@@ -66,15 +66,15 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
 
   const loadFormData = useCallback(() => {
     const isActive = localStorage.getItem(EASY_FORM_DATA_KEYS.IS_ACTIVE) === 'true';
-    
+
     if (!isActive) return false;
-    
+
     try {
       const safeParse = (key, defaultValue) => {
         try {
           const value = localStorage.getItem(key);
           if (value === null || value === undefined) return defaultValue;
-          
+
           if (key === EASY_FORM_DATA_KEYS.SELECTED_STYLE) {
             try {
               return JSON.parse(value);
@@ -82,34 +82,34 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
               return value;
             }
           }
-          
+
           return JSON.parse(value);
         } catch (error) {
           console.warn(`Eroare la parsarea ${key}:`, error);
           return defaultValue;
         }
       };
-      
+
       const safeGetString = (key, defaultValue = '') => {
         const value = localStorage.getItem(key);
         return value !== null && value !== undefined ? value : defaultValue;
       };
-      
+
       const loadedStyle = safeParse(EASY_FORM_DATA_KEYS.SELECTED_STYLE, null);
       const loadedSongName = safeGetString(EASY_FORM_DATA_KEYS.SONG_NAME, '');
-      
+
       // Verifică dacă există date reale pentru a încărca
       const hasRealData = loadedStyle || (loadedSongName && loadedSongName.trim());
-      
+
       if (!hasRealData) {
         // Dacă nu există date reale, șterge IS_ACTIVE și nu încărca nimic
         localStorage.removeItem(EASY_FORM_DATA_KEYS.IS_ACTIVE);
         return false;
       }
-      
+
       setSelectedStyle(loadedStyle);
       setSongName(loadedSongName);
-      
+
       return true;
     } catch (error) {
       console.error('Eroare la încărcarea datelor formularului:', error);
@@ -160,7 +160,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
   // Salvare automată a datelor formularului (doar dacă nu au fost încărcate din storage)
   useEffect(() => {
     const hasRealData = (songName && songName.trim());
-    
+
     if (hasRealData && !dataLoadedFromStorage) {
       saveFormData();
     }
@@ -202,7 +202,7 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
       }
     }, 50);
   };
-  
+
   const sendGenerationRequest = async () => {
     setIsProcessing(true);
     setError(null);
@@ -231,13 +231,13 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
         mode: 'easy',
         price: calculatePrice()
       });
-      
+
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] EasyMode: Creare notificare loading cu requestId:', response.requestId);
-        
-        // Șterge datele formularului când generarea începe cu succes
-        clearFormData();
-        
+
+        // Don't clear form data yet - wait for actual success
+        // clearFormData();
+
         // Show loading notification with requestId
         const notificationId = showNotification({
           type: 'loading',
@@ -247,13 +247,13 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
           requestId: response.requestId
         });
         console.log('[NOTIF-DEBUG] EasyMode: Notificare loading creată cu id:', notificationId);
-        
+
         // Save requestId separately for persistence across redirects
         localStorage.setItem('activeGenerationRequestId', response.requestId);
         console.log('[NOTIF-DEBUG] EasyMode: requestId salvat în localStorage:', response.requestId);
-        
+
         // Generation started, go to loading page
-        navigate('/result', { 
+        navigate('/result', {
           state: { requestId: response.requestId, songId: null }
         });
       } else {
@@ -343,40 +343,40 @@ export default function EasyModeForm({ onBack, preSelectedStyle }) {
 
   const calculatePrice = () => {
     let basePrice = 24.99; // Preț fix pentru Easy Mode
-    
+
     // Apply subscription discount of 10 RON if user has active subscription
     if (userData?.isSubscribed) {
       // This indicates user has subscription (credits but not unlimited)
       basePrice = Math.max(0, basePrice - 10.00);
     }
-    
+
     return basePrice;
   };
 
   return (
     <div className="easy-mode-form">
       {/* Style Selection */}
-              <div className="style-selection-container">
-          <label className="input-label">Alege stilul</label>
-          <div className="style-cards-grid">
-            {styles.map((style) => (
-              <div
-                key={style.value}
-                className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
-                onClick={() => {
-                  setSelectedStyle(style.value);
-                  resetErrors();
-                }}
-              >
-                <div className="style-mini-card-content">
-                  <h3 className="style-mini-card-title">{style.title}</h3>
-                  <p className="style-mini-card-description">{style.subtitle}</p>
-                </div>
+      <div className="style-selection-container">
+        <label className="input-label">Alege stilul</label>
+        <div className="style-cards-grid">
+          {styles.map((style) => (
+            <div
+              key={style.value}
+              className={`style-mini-card ${selectedStyle === style.value ? 'selected' : ''}`}
+              onClick={() => {
+                setSelectedStyle(style.value);
+                resetErrors();
+              }}
+            >
+              <div className="style-mini-card-content">
+                <h3 className="style-mini-card-title">{style.title}</h3>
+                <p className="style-mini-card-description">{style.subtitle}</p>
               </div>
-            ))}
-          </div>
-          {fieldErrors.style && <div className="field-error">{fieldErrors.style}</div>}
+            </div>
+          ))}
         </div>
+        {fieldErrors.style && <div className="field-error">{fieldErrors.style}</div>}
+      </div>
 
       {/* Song Name */}
       <div className="input-group">

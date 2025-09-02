@@ -70,6 +70,7 @@ export default function GlobalGenerationListener() {
                     onClick: () => navigate('/result', { state: { requestId: id, songId: viewData?.songIds[0] } }),
                 },
             });
+            clearFormData();
         }
 
         if (st === 'failed' && !seen.current.failed.has(id)) {
@@ -97,6 +98,7 @@ export default function GlobalGenerationListener() {
                 },
                 duration: 30000,
             });
+            clearFormData();
             clearActiveGenerationId(); // unsubscribe globally
         }
     }, [activeId, generationStatus, showNotification, clearAllNotifications, clearActiveGenerationId]);
