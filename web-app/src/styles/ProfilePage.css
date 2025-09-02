@@ -10,7 +10,8 @@
   background-color: #1a1a1a;
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  overflow-y: auto; /* Extra space for bottom menu */
+  overflow-y: auto;
+  /* Extra space for bottom menu */
 }
 
 /* Overlay pentru fundal */
@@ -28,7 +29,7 @@
 
 
 /* Asigură-te că conținutul este deasupra overlay-ului */
-.profile-page > * {
+.profile-page>* {
   position: relative;
   z-index: 2;
 }
@@ -82,7 +83,10 @@
   margin-top: 50px;
 }
 
-.profile-avatar { position: relative; margin-bottom: 2px; }
+.profile-avatar {
+  position: relative;
+  margin-bottom: 2px;
+}
 
 .profile-page .vip-badge {
   position: absolute;
@@ -94,8 +98,8 @@
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  border: 1px solid rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
 
@@ -107,13 +111,13 @@
 }
 
 @media (max-width: 768px) {
-  .profile-page .vip-badge { 
-    top: -12px; 
-    right: -8px; 
+  .profile-page .vip-badge {
+    top: -12px;
+    right: -8px;
     font-size: 11px;
     padding: 3px 7px;
   }
-  
+
   .profile-page .unsubscribed-badge {
     top: -12px;
     right: 6px;
@@ -426,15 +430,25 @@
 }
 
 /* Subtle visual separation from header */
-.profile-page .quick-actions { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+.profile-page .quick-actions {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 16px;
+}
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .profile-page .quick-actions { grid-template-columns: repeat(3, 1fr); }
+  .profile-page .quick-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-  .profile-page .quick-actions { grid-template-columns: 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+  .profile-page .quick-actions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
 }
 
 .profile-page .action-button {
@@ -477,7 +491,7 @@
 }
 
 .profile-page .action-button .hero-btn-text {
-background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
+  background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110, 1) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -492,7 +506,8 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 
 .profile-page .back-button {
   position: absolute;
-  top: 80px; /* Adjusted for header */
+  top: 80px;
+  /* Adjusted for header */
   left: 20px;
   background-color: #23242b;
   color: #eab111;
@@ -529,8 +544,13 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .profile-page .loading-container p {
@@ -551,6 +571,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   flex-direction: column;
   align-items: stretch;
 }
+
 .profile-page .profile-song-list {
   width: 100%;
   display: flex;
@@ -609,51 +630,53 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   .profile-page {
     padding: 15px;
     padding-top: 70px;
-    padding-bottom: 150px; /* Adjusted for smaller header */
+    padding-bottom: 150px;
+    /* Adjusted for smaller header */
   }
-  
+
   .profile-page .container {
     padding-top: 10px;
   }
-  
+
   .profile-page .title {
     font-size: 28px;
   }
-  
+
   .profile-content {
     gap: 12px;
   }
-  
+
   .profile-stats {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .profile-actions .form-actions {
     flex-direction: column;
   }
-  
+
   .profile-page .profile-song-card {
     padding: 8px;
     gap: 12px;
   }
-  
+
   .profile-page .quick-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .profile-page .action-button {
     max-width: 230px;
   }
-  
+
   .profile-page .back-button {
-    top: 70px; /* Adjusted for smaller header */
+    top: 70px;
+    /* Adjusted for smaller header */
     left: 15px;
     padding: 8px 12px;
     font-size: 12px;
   }
-} 
+}
 
 @media (max-width: 600px) {
   .profile-page .song-styles-filter {
@@ -664,22 +687,27 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     padding-left: 12px;
     padding-right: 12px;
     position: relative;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE 10+ */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */
   }
+
   .profile-page .song-styles-filter::-webkit-scrollbar {
     display: none;
   }
+
   .profile-page .profile-song-card {
     padding: 6px;
     gap: 10px;
   }
-  
+
   .profile-page .style-filter-btn {
     flex: 0 0 auto;
     padding: 7px 12px;
     font-size: 14px;
   }
+
   /* Fade effect left */
   .profile-page .song-styles-filter::before {
     content: '';
@@ -692,6 +720,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     background: linear-gradient(to right, #23242b 80%, transparent 100%);
     z-index: 2;
   }
+
   /* Fade effect right */
   .profile-page .song-styles-filter::after {
     content: '';
@@ -704,7 +733,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     background: linear-gradient(to left, #23242b 80%, transparent 100%);
     z-index: 2;
   }
-} 
+}
 
 /* New header layout */
 .profile-page .profile-header {
@@ -813,22 +842,32 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 /* Make placeholder text scale for large variant */
-.avatar-placeholder-large { font-size: 48px; }
+.avatar-placeholder-large {
+  font-size: 48px;
+}
 
 /* Reduce old profile-content spacing since it's removed visually */
-.profile-content { display: none; }
+.profile-content {
+  display: none;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
-  .profile-header { 
-    grid-template-columns: 1fr; 
-    gap: 20px; 
+  .profile-header {
+    grid-template-columns: 1fr;
+    gap: 20px;
     text-align: center;
     align-items: center;
   }
 
-  .profile-info { align-items: center; }
-  .profile-user-details { align-items: center; }
+  .profile-info {
+    align-items: center;
+  }
+
+  .profile-user-details {
+    align-items: center;
+  }
+
   .profile-stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
@@ -836,7 +875,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     margin-top: 8px;
     justify-self: center;
   }
-} 
+}
 
 .profile-mini-actions {
   display: flex;
@@ -870,7 +909,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   background: rgba(255, 255, 255, 0.15);
 }
 
-.profile-mini-actions .action-wrapper > * {
+.profile-mini-actions .action-wrapper>* {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -880,14 +919,15 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 /* Specific adjustment for the anchor to match button alignment */
-.profile-mini-actions .action-wrapper > a.edit-profile-button {
+.profile-mini-actions .action-wrapper>a.edit-profile-button {
   position: relative;
   top: 1px;
 }
 
 .profile-page .edit-profile-button {
   /* distinct from username/email gold gradient */
-  color: #F1D292; /* warm sand/gold, solid */
+  color: #F1D292;
+  /* warm sand/gold, solid */
   border: none;
   outline: none;
   background: transparent;
@@ -906,7 +946,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   height: 100%;
 }
 
-.profile-page .edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
+.profile-page .edit-profile-button:hover {
+  text-decoration: underline;
+  color: #ffe7aa;
+}
 
 .profile-page .text-link {
   background: transparent;
@@ -928,13 +971,19 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   color: #ff7a7a;
 }
 
-.profile-page .soft-red-text:hover { color: #ff9a9a; }
+.profile-page .soft-red-text:hover {
+  color: #ff9a9a;
+}
 
-.profile-page .divider-dot { color: rgba(255,255,255,0.35); }
+.profile-page .divider-dot {
+  color: rgba(255, 255, 255, 0.35);
+}
 
 @media (max-width: 768px) {
-  .profile-page .profile-mini-actions { justify-content: center; }
-} 
+  .profile-page .profile-mini-actions {
+    justify-content: center;
+  }
+}
 
 /* Modal styles */
 .profile-page .modal-overlay {
@@ -944,7 +993,8 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999; /* ensure above all */
+  z-index: 99999;
+  /* ensure above all */
   backdrop-filter: blur(4px);
 }
 
@@ -954,7 +1004,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     padding: 16px;
     max-width: 95vw;
   }
-} 
+}
 
 /* New styles for avatar uploader preview */
 .profile-page .edit-form .avatar-preview {
@@ -969,7 +1019,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   border-radius: 50%;
   border: 3px solid #eab111;
   object-fit: cover;
-} 
+}
 
 
 
@@ -1011,7 +1061,8 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 
 .profile-page .dropzone-browse-btn:active {
   /* distinct from username/email gold gradient */
-  color: #F1D292; /* warm sand/gold, solid */
+  color: #F1D292;
+  /* warm sand/gold, solid */
   border: none;
   outline: none;
   background: transparent;
@@ -1025,7 +1076,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   text-decoration: none;
 }
 
-.profile-page .dropzone-browse-btn:hover:not(:disabled) { text-decoration: underline; color: #ffe7aa; }
+.profile-page .dropzone-browse-btn:hover:not(:disabled) {
+  text-decoration: underline;
+  color: #ffe7aa;
+}
 
 /* Edit modal close button (X) */
 .profile-page .modal-close-btn {
@@ -1049,8 +1103,15 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   z-index: 5;
 }
 
-.profile-page .modal-close-btn:hover { transform: translateY(-1px); box-shadow: -1px 3px 2px 0px #000; }
-.profile-page .modal-close-btn:active { transform: translateY(0); box-shadow: -1px 1px 0px 0px #000; }
+.profile-page .modal-close-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: -1px 3px 2px 0px #000;
+}
+
+.profile-page .modal-close-btn:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0px 0px #000;
+}
 
 /* Use text-link-like style for the browse button, matching edit-profile-button */
 .profile-page .dropzone-actions .edit-profile-button {
@@ -1068,7 +1129,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   text-decoration: none;
 }
 
-.profile-page .dropzone-actions .edit-profile-button:hover { text-decoration: underline; color: #ffe7aa; }
+.profile-page .dropzone-actions .edit-profile-button:hover {
+  text-decoration: underline;
+  color: #ffe7aa;
+}
 
 /* Save button in gold with dark text */
 .profile-page .save-button {
@@ -1107,7 +1171,9 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 /* Ensure the close button positions relative to the modal card */
-.profile-page .edit-form { position: relative; }
+.profile-page .edit-form {
+  position: relative;
+}
 
 /* Close button positioned at top-left of the modal panel */
 .profile-page .modal-close-btn {
@@ -1144,6 +1210,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 @media (max-width: 768px) {
+
   /* Ensure items stack and center on mobile */
   .profile-page .profile-header {
     grid-template-columns: 1fr;
@@ -1177,6 +1244,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 
 /* Extra-small devices tweaks */
 @media (max-width: 380px) {
+
   .profile-page .profile-mini-actions .edit-profile-button,
   .profile-page .profile-mini-actions .text-link {
     font-size: 13px;
@@ -1184,28 +1252,33 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 @media (max-width: 768px) {
+
   /* Center all header items */
-  .profile-page .container { 
+  .profile-page .container {
     align-items: center;
     padding: 15px;
   }
-  .profile-page .profile-header { 
-    grid-template-columns: 1fr; 
+
+  .profile-page .profile-header {
+    grid-template-columns: 1fr;
     justify-items: center;
     padding: 8px 4px;
     gap: 16px;
   }
-  .profile-page .profile-info { 
+
+  .profile-page .profile-info {
     align-items: center;
     gap: 8px;
   }
-  .profile-page .profile-user-details { 
+
+  .profile-page .profile-user-details {
     align-items: center;
     gap: 4px;
   }
-  .profile-page .profile-mini-actions { 
-    justify-content: center; 
-    gap: 4px; 
+
+  .profile-page .profile-mini-actions {
+    justify-content: center;
+    gap: 4px;
     flex-wrap: nowrap;
     margin-top: 4px;
     width: 100%;
@@ -1235,6 +1308,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   .profile-username {
     font-size: 24px;
   }
+
   .profile-email-text {
     font-size: 16px;
   }
@@ -1248,7 +1322,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     margin: 0;
     padding: 0 4px;
   }
-  
+
   .profile-page .profile-stats-grid .stat-item {
     padding: 10px;
     text-align: center;
@@ -1292,6 +1366,7 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   .profile-username {
     font-size: 22px;
   }
+
   .profile-email-text {
     font-size: 14px;
   }
@@ -1338,8 +1413,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
     align-items: center;
     gap: 16px;
   }
+
   .profile-page .profile-stats-grid {
-    grid-column: 1 / -1; /* span full width under header */
+    grid-column: 1 / -1;
+    /* span full width under header */
     grid-row: 2;
     grid-template-columns: repeat(4, 1fr);
     justify-content: center;
@@ -1348,13 +1425,25 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 @media (max-width: 768px) {
+
   /* Tighter spacing between avatar and name */
-  .profile-page .profile-header { gap: 10px; padding-top: 4px; }
-  .profile-page .profile-avatar { margin-bottom: 0; }
-  .profile-page .profile-username { margin-top: 0; }
+  .profile-page .profile-header {
+    gap: 10px;
+    padding-top: 4px;
+  }
+
+  .profile-page .profile-avatar {
+    margin-bottom: 0;
+  }
+
+  .profile-page .profile-username {
+    margin-top: 0;
+  }
 
   /* Raise the header on mobile by reducing page top padding */
-  .profile-page { padding-top: 30px; }
+  .profile-page {
+    padding-top: 30px;
+  }
 }
 
 .profile-page .profile-song-content {
@@ -1385,11 +1474,13 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   background: transparent;
   color: #e9d7b7;
   font-weight: 600;
-  font-size: 13px; /* smaller text, keep color */
+  font-size: 13px;
+  /* smaller text, keep color */
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0 16px;
-  box-shadow: none; /* no glow */
+  box-shadow: none;
+  /* no glow */
 }
 
 .profile-edit-subscription-button {
@@ -1469,8 +1560,10 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   justify-content: center;
   transition: transform 0.2s ease;
   min-width: 40px;
-  height: 38px; /* Match download button height */
-  align-self: center; /* Center vertically in the flex container */
+  height: 38px;
+  /* Match download button height */
+  align-self: center;
+  /* Center vertically in the flex container */
 }
 
 .profile-page .share-song-button:hover {
@@ -1559,8 +1652,8 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
   flex-shrink: 0;
   border-radius: 4150.876px;
   border: 1px solid #B8860B;
-  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
-  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 30%, #D4AF37 50%, #B8860B 70%, #D4AF37 100%);
+  box-shadow: 0 4px 15px rgba(184, 134, 11, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.2);
   padding: 0;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1575,14 +1668,14 @@ background: linear-gradient(90deg, rgba(255, 238, 204, 1) 0%, rgba(207, 175, 110
 }
 
 .profile-page .feedback-btn:hover {
-  background: linear-gradient(135deg, #FFE135 0%, #FFD700 30%, #FFE135 50%, #FFD700 70%, #FFE135 100%);
+  background: linear-gradient(135deg, #E6C547 0%, #D4AF37 30%, #E6C547 50%, #D4AF37 70%, #E6C547 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 20px rgba(184, 134, 11, 0.3), inset 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 .profile-page .feedback-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 10px rgba(184, 134, 11, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.2);
 }
 
 .profile-page .feedback-btn-text {
