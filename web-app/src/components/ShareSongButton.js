@@ -76,8 +76,18 @@ export default function ShareSongButton({ song, className = '' }) {
           lastModified: Date.now()
         });
 
+        // Create custom text with link to manele.io
+        const customText = `🎵 ${song.apiData?.title || 'Manea generată cu AI'} - 🎙️🎶\n\n Intră aici ca să îți generezi și tu: https://manele.io`;
+
         // Check if file sharing is supported
-        const shareData = { files: [file] };
+        const shareData = {
+          files: [file],
+          text: customText,
+          title: song.apiData?.title || 'Manea generată',
+          url: 'https://manele.io'
+        };
+
+        // Check if the share data is supported
         if (!navigator.canShare(shareData)) {
           alert('File sharing not supported on this device. You can download and share manually.');
           return;
