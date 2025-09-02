@@ -4,6 +4,7 @@ import { UserGenerationInput } from 'hooks/realtime-query/useGenerationRealtimeQ
 import { useState } from 'react';
 import { storage } from 'services/firebase';
 import { downloadFile } from 'utils';
+import '../styles/ResultPage.css';
 import AudioPlayer from './audio/AudioPlayer';
 import FeedbackModal from './FeedbackModal';
 import ShareSongButton from './ShareSongButton';
@@ -48,6 +49,10 @@ export default function SongResultCard(props: SongResultCardProps) {
 
     const handleCloseFeedbackModal = () => {
         setShowFeedbackModal(false);
+    };
+
+    const handleOpenFeedbackModal = () => {
+        setShowFeedbackModal(true);
     };
 
     // // Test audio URL accessibility
@@ -120,7 +125,7 @@ export default function SongResultCard(props: SongResultCardProps) {
             )}
             {/* Spațiu între versuri și butoane */}
             <div style={{ marginBottom: 16 }} />
-            {/* Butoane de download și share pentru această piesă */}
+            {/* Butoane de download, share și feedback pentru această piesă */}
             {canDownload ? (
                 <div className="result-song-actions">
                     <Button
@@ -145,6 +150,12 @@ export default function SongResultCard(props: SongResultCardProps) {
                     </p>
                 </div>
             )}
+            <Button
+                className="feedback-btn"
+                onClick={handleOpenFeedbackModal}
+            >
+                <span className="feedback-btn-text">Lasă recenzie</span>
+            </Button>
             {/* Feedback Modal */}
             <FeedbackModal
                 isOpen={showFeedbackModal}
