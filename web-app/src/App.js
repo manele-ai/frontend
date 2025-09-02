@@ -10,16 +10,15 @@ import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
 // import Marquee from './components/ui/Marquee';
 import { usePostHog } from 'posthog-js/react';
+import GlobalGenerationListener from './components/GlobalGenerationListener';
 import { SEOManager } from './components/seo';
 import StickyGenerateButton from './components/ui/StickyGenerateButton';
 import { AudioProvider } from './context/AudioContext';
 import { NotificationProvider } from './context/NotificationContext';
-import { useGlobalSongStatus } from './hooks/useGlobalSongStatus';
 import AuthPage from './pages/AuthPage';
 import GeneratePage from './pages/GeneratePage';
 import HomePage from './pages/HomePage';
 import LeaderboardPage from './pages/LeaderboardPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
@@ -33,6 +32,7 @@ function App() {
     <AuthProvider>
       <Router>
         <NotificationProvider>
+          <GlobalGenerationListener />
           <AppContent />
         </NotificationProvider>
       </Router>
@@ -41,21 +41,18 @@ function App() {
 }
 
 function AppContent() {
-  // Initialize global song status monitoring
-  useGlobalSongStatus();
-    
   // Initialize PostHog tracking
   const { trackPageView } = usePostHogTracking();
   const posthog = usePostHog();
   const location = useLocation();
-  
+
   // Setup global error handling
   useEffect(() => {
     if (posthog) {
       setupGlobalErrorHandling(posthog);
     }
   }, [posthog]);
-  
+
   // Track page views when location changes
   useEffect(() => {
     const pageName = location.pathname === '/' ? 'home' : location.pathname.replace('/', '');
@@ -81,7 +78,7 @@ function AppContent() {
             <Route path="/tarife" element={<TarifePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
-            
+
             {/* Protected routes */}
             <Route path="/result" element={
               <ProtectedRoute>
@@ -92,11 +89,6 @@ function AppContent() {
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/payment-success" element={
-              <ProtectedRoute>
-                <PaymentSuccessPage />
               </ProtectedRoute>
             } />
           </Routes>

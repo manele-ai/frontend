@@ -20,8 +20,9 @@ export const aggregateViewFromGenerationRequest = onDocumentWritten(
             await generationViewRef.update({
                 paymentStatus: after.paymentStatus,
                 generationStarted: after.generationStarted,
-                generationStartedAt: after.generationStartedAt,
-                error: after.error,
+                ...(after.generationStarted && { generationStartedAt: after.generationStartedAt }),
+                ...(after.error && { error: after.error }),
+                userGenerationInput: after.userGenerationInput,
             });
         } catch (error) {
             logger.error("[aggregateFromGenerationRequest] Error for viewId: ${viewId}", error);
@@ -44,11 +45,14 @@ export const aggregateViewFromTaskStatus = onDocumentWritten(
         try {
             const generationViewRef = db.collection(COLLECTIONS.GENERATION_VIEWS).doc(viewId);
             // Update the generation view
-            await generationViewRef.update({
-                status: after.status,
-                songIds: after.songIds,
-                lyrics: after.lyrics,
-            });
+            const updates = {
+                ...(after.status && { status: after.status }),
+                ...(after.songIds && { songIds: after.songIds }),
+                ...(after.lyrics && { lyrics: after.lyrics }),
+            };
+            if (Object.keys(updates).length > 0) {
+                await generationViewRef.update(updates);
+            }
         } catch (error) {
             logger.error("[aggregateViewFromTaskStatus] Error for viewId: ${viewId}", error);
             throw new HttpsError('internal', 'Internal server error while aggregating generation view.');
@@ -73,14 +77,15 @@ export const aggregateViewFromSong = onDocumentWritten(
             const songView = {
                 id: songId,
                 streamAudioUrl: after.apiData.streamAudioUrl,
-                audioUrl: after.apiData.audioUrl,
+                imageUrl: after.apiData.imageUrl,
                 title: after.apiData.title,
-                duration: after.apiData.duration,
-                storage: after.storage,
-            }
+                ...(after.apiData.audioUrl && { audioUrl: after.apiData.audioUrl }),
+                ...(after.apiData.duration && { duration: after.apiData.duration }),
+                ...(after.storage && { storage: after.storage }),
+            };
             // Update only this song
             await generationViewRef.update({
-                [`songsById.${songId}`]: songView,
+                [`songById.${songId}`]: songView,
             });
         } catch (error) {
             logger.error("[aggregateViewFromSong] Error for viewId: ${viewId}", error);

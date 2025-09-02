@@ -33,6 +33,7 @@ function extractPublicFields(songData: Database.SongData): Database.SongDataPubl
   return {
     taskId: songData.taskId,
     userId: songData.userId,
+    requestId: songData.requestId,
     createdAt: songData.createdAt,
     updatedAt: songData.updatedAt,
     storage: songData.storage ? {
@@ -101,7 +102,7 @@ export const mirrorSongsPublic = onDocumentWritten(
 
       // Create or update public document
       await publicSongRef.set(afterPublicData);
-            
+
     } catch (error) {
       logger.error(`Error in mirrorSongsPublicHandler for song ${songId}:`, error);
       throw new HttpsError(
