@@ -17,11 +17,11 @@ export namespace Database {
     donationAmount?: number;
   }
 
-  export type GenerationStatus = 
-  | 'processing'
-  | 'partial'
-  | 'completed'
-  | 'failed';
+  export type GenerationStatus =
+    | 'processing'
+    | 'partial'
+    | 'completed'
+    | 'failed';
 
   export interface GenerateSongTask {
     userId: string;
@@ -31,8 +31,8 @@ export namespace Database {
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     lastStatusPollAt?: admin.firestore.Timestamp;
-    songIds?: string[]; // ignore for now
-    songId?: string;
+    songId?: string; // Deprecated
+    songIds?: string[];
     userGenerationInput: UserGenerationInput;
     requestId: string;
   }
@@ -40,7 +40,8 @@ export namespace Database {
   export interface TaskStatus {
     userId: string;
     status: GenerationStatus;
-    songId?: string;
+    songId?: string; // Deprecated
+    songIds?: string[];
     error?: string;
     requestId: string;
     userGenerationInput: UserGenerationInput;
@@ -54,22 +55,22 @@ export namespace Database {
     userId: string;
     taskId?: string;
     paymentStatus: // Overall payment status (can only pay at once)
-      'pending'
-      | 'success'
-      | 'failed'; 
+    'pending'
+    | 'success'
+    | 'failed';
     songPaymentType:
-      'balance'
-      | 'subscription_free'
-      | 'subscription_discount'
-      | 'onetime_unsubscribed';
+    'balance'
+    | 'subscription_free'
+    | 'subscription_discount'
+    | 'onetime_unsubscribed';
     dedicationPaymentType:
-      'no_payment'
-      | 'balance'
-      | 'onetime';
+    'no_payment'
+    | 'balance'
+    | 'onetime';
     aruncaCuBaniPaymentType:
-      'no_payment'
-      | 'balance'
-      | 'onetime';
+    'no_payment'
+    | 'balance'
+    | 'onetime';
     aruncaCuBaniAmountToPay?: number;
     shouldFulfillDedication?: boolean;
     shouldFulfillAruncaCuBani?: boolean;
@@ -83,7 +84,35 @@ export namespace Database {
     generationStarted?: boolean;
     generationStartedAt?: admin.firestore.Timestamp;
   }
-  
+
+  export interface GenerationView {
+    userId: string;
+    paymentStatus: 'pending' | 'success' | 'failed';
+    status?: GenerationStatus;
+    taskId?: string;
+    createdAt: admin.firestore.Timestamp;
+    generationStarted: boolean;
+    generationStartedAt?: admin.firestore.Timestamp;
+    generationCompletedAt?: admin.firestore.Timestamp;
+    error?: string;
+    lyrics?: string;
+    songIds?: string[];
+    songById?: Record<string, {
+      id: string;
+      streamAudioUrl: string;
+      audioUrl?: string;
+      title: string;
+      duration: number;
+      storage?: {
+        url: string;
+        path: string;
+        sizeBytes: number;
+        contentType: string;
+      };
+    }>;
+    userGenerationInput: UserGenerationInput;
+  }
+
   export interface User {
     uid: string;
     displayName: string;
@@ -129,7 +158,7 @@ export namespace Database {
       sumDonationsTotal: number;
     }
   }
-  
+
   export interface SongData {
     // Override the id field with our naming
     externalId: string;
@@ -137,6 +166,7 @@ export namespace Database {
     taskId: string;
     externalTaskId: string;
     userId: string;
+    requestId: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     storage?: {
@@ -154,6 +184,7 @@ export namespace Database {
   export interface SongDataPublic {
     taskId: string;
     userId: string;
+    requestId: string;
     createdAt: admin.firestore.Timestamp;
     updatedAt: admin.firestore.Timestamp;
     storage: {
