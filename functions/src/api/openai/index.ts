@@ -17,12 +17,12 @@ function parseResponseText(responseText: string): string {
 }
 
 // Atm we only do lyrics generation and keep the style constant across manele types
-export async function generateLyrics(data : Requests.GenerateSong): Promise<{ lyrics: string }> {
+export async function generateLyrics(data: Requests.GenerateSong): Promise<{ lyrics: string }> {
   try {
     const { userPrompt, systemPrompt } = buildLyricsPrompts(data);
     logger.info("[OPENAI][generateLyrics] Built lyrics prompt for style " + data.style);
 
-    const client = getOpenAIClient(); 
+    const client = getOpenAIClient();
 
     const response = await client.responses.create({
       model: OPENAI_MODEL,
@@ -35,7 +35,7 @@ export async function generateLyrics(data : Requests.GenerateSong): Promise<{ ly
       },
     })
     logger.info("[OPENAI][generateLyrics] Got response from OpenAI API");
-    
+
     const textResponse = response.output_text?.trim();
     if (!textResponse) {
       console.error("[OPENAI][generateLyrics] No text content found in OpenAI response");
@@ -43,11 +43,11 @@ export async function generateLyrics(data : Requests.GenerateSong): Promise<{ ly
     }
     logger.info("[OPENAI][generateLyrics] Found response text from OpenAI API");
     logger.info("[OPENAI][generateLyrics] Response text: " + textResponse);
-    
+
     // Parse and validate the response format
-    const lyrics = parseResponseText(textResponse); 
+    const lyrics = parseResponseText(textResponse);
     logger.info("[OPENAI][generateLyrics] Parsed response text from OpenAI API");
-    
+
     return {
       lyrics,
     };

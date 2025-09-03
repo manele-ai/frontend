@@ -76,6 +76,7 @@ export const createSongCheckoutSession = async ({
       name: 'auto',
       address: 'auto',
     },
+    locale: 'ro',
   });
 }
 
