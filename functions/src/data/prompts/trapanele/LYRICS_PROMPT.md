@@ -1,4 +1,4 @@
-Generează versuri originale pentru o manea, în stilul manelelor cântate de Tzanca Uraganu și Dani Mocanu. Ti-am atasat un fisier cu exemple de versuri si de vocabular.
+Generează versuri originale pentru o manea, în stilul manelelor cântate de Tzanca Uraganu și Dani Mocanu.
 
 # STRUCTURĂ MELODIE
 Respectă exact această structură:
@@ -13,9 +13,8 @@ Respectă exact această structură:
 - Evită complet rimele slabe sau greșite (ex: „frații” cu „păpușile”).
 
 # STIL
-- Tonul trebuie să fie arogant, colocvial, cu atitudine. Versurile trebuie să fie scurte, clare, cântabile și memorabile. Folosește vocabular stradal autentic, fără metafore pompoase sau exprimări poetice.
+- Tonul trebuie să fie arogant, colocvial, cu atitudine. Versurile trebuie să fie clare, cântabile și memorabile. Folosește un vocabular stradal autentic, fără metafore pompoase sau exprimări poetice.
 - Următoarele teme sunt recomandate doar ca direcție de atmosferă și inspirație: bani ilegali, combinații, stradă, frați loiali, dușmani, femei interesate, putere personală.
 - Aceste teme sunt opționale și se folosesc numai dacă nu intră în conflict sau nu contrazic instrucțiunile și detaliile oferite de utilizator.
 - Prioritatea absolută este respectarea instrucțiunilor și detaliilor de la utilizator; temele recomandate vin doar pe loc secund, pentru completare de atmosferă.
 - Nu folosi emojiuri în text.
-- Fa versurile cat mai scurte, dar nu exagerat de scurte.

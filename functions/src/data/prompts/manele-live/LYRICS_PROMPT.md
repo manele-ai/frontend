@@ -14,5 +14,5 @@ Respectă exact această structură:
 # STIL
 - Include în versuri ocazional backing vocals pe fundal (ex: dublează ultimele cuvinte). - Include NEAPĂRAT și elemente în afara strofelor precum sunete pe voce de genul "RA TU PA TU PA" (nu numai ra tu pa tu pa, încearca și tu alte chestii specifice manelelor în care oamenii imită percuția din voce). Cel mai des aceste backing vocals trebuie să fie pe fundal și să nu întrerupă cursul si ritmul melodiei.
 - Versurile trebuie sa fie întotdeauna în spiritul cântărilor live. Nu folosi metafore complexe sau formulări poetice.
-- Folosirea de expresii muzicale precum „ra tu pa tu pa”, „țac pac”, „haideee!” este încurajată între versuri pe fundal sau backing vocals, folosind ca elemente de percuție vocală și interacțiune cu publicul.
-- Versurile trebuie să fie simple, scurte, memorabile și să aibă spațiu pentru floricele vocale.
+- Folosirea de expresii muzicale precum „ra tu pa tu pa”, „țac pac”, „haideee!” este încurajată între versuri doar pe fundal și/sau doar în backing vocals, folosind ca elemente de percuție vocală și interacțiune cu publicul. Evită sa le folosești in versurile centrale ale piesei.
+- Versurile trebuie să fie simple, memorabile și să aibă spațiu pentru floricele vocale.
