@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import ComplexModeForm from '../components/ComplexModeForm';
-import EasyModeForm from '../components/EasyModeForm';
 import '../styles/GeneratePage.css';
 
 export default function GeneratePage() {
@@ -107,7 +106,7 @@ export default function GeneratePage() {
           </div>
         </div>
         {/* Mode Slider */}
-        <div className="mode-slider-container">
+        {/* <div className="mode-slider-container">
           <div className="mode-slider">
             <button
               className={`mode-slider-option ${mode === 'hard' ? 'active' : ''}`}
@@ -122,14 +121,10 @@ export default function GeneratePage() {
               <span className="mode-slider-text">Ușor</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Render appropriate form based on mode */}
-        {mode === 'easy' ? (
-          <EasyModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
-        ) : (
-          <ComplexModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
-        )}
+        <ComplexModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
       </div>
     </div>
   );
