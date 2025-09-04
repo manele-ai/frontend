@@ -3,6 +3,7 @@ import { logger } from "firebase-functions/v2";
 import { FunctionsErrorCode, HttpsError } from "firebase-functions/v2/https";
 import { thirdPartyApiBaseUrl, thirdPartyApiKey } from "../config";
 import { MusicApi } from "../types/music-api";
+import { getTaskStatusMock, initiateMusicGenerationMock } from "./music.mock";
 
 const apiClient = axios.create({
   baseURL: thirdPartyApiBaseUrl.value(),
@@ -24,9 +25,12 @@ export async function initiateMusicGeneration({
   title,
   stylePrompt,
   negativeTags,
-}: InitiateMusicGenerationParams
+}: InitiateMusicGenerationParams & { testMode?: boolean }
 ): Promise<MusicApi.Response<MusicApi.GenerateResponseData>> {
   try {
+    if ((arguments[0] as any)?.testMode && process.env.TEST_MODE === 'true') {
+      return initiateMusicGenerationMock();
+    }
     if (!lyrics || !title || !stylePrompt) {
       throw new Error("Missing required arguments for music generation");
     }
@@ -73,6 +77,9 @@ export async function initiateMusicGeneration({
 
 export async function getTaskStatus(externaTaskId: string): Promise<MusicApi.Response<MusicApi.StatusResponseData>> {
   try {
+    if (externaTaskId.startsWith('mock-') && process.env.TEST_MODE === 'true') {
+      return getTaskStatusMock(externaTaskId);
+    }
     logger.info(`[MUSIC][getTaskStatus] Fetching status for task ID: ${externaTaskId} from music API`);
     const { data } = await apiClient.get<MusicApi.Response<MusicApi.StatusResponseData>>('/generate/record-info', {
       params: {

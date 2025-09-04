@@ -28,7 +28,9 @@ export const onGenerationRequestPaymentSuccess = onDocumentWritten(
       const generationData: Requests.GenerateSong = {
         ...after.userGenerationInput,
         wantsDedication: after.userGenerationInput.wantsDedication || false,
-        wantsDonation: after.userGenerationInput.wantsDonation || false
+        wantsDonation: after.userGenerationInput.wantsDonation || false,
+        // propagate testMode if stored on request; final decision gated by env in API modules
+        testMode: (after as any).testMode === true,
       };
       await enqueueGenerateSongTask(
         after.userId,

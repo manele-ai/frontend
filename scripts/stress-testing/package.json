@@ -27,6 +27,7 @@
     "simple-test-small": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 5",
     "simple-test-medium": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 25",
     "simple-test-large": "TEST_ENVIRONMENT=local ts-node src/simpleStressTest.ts 50",
+    "single-real-generation": "USE_EMULATOR=true ts-node src/singleRealGeneration.ts",
     "clean": "rm -rf dist",
     "watch": "tsc --watch"
   },
