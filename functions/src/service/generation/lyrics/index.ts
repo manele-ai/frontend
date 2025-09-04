@@ -16,10 +16,16 @@ Vers 1:
 Vers 2:
 ...
 
-De asemenea:
+# INDICAȚII GENERALE PENTRU VERSURI
 - Vei pune NEAPĂRAT diacritice peste tot unde este nevoie în versurile generate, inclusiv în dedicații si inputul utilizatorului.
+- ⁠Versurile să nu depășească 10 cuvinte/vers.
+- Versurile și strofele trebuie să aibă continuitate logică. Înainte de a scrie o strofă fă o schița mentală a ideii pe care o vei transforma în versuri.
+- Nu forța rima in detrimentul sensului și gramaticii.
+- Substantivele trebuie sa fie articulate corect.
+- Versurile nu trebuie să fie doar substantive juxtapuse: aruncate și înșiruite (excepție dacă userul a furnizat astfel de propoziții sau dacă a menționat că îsi dorește asta).
+- Evită versurile și propozițiile care nu au nici un verb (excepție dacă userul a furnizat o propoziție fără verb).
 - Toate cifrele și numerele trebuie scrise doar cu litere, în limba română (ex: „2000” → „două mii”, „12” → „douăsprezece”).
-
+- Ideile mai lungi pot fi împărțite în mai multe versuri.
 `;
 
 const PROMPT_LEAK_INSTRUCTION = `
