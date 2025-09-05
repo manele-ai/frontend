@@ -1,8 +1,10 @@
 import { styles } from 'data/stylesData';
 import { getDownloadURL, ref } from 'firebase/storage';
+import { UserGenerationInput } from 'hooks/realtime-query/useGenerationRealtimeQuery';
 import { useState } from 'react';
 import { storage } from 'services/firebase';
 import { downloadFile } from 'utils';
+import '../styles/ResultPage.css';
 import AudioPlayer from './audio/AudioPlayer';
 import FeedbackModal from './FeedbackModal';
 import ShareSongButton from './ShareSongButton';
@@ -12,44 +14,34 @@ import SoundWave from './ui/SoundWave';
 interface SongResultCardProps {
     song: {
         id: string;
-        apiData: {
-            streamAudioUrl?: string;
-            audioUrl?: string;
-            imageUrl: string;
-            title: string;
-            lyrics?: string;
+        streamAudioUrl: string;
+        audioUrl?: string;
+        imageUrl: string;
+        title: string;
+        storage?: {
+            url: string;
+            path: string;
+            sizeBytes: number;
+            contentType: string;
         };
-        storage: {
-            url?: string;
-        };
-    };
-    index: number;
+    }
     lyrics?: string;
+    userGenerationInput: UserGenerationInput;
+    index: number;
 }
 
 // Helper function to get song style
-const getSongStyleFromSong = (song) => {
-    if (!song?.userGenerationInput?.style) return null;
-    return styles.find(s => s.value === song.userGenerationInput.style);
-};
-
-// Helper function to get song lyrics
-const getSongLyricsFromSong = (song) => {
-    // Fallback pentru versurile din song data
-    const lyrics = song?.apiData?.lyrics ||
-        song?.lyrics ||
-        song?.userGenerationInput?.lyrics ||
-        null;
-
-    return lyrics;
+const getSongStyleLabel = (userGenerationInput: SongResultCardProps['userGenerationInput']) => {
+    if (!userGenerationInput?.style) return null;
+    return styles.find(s => s.value === userGenerationInput.style);
 };
 
 export default function SongResultCard(props: SongResultCardProps) {
-    const { song, index, lyrics } = props;
+    const { song, index, lyrics, userGenerationInput } = props;
 
-    const canDownload = song.storage?.url || song.apiData?.audioUrl;
-    const songLyrics = lyrics ? lyrics : getSongLyricsFromSong(song);
-    const songStyle = getSongStyleFromSong(song);
+    const canDownload = song.storage?.url || song.audioUrl;
+    const songLyrics = lyrics;
+    const songStyle = getSongStyleLabel(userGenerationInput);
 
     const [isDownloading, setIsDownloading] = useState(false);
     const [error, setError] = useState(null);
@@ -57,6 +49,10 @@ export default function SongResultCard(props: SongResultCardProps) {
 
     const handleCloseFeedbackModal = () => {
         setShowFeedbackModal(false);
+    };
+
+    const handleOpenFeedbackModal = () => {
+        setShowFeedbackModal(true);
     };
 
     // // Test audio URL accessibility
@@ -71,7 +67,7 @@ export default function SongResultCard(props: SongResultCardProps) {
 
     // Handle download for specific song
     const handleDownloadForSong = async (song) => {
-        const rawUrl = song?.storage?.url || song?.apiData?.audioUrl || song?.apiData?.streamAudioUrl;
+        const rawUrl = song?.storage?.url || song?.audioUrl || song?.streamAudioUrl;
         if (!rawUrl) {
             setError("Nu s-a găsit URL-ul pentru descărcare.");
             return;
@@ -89,7 +85,7 @@ export default function SongResultCard(props: SongResultCardProps) {
             // if (!isAccessible) {
             //     throw new Error('URL-ul nu este accesibil');
             // }
-            await downloadFile(resolvedUrl, `${song.apiData?.title || 'manea'}.mp3`);
+            await downloadFile(resolvedUrl, `${song.title || 'manea'}.mp3`);
         } catch (error) {
             setError("Nu s-a putut descărca piesa. Încearcă din nou.");
         } finally {
@@ -100,11 +96,11 @@ export default function SongResultCard(props: SongResultCardProps) {
     return (
         <div key={song.id || index} className="player-box">
             <img
-                src={song.apiData?.imageUrl || 'https://via.placeholder.com/150'}
+                src={song.imageUrl || 'https://via.placeholder.com/150'}
                 alt="Song artwork"
                 className="song-artwork"
             />
-            <h2 className="player-song-title">{song.apiData?.title || 'Piesa ta e gata!'}</h2>
+            <h2 className="player-song-title">{song.title || 'Piesa ta e gata!'}</h2>
             <h4 className="song-style-name">{songStyle?.title || 'Manele'}</h4>
 
             {/* Player audio pentru această piesă */}
@@ -112,8 +108,8 @@ export default function SongResultCard(props: SongResultCardProps) {
                 <AudioPlayer
                     key={`audio-${song.id || index}`}
                     urls={{
-                        streamAudioUrl: song.apiData?.streamAudioUrl,
-                        audioUrl: song.apiData?.audioUrl,
+                        streamAudioUrl: song.streamAudioUrl,
+                        audioUrl: song.audioUrl,
                         storageUrl: song.storage?.url,
                     }}
                     songId={song.id}
@@ -129,7 +125,7 @@ export default function SongResultCard(props: SongResultCardProps) {
             )}
             {/* Spațiu între versuri și butoane */}
             <div style={{ marginBottom: 16 }} />
-            {/* Butoane de download și share pentru această piesă */}
+            {/* Butoane de download, share și feedback pentru această piesă */}
             {canDownload ? (
                 <div className="result-song-actions">
                     <Button
@@ -154,11 +150,17 @@ export default function SongResultCard(props: SongResultCardProps) {
                     </p>
                 </div>
             )}
+            <Button
+                className="feedback-btn"
+                onClick={handleOpenFeedbackModal}
+            >
+                <span className="feedback-btn-text">Lasă recenzie</span>
+            </Button>
             {/* Feedback Modal */}
             <FeedbackModal
                 isOpen={showFeedbackModal}
                 onClose={handleCloseFeedbackModal}
-                songTitle={song.apiData?.title || ''}
+                songTitle={song.title || ''}
             />
         </div>
     );

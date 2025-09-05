@@ -1,9 +1,8 @@
+import { useGenerationStatus } from 'hooks/useGenerationStatus';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import ComplexModeForm from '../components/ComplexModeForm';
-import EasyModeForm from '../components/EasyModeForm';
-import { useGlobalSongStatus } from '../hooks/useGlobalSongStatus';
 import '../styles/GeneratePage.css';
 
 export default function GeneratePage() {
@@ -11,10 +10,10 @@ export default function GeneratePage() {
   const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const { isGenerationActive, activeRequestId, hasTimedOut } = useGlobalSongStatus();
+  const { isGenerationProcessing, activeId } = useGenerationStatus();
   const { user, isAuthenticated } = useAuth();
   const [userCredits, setUserCredits] = useState(0);
-  
+
   // Get pre-selected style from navigation state
   const preSelectedStyle = location.state?.selectedStyle;
   const fromHomePage = location.state?.fromHomePage;
@@ -22,20 +21,10 @@ export default function GeneratePage() {
   // Check for active generation on component mount and redirect if needed
   useEffect(() => {
     const checkAndRedirect = () => {
-      // Nu e necesar, dar sa fim siguri
-      if (hasTimedOut) {
-        setIsChecking(false);
-        return;
-      }
-      
-      if (isGenerationActive()) {
-        // Navigate to result page with the active request ID
-        const savedRequestId = localStorage.getItem('activeGenerationRequestId');
-        const requestIdToUse = activeRequestId || savedRequestId;
-        
-        if (requestIdToUse) {
-          navigate('/result', { 
-            state: { requestId: requestIdToUse },
+      if (isGenerationProcessing) {
+        if (activeId) {
+          navigate('/result', {
+            state: { requestId: activeId },
             replace: true // Replace current entry in history to prevent back navigation loops
           });
           return;
@@ -47,7 +36,7 @@ export default function GeneratePage() {
 
     // Check immediately
     checkAndRedirect();
-  }, [isGenerationActive, activeRequestId, hasTimedOut, navigate]);
+  }, [isGenerationProcessing, activeId, navigate]);
 
   // Load user credits for display in Generate page header
   useEffect(() => {
@@ -74,7 +63,7 @@ export default function GeneratePage() {
   // Show minimal loading div while checking to prevent flash
   if (isChecking) {
     return (
-      <div 
+      <div
         className="generate-page"
         style={{
           backgroundSize: '30%',
@@ -88,7 +77,7 @@ export default function GeneratePage() {
   }
 
   return (
-    <div 
+    <div
       className="generate-page"
       style={{
         backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -117,7 +106,7 @@ export default function GeneratePage() {
           </div>
         </div>
         {/* Mode Slider */}
-        <div className="mode-slider-container">
+        {/* <div className="mode-slider-container">
           <div className="mode-slider">
             <button
               className={`mode-slider-option ${mode === 'hard' ? 'active' : ''}`}
@@ -132,14 +121,10 @@ export default function GeneratePage() {
               <span className="mode-slider-text">Ușor</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Render appropriate form based on mode */}
-        {mode === 'easy' ? (
-          <EasyModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
-        ) : (
-          <ComplexModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
-        )}
+        <ComplexModeForm onBack={handleBack} preSelectedStyle={preSelectedStyle} />
       </div>
     </div>
   );

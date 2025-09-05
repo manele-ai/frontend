@@ -14,7 +14,6 @@ import { handleGenerationFailed } from "../../service/generation/failure";
 import { Database, Requests } from "../../types";
 import { enqueuePollGenerationStatusTask } from "./pollGenerationStatus";
 
-
 function loadStylePrompt(style: string) {
   const stylePromptFilePath = path.join(__dirname, `../../data/prompts/${style}/STYLE_PROMPT.md`);
   const stylePrompt = readFileSync(stylePromptFilePath, 'utf8');
@@ -35,6 +34,8 @@ async function tryAcquireGenerationLock(requestId: string): Promise<boolean> {
     return true; // We are first to start
   });
 }
+
+const WATERMARK_TEXT = "Generat cu manele punct io"
 
 export const generateSongTask = onTaskDispatched({
   retryConfig: {
@@ -70,7 +71,10 @@ export const generateSongTask = onTaskDispatched({
       throw new HttpsError('not-found', 'User not found');
     }
     // First, generate lyrics and style description using OpenAI
-    const { lyrics } = await generateLyrics(generationData);
+    const { lyrics: rawLyrics } = await generateLyrics(generationData);
+
+    // Add watermark at the end of lyrics
+    const lyrics = rawLyrics + `\n\n[Spoken Words Male Voice]\n${WATERMARK_TEXT}`;
 
     const stylePrompt = loadStylePrompt(generationData.style);
 
@@ -93,7 +97,7 @@ export const generateSongTask = onTaskDispatched({
     // Write new task and its mirrored task status
     const newTaskRef = db.collection(COLLECTIONS.GENERATE_SONG_TASKS).doc();
     const taskId = newTaskRef.id;
-    
+
     batch.update(db.collection(COLLECTIONS.GENERATION_REQUESTS).doc(requestId), {
       taskId,
       updatedAt: FieldValue.serverTimestamp() as admin.firestore.Timestamp,
@@ -171,7 +175,7 @@ export async function enqueueGenerateSongTask(
 ) {
   const queue = getFunctions().taskQueue(`locations/${REGION}/functions/generateSongTask`);
   const id = [...`generateSong-${requestId}`].reverse().join("");
-  return queue.enqueue({ 
+  return queue.enqueue({
     userId,
     generationData,
     requestId

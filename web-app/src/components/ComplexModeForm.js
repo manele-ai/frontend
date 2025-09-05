@@ -9,6 +9,7 @@ import AudioPlayer from './audio/AudioPlayer';
 import { useAuth } from './auth/AuthContext';
 import AuthModal from './auth/AuthModal';
 import GenerateButton from './ui/GenerateButton';
+import TextInput from './ui/TextInput';
 
 // Constante pentru localStorage - Complex Mode
 const COMPLEX_FORM_DATA_KEYS = {
@@ -356,8 +357,8 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       if (response.paymentStatus === 'success') {
         console.log('[NOTIF-DEBUG] ComplexMode: Creare notificare loading cu requestId:', response.requestId);
 
-        // Șterge datele formularului când generarea începe cu succes
-        clearFormData();
+        // Don't clear form data yet - wait for actual success
+        // clearFormData();
 
         // Show loading notification with requestId
         const notificationId = showNotification({
@@ -471,11 +472,11 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
   };
 
   const calculatePrice = () => {
-    let basePrice = 24.99;
+    let basePrice = 24.9;
 
     // If dedication is checked, add 10 RON
     if (wantsDedication) {
-      basePrice += 10.00;
+      basePrice += 9.9;
     }
 
     // If donation is checked, add the donation amount
@@ -520,18 +521,18 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       {/* Song Name */}
       <div className="input-group">
         <label className="input-label">Titlu piesă:</label>
-        <input
-          className={`input ${fieldErrors.songName ? 'error' : ''}`}
-          type="text"
-          placeholder="Scrie aici numele piesei"
+        <TextInput
+          className='input'
+          allowNewlines={false}
           value={songName}
-          maxLength={100}
-          onChange={(e) => {
-            setSongName(e.target.value);
+          onChange={(value) => {
+            setSongName(value);
             resetErrors();
           }}
+          placeholder="Scrie aici numele piesei"
+          maxLength={100}
+          error={!!fieldErrors.songName}
         />
-        <div className="char-counter">{songName.length}/100</div>
         {fieldErrors.songName && <div className="field-error">{fieldErrors.songName}</div>}
       </div>
 
@@ -539,17 +540,15 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
       <div className="input-group">
         <label className="input-label">Detalii versuri:</label>
         <p className="checkbox-explanation">
-          Spune-ne despre ce să fie versurile manelei, dă-ne detalii.
+          Spune-ne despre ce să fie versurile manelei, dă-ne detalii. Pune <b>multe detalii</b> și maneaua va ieși beton.
         </p>
-        <input
-          className="input"
-          type="text"
-          placeholder="Scrie aici detalii versuri"
+        <TextInput
+          className='input'
           value={songDetails}
+          onChange={setSongDetails}
+          placeholder="Scrie aici detalii versuri"
           maxLength={300}
-          onChange={(e) => setSongDetails(e.target.value)}
         />
-        <div className="char-counter">{songDetails.length}/300</div>
       </div>
 
       {/* Dedication Section */}
@@ -559,7 +558,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             Vrei dedicație?
           </label>
           <p className="checkbox-explanation">
-            Vrei să dedici această melodie unei persoane?
+            Vrei să dedici această melodie unei persoane? Dacă da, <b>o să apară în piesă</b>.
           </p>
         </div>
         <div className="checkbox-slider-container">
@@ -619,34 +618,34 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           </div>
           <div className="input-group">
             <label className="input-label">De la cine?</label>
-            <input
+            <TextInput
               className={`input ${fieldErrors.fromName ? 'error' : ''}`}
-              type="text"
-              placeholder="Scrie de la cine e dedicația"
+              allowNewlines={false}
               value={fromName}
-              maxLength={50}
-              onChange={(e) => {
-                setFromName(e.target.value);
+              onChange={(value) => {
+                setFromName(value);
                 resetErrors();
               }}
+              placeholder="Scrie de la cine e dedicația"
+              maxLength={50}
+              error={!!fieldErrors.fromName}
             />
-            <div className="char-counter">{fromName.length}/50</div>
             {fieldErrors.fromName && <div className="field-error">{fieldErrors.fromName}</div>}
           </div>
           <div className="input-group">
             <label className="input-label">Pentru cine?</label>
-            <input
+            <TextInput
               className={`input ${fieldErrors.toName ? 'error' : ''}`}
-              type="text"
-              placeholder="Scrie aici pentru cine e dedicația"
+              allowNewlines={false}
               value={toName}
-              maxLength={50}
-              onChange={(e) => {
-                setToName(e.target.value);
+              onChange={(value) => {
+                setToName(value);
                 resetErrors();
               }}
+              placeholder="Scrie aici pentru cine e dedicația"
+              maxLength={50}
+              error={!!fieldErrors.toName}
             />
-            <div className="char-counter">{toName.length}/50</div>
             {fieldErrors.toName && <div className="field-error">{fieldErrors.toName}</div>}
           </div>
           <div className="input-group">
@@ -654,18 +653,18 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             {/* <p className="checkbox-explanation">
               Spune-ne aici ce vrei sa spună în dedicație.
             </p> */}
-            <input
+            <TextInput
               className={`input ${fieldErrors.dedication ? 'error' : ''}`}
-              type="text"
-              placeholder="Scrie aici ce vrei sa spună în dedicație"
+              allowNewlines={false}
               value={dedication}
-              maxLength={100}
-              onChange={(e) => {
-                setDedication(e.target.value);
+              onChange={(value) => {
+                setDedication(value);
                 resetErrors();
               }}
+              placeholder="Scrie aici ce vrei sa spună în dedicație"
+              maxLength={100}
+              error={!!fieldErrors.dedication}
             />
-            <div className="char-counter">{dedication.length}/100</div>
             {fieldErrors.dedication && <div className="field-error">{fieldErrors.dedication}</div>}
           </div>
 
@@ -680,7 +679,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             Vrei să arunci cu bani?
           </label>
           <p className="checkbox-explanation">
-            Alege suma pe care vrei să o arunci la lăutar. Exemplu: 10 RON (va fi "un milion" in piesa)
+            Alege suma pe care vrei să o arunci la lăutar. Exemplu: 10 RON, <b>va spune "un milion" în piesă</b>.
           </p>
         </div>
         <div className="checkbox-slider-container">
@@ -739,18 +738,18 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
           </div>
           <div className="input-group">
             <label className="input-label">Numele celui care aruncă cu bani</label>
-            <input
+            <TextInput
               className={`input ${fieldErrors.donorName ? 'error' : ''}`}
-              type="text"
-              placeholder="Scrie aici numele celui care dă bani"
+              allowNewlines={false}
               value={donorName}
-              maxLength={50}
-              onChange={(e) => {
-                setDonorName(e.target.value);
+              onChange={(value) => {
+                setDonorName(value);
                 resetErrors();
               }}
+              placeholder="Scrie aici numele celui care dă bani"
+              maxLength={50}
+              error={!!fieldErrors.donorName}
             />
-            <div className="char-counter">{donorName.length}/50</div>
             {fieldErrors.donorName && <div className="field-error">{fieldErrors.donorName}</div>}
           </div>
           <div className="input-group">
@@ -786,7 +785,7 @@ export default function ComplexModeForm({ onBack, preSelectedStyle }) {
             <div className="price-breakdown">
               <div className="price-item">
                 <span className="price-item-label">2 manele:</span>
-                <span className="price-item-value">24.99 RON</span>
+                <span className="price-item-value">24.9 RON</span>
               </div>
               {wantsDedication && (
                 <div className="price-item">

@@ -8,15 +8,15 @@ process.chdir(path.join(__dirname, '../functions/src'));
 
 // Sample data to generate prompts
 const sampleData: Requests.GenerateSong = {
-  title: "Muie Mihnea", //"[TITLE]",
+  title: "Echipa se numește: Passo Doble Team", //"[TITLE]",
   style: "", // will be filled in for each style
-  from: "Radone", //"[FROM]",
-  to: "Mihnea", //"[TO]",
-  dedication: "Muie Mihnea!", //"[MESAJ_DEDICATIE]",
-  wantsDedication: true,
+  from: "", //"[FROM]",
+  to: "", //"[TO]",
+  dedication: "", //"[MESAJ_DEDICATIE]",
+  wantsDedication: false,
   wantsDonation: false,
   donationAmount: 0,
-  lyricsDetails: "Mihnea e mare spritza si cand se imbata o ia in gura", //"[DETALII]"
+  lyricsDetails: "Despre echipa Passo Doble Team. Portari: Teo și Adrian.. Fundași: Tony, Mândrilă, Corciovei, Catană, Gâlceavă, Milea.. Mijlocași: Stere, Olteanu, Dinu, Fătu, Atacanți: Bogdan, Meregiu, Claudel.. Antrenori: Dragoș și Mitică", //"[DETALII]"
 };
 
 // Get all style directories
@@ -42,13 +42,13 @@ styles.forEach(style => {
     }
 
     console.log(`Generating prompts for style: ${style}`);
-    
+
     // Create data for this style
     const styleData = { ...sampleData, style };
-    
+
     // Generate the prompts using existing functions
     const { systemPrompt, userPrompt } = buildLyricsPrompts(styleData);
-      
+
     // Write to file
     const outPathSystemPrompt = path.join(outputDir, style, 'SYSTEM_PROMPT.md');
     fs.mkdirSync(path.join(outputDir, style), { recursive: true });

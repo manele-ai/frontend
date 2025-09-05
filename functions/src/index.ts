@@ -6,6 +6,9 @@ export { syncGenerationStatusForUser } from './handlers/syncGenerationStatus';
 export { updateUserProfile } from './handlers/updateUserProfile';
 
 // Triggers
+export {
+    aggregateViewFromGenerationRequest, aggregateViewFromSong, aggregateViewFromTaskStatus
+} from './handlers/triggers/generation-view/aggregateGenerationView';
 export { onGenerationRequestPaymentSuccess } from "./handlers/triggers/onGenerationRequestPaymentSuccess";
 export { mirrorSongsPublic } from './handlers/triggers/song/mirrorSongsPublic';
 export { onSongAudioUrlCreated } from './handlers/triggers/song/onSongAudioUrlCreated';

@@ -1296,8 +1296,8 @@
   flex-shrink: 0;
   border-radius: 4150.876px;
   border: 2px solid #B8860B;
-  background: linear-gradient(135deg, #FFD700 0%, #FDB931 30%, #FFD700 50%, #FDB931 70%, #FFD700 100%);
-  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 30%, #D4AF37 50%, #B8860B 70%, #D4AF37 100%);
+  box-shadow: 0 4px 15px rgba(184, 134, 11, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.2);
   padding: 0;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1311,14 +1311,14 @@
 }
 
 .feedback-btn:hover {
-  background: linear-gradient(135deg, #FFE135 0%, #FFD700 30%, #FFE135 50%, #FFD700 70%, #FFE135 100%);
+  background: linear-gradient(135deg, #E6C547 0%, #D4AF37 30%, #E6C547 50%, #D4AF37 70%, #E6C547 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(218, 165, 32, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 20px rgba(184, 134, 11, 0.3), inset 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 .feedback-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(218, 165, 32, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 10px rgba(184, 134, 11, 0.25), inset 0 0 6px rgba(255, 255, 255, 0.2);
 }
 
 .feedback-btn-text {

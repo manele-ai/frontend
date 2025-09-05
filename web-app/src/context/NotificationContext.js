@@ -55,14 +55,14 @@ export const NotificationProvider = ({ children }) => {
       }
 
       const newNotifications = [...prev, { ...notification, id: Date.now(), createdAt: Date.now() }];
-      
+
       // Save to localStorage for persistence
       try {
         localStorage.setItem('globalNotifications', JSON.stringify(newNotifications));
       } catch (error) {
         console.error('Eroare la salvarea notificărilor în localStorage:', error);
       }
-      
+
       return newNotifications;
     });
   }, []);
@@ -70,21 +70,21 @@ export const NotificationProvider = ({ children }) => {
   const removeNotification = useCallback((id) => {
     setNotifications(prev => {
       const newNotifications = prev.filter(n => n.id !== id);
-      
+
       // Update localStorage
       try {
         localStorage.setItem('globalNotifications', JSON.stringify(newNotifications));
       } catch (error) {
         console.error('Eroare la actualizarea notificărilor în localStorage:', error);
       }
-      
+
       return newNotifications;
     });
   }, []);
 
-  const clearAll = useCallback(() => {
+  const clearAllNotifications = useCallback(() => {
     setNotifications([]);
-    
+
     // Clear localStorage
     try {
       localStorage.removeItem('globalNotifications');
@@ -97,7 +97,7 @@ export const NotificationProvider = ({ children }) => {
     notifications,
     showNotification,
     removeNotification,
-    clearAll
+    clearAllNotifications,
   };
 
   return (

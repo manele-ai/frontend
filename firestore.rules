@@ -48,6 +48,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ---------- /generationView collection ------------
+    // - Client can READ their own.
+    // - NO client WRITES allowed.
+    match /generationViews/{viewId} {
+      allow read: if request.auth != null && 
+                    request.auth.uid == resource.data.userId;
+      allow write: if false;
+    } 
+
     // ---------- /usersPublic collection ------------
     // - ALL clients may READ.
     // - NO client may WRITE.
