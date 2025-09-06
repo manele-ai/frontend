@@ -5,4 +5,4 @@
 - Dacă există si o cerință pentru dedicație mai sus, le vei uni astfel încat ambele sa fie mentionate conform instructiunilor (nu rata niciuna).
 - Nu vei altera numele și suma din instrucțiune. 
 
-Trebuie neapărat să menționezi secțiunea Aruncă cu bani conform instrucțiunilor.
+Trebuie neapărat să instrucțiunile de mai sus.

@@ -17,6 +17,7 @@ const DEFAULT_GARBAGE_COLLECTION_TIME = 1000 * 60 * 60 * 24; // 5 minutes
 // --- PostHog config ---
 const options = {
   api_host: process.env.REACT_APP_POSTHOG_HOST || 'https://eu.i.posthog.com',
+  capture_pageview: false, // we track it manually
 };
 
 // --- Error fallback component (unchanged) ---
