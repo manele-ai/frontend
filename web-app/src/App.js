@@ -59,6 +59,11 @@ function AppContent() {
     trackPageView(pageName);
   }, [location.pathname, trackPageView]);
 
+  useEffect(() => {
+    // Default page view event
+    posthog?.capture('$pageview');
+  }, [location]);
+
   return (
     <>
       {/* SEO metadata is now handled by SEOManager component */}
