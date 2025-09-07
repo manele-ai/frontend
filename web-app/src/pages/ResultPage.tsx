@@ -45,7 +45,7 @@ export default function ResultPage() {
     //   navigate('/generate');
     //   return;
     // }
-  }, [incomingRequestId, activeId, setActiveGenerationId, isGenerationProcessing]);
+  }, [incomingRequestId, activeId, setActiveGenerationId]);
 
   // Derive songIds from the generation view (supports single or multiple)
   const songIds: string[] = useMemo(() => {
