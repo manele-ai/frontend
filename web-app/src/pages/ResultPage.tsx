@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SongResultCard from '../components/SongResultCard';
+import SongResultCardSkeleton from '../components/SongResultCardSkeleton';
 import Button from '../components/ui/Button';
 import '../styles/ResultPage.css';
 
@@ -25,6 +26,7 @@ export default function ResultPage() {
 
   const {
     viewData,
+    isLoadingData,
     generationStatus,
     isGenerationProcessing,
     isGenerationPartial,
@@ -45,7 +47,7 @@ export default function ResultPage() {
     //   navigate('/generate');
     //   return;
     // }
-  }, [incomingRequestId, activeId, setActiveGenerationId, isGenerationProcessing]);
+  }, [incomingRequestId, activeId, setActiveGenerationId]);
 
   // Derive songIds from the generation view (supports single or multiple)
   const songIds: string[] = useMemo(() => {
@@ -143,7 +145,7 @@ export default function ResultPage() {
       </div>
     );
   } else if (isGenerationPartial || isGenerationComplete) {
-    // Render all songs (partial or completed)
+    // Render all songs (partial or completed) or skeletons if data is loading
     return (
       <div
         className="result-page"
@@ -156,17 +158,25 @@ export default function ResultPage() {
       >
         <div className="result-container">
           <div className="songs-container">
-            {songIds.map((id, index) => (
-              viewData.songById?.[id] && (
-                <SongResultCard
-                  key={id}
-                  index={index}
-                  song={viewData.songById?.[id]}
-                  lyrics={viewData.lyrics ?? null}
-                  userGenerationInput={viewData.userGenerationInput}
-                />
-              )
-            ))}
+            {isLoadingData ? (
+              // Show skeleton placeholders while data is loading
+              Array.from({ length: 1 }, (_, index) => (
+                <SongResultCardSkeleton key={`skeleton-${index}`} index={index} />
+              ))
+            ) : (
+              // Show actual songs when data is loaded
+              songIds.map((id, index) => (
+                viewData.songById?.[id] && (
+                  <SongResultCard
+                    key={id}
+                    index={index}
+                    song={viewData.songById?.[id]}
+                    lyrics={viewData.lyrics ?? null}
+                    userGenerationInput={viewData.userGenerationInput}
+                  />
+                )
+              ))
+            )}
           </div>
           <Button className="hero-btn" style={{ marginTop: 20 }} onClick={() => navigate('/generate')}>
             <span className="hero-btn-text gen-btn">Generează manea nouă</span>
