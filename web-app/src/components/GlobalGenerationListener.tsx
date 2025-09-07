@@ -20,6 +20,7 @@ const clearFormData = () => {
 export default function GlobalGenerationListener() {
     const {
         viewData,
+        isLoadingData,
         isGenerationComplete,
         isGenerationFailed,
         generationStatus,
@@ -45,7 +46,9 @@ export default function GlobalGenerationListener() {
     useEffect(() => {
         const id = activeId;
         const st = generationStatus;
+
         if (!id || !st) return;
+        if (isLoadingData) return;
 
         if (st === 'processing' && !seen.current.processing.has(id)) {
             seen.current.processing.add(id);
@@ -101,7 +104,14 @@ export default function GlobalGenerationListener() {
             clearFormData();
             clearActiveGenerationId(); // unsubscribe globally
         }
-    }, [activeId, generationStatus, showNotification, clearAllNotifications, clearActiveGenerationId]);
+    }, [
+        activeId,
+        generationStatus,
+        showNotification,
+        clearAllNotifications,
+        clearActiveGenerationId,
+        isLoadingData,
+    ]);
 
     // Timeout handling (server should enforce; client shows UX)
     useEffect(() => {

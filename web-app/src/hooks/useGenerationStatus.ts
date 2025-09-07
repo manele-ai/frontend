@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     GenerationStatus,
     GenerationViewData,
@@ -8,6 +8,7 @@ import {
 // ---- Public return type for the hook ----
 export interface UseGenerationStatusReturn {
     viewData: GenerationViewData | null;
+    isLoadingData: boolean;
     hasGenerationStarted: boolean;
     isGenerationProcessing: boolean;
     isGenerationPartial: boolean;
@@ -46,6 +47,13 @@ function writeActiveId(id: string | null) {
 export const useGenerationStatus = (): UseGenerationStatusReturn => {
     const [activeId, setActiveId] = useState<string | null>(() => readActiveId());
     const [timeWhenActiveSet, setTimeWhenActiveSet] = useState<number | null>(null);
+
+    // ⏱ keep a ticking "now" that updates every 5s
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 5000); // 5s tick
+        return () => clearInterval(id);
+    }, []);
 
     const setActiveGenerationId = useCallback((requestId: string) => {
         setTimeWhenActiveSet(Date.now());
@@ -104,11 +112,13 @@ export const useGenerationStatus = (): UseGenerationStatusReturn => {
     }, [viewData?.status]);
 
     const hasTimedOut = useMemo(() => {
+        if (isViewLoading || isGenerationComplete) {
+            return false;
+        }
         if (!hasGenerationStarted) {
             // Use timeout w.r.t. when active id was set
             if (timeWhenActiveSet) {
-                const timeSinceActiveSet = Date.now() - timeWhenActiveSet;
-                console.log('timeSinceActiveSet', timeSinceActiveSet);
+                const timeSinceActiveSet = now - timeWhenActiveSet;
                 return timeSinceActiveSet > TIMEOUT_AFTER_SECONDS * 1000;
             }
             return false;
@@ -116,16 +126,24 @@ export const useGenerationStatus = (): UseGenerationStatusReturn => {
         if (viewData?.generationStartedAt) {
             // Use timeout w.r.t. when generation started
             const generationStartedAt = viewData?.generationStartedAt?.toDate().getTime() ?? 0;
-            const timeSinceGenerationStarted = Date.now() - generationStartedAt;
+            const timeSinceGenerationStarted = now - generationStartedAt;
             console.log('timeSinceGenerationStarted', timeSinceGenerationStarted);
             return timeSinceGenerationStarted > TIMEOUT_AFTER_SECONDS * 1000;
         } else {
             // Use timeout w.r.t. when generation view doc was created
-            const timeSinceCreatedAt = Date.now() - viewData?.createdAt?.toDate().getTime();
+            const timeSinceCreatedAt = now - viewData?.createdAt?.toDate().getTime();
             console.log('timeSinceCreatedAt', timeSinceCreatedAt);
             return timeSinceCreatedAt > TIMEOUT_AFTER_SECONDS * 1000;
         }
-    }, [hasGenerationStarted, viewData?.generationStartedAt, timeWhenActiveSet, viewData?.createdAt]);
+    }, [
+        now,
+        isViewLoading,
+        isGenerationComplete,
+        hasGenerationStarted,
+        viewData?.generationStartedAt,
+        timeWhenActiveSet,
+        viewData?.createdAt,
+    ]);
 
     const isGenerationProcessing = useMemo(() => {
         console.log('viewData?.status', viewData?.status);
@@ -134,6 +152,7 @@ export const useGenerationStatus = (): UseGenerationStatusReturn => {
 
     return {
         viewData,
+        isLoadingData: isViewLoading,
         hasGenerationStarted,
         isGenerationProcessing,
         isGenerationPartial,
