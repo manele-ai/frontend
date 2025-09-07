@@ -21,12 +21,9 @@ export default function GlobalGenerationListener() {
     const {
         viewData,
         isLoadingData,
-        isGenerationComplete,
-        isGenerationFailed,
         generationStatus,
         hasTimedOut,
         activeId,
-        setActiveGenerationId,
         clearActiveGenerationId,
     } = useGenerationStatus();
 
