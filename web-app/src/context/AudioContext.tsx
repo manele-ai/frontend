@@ -61,6 +61,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const onError = () => {
       const err = audio.error;
       const msg = err ? `${err.code}: ${err.message || "Audio error"}` : "Unknown audio error";
+      console.error('Audio error', err);
       setError(msg);
       setIsLoading(false);
       setIsPlaying(false);
@@ -92,7 +93,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const pause = useCallback(() => {
     const audio = audioRef.current!;
-    try { audio.pause(); } catch {}
+    try { audio.pause(); } catch { }
   }, []);
 
   const stop = useCallback(() => {
@@ -101,7 +102,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       audio.pause();
       audio.currentTime = 0;
       setIsPlaying(false);
-    } catch {}
+    } catch { }
   }, []);
 
   const seek = useCallback((timeSeconds: number) => {
@@ -139,7 +140,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!isSameTrack) {
       // New track: set src to track.url and lock it
       setIsLoading(true);
-      try { audio.pause(); } catch {}
+      try { audio.pause(); } catch { }
       audio.src = track.url;
       lockedSrcRef.current = { trackId: track.id, url: track.url }; // lock to this url for this track session
       setCurrentTrack(track);
@@ -180,7 +181,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Defensive: if for some reason we had no lock for same id (shouldn't happen), set and play
     setIsLoading(true);
-    try { audio.pause(); } catch {}
+    try { audio.pause(); } catch { }
     audio.src = track.url;
     lockedSrcRef.current = { trackId: track.id, url: track.url };
     setCurrentTrack(track);
