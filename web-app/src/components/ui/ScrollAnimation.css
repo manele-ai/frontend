@@ -1,0 +1,120 @@
+/* ScrollAnimation.css - Stiluri pentru animațiile de scroll */
+
+.scroll-animation {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity var(--animation-duration, 0.6s) ease-out var(--animation-delay, 0s),
+              transform var(--animation-duration, 0.6s) ease-out var(--animation-delay, 0s);
+}
+
+.scroll-animation--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Direcții de animație */
+.scroll-animation--up {
+  transform: translateY(50px);
+}
+
+.scroll-animation--up.scroll-animation--visible {
+  transform: translateY(0);
+}
+
+.scroll-animation--down {
+  transform: translateY(-50px);
+}
+
+.scroll-animation--down.scroll-animation--visible {
+  transform: translateY(0);
+}
+
+.scroll-animation--left {
+  transform: translateX(50px);
+}
+
+.scroll-animation--left.scroll-animation--visible {
+  transform: translateX(0);
+}
+
+.scroll-animation--right {
+  transform: translateX(-50px);
+}
+
+.scroll-animation--right.scroll-animation--visible {
+  transform: translateX(0);
+}
+
+.scroll-animation--scale {
+  transform: scale(0.8);
+}
+
+.scroll-animation--scale.scroll-animation--visible {
+  transform: scale(1);
+}
+
+/* Animații speciale */
+.scroll-animation--fade {
+  transform: none;
+}
+
+.scroll-animation--fade.scroll-animation--visible {
+  transform: none;
+}
+
+/* Responsive - reduce animația pe mobile pentru performanță */
+@media (max-width: 768px) {
+  .scroll-animation {
+    transform: translateY(30px);
+  }
+  
+  .scroll-animation--up {
+    transform: translateY(30px);
+  }
+  
+  .scroll-animation--down {
+    transform: translateY(-30px);
+  }
+  
+  .scroll-animation--left {
+    transform: translateX(30px);
+  }
+  
+  .scroll-animation--right {
+    transform: translateX(-30px);
+  }
+}
+
+@media (max-width: 480px) {
+  .scroll-animation {
+    transform: translateY(20px);
+  }
+  
+  .scroll-animation--up {
+    transform: translateY(20px);
+  }
+  
+  .scroll-animation--down {
+    transform: translateY(-20px);
+  }
+  
+  .scroll-animation--left {
+    transform: translateX(20px);
+  }
+  
+  .scroll-animation--right {
+    transform: translateX(-20px);
+  }
+}
+
+/* Preferințe pentru utilizatorii care preferă animațiile reduse */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-animation {
+    transition: opacity 0.3s ease-out;
+    transform: none !important;
+  }
+  
+  .scroll-animation--visible {
+    transform: none !important;
+  }
+}

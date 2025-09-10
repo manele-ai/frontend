@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import { faqQuestions } from '../../data/faqData';
 import { getSEOConfig, ORGANIZATION_STRUCTURED_DATA } from '../../data/seo';
 
 /**
@@ -38,6 +39,28 @@ export function SEOManager() {
   // Get SEO config for current page
   const seoConfig = getSEOConfig(pageName);
 
+  // Generate FAQ structured data for pages that have FAQ
+  const getFAQStructuredData = () => {
+    const pagesWithFAQ = ['home', 'pricing'];
+    if (pagesWithFAQ.includes(pageName)) {
+      return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqQuestions.map(question => ({
+          "@type": "Question",
+          "name": question.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": question.answer
+          }
+        }))
+      };
+    }
+    return null;
+  };
+
+  const faqStructuredData = getFAQStructuredData();
+
   return (
     <>
       {/* Page Title - React 19 will automatically set document.title */}
@@ -72,6 +95,13 @@ export function SEOManager() {
       <script type="application/ld+json">
         {JSON.stringify(ORGANIZATION_STRUCTURED_DATA)}
       </script>
+      
+      {/* FAQ Structured Data - included for pages with FAQ */}
+      {faqStructuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(faqStructuredData)}
+        </script>
+      )}
     </>
   );
 }
