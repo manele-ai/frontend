@@ -6,7 +6,7 @@
 export const SEO_CONFIG = {
   // Default/Home page metadata
   home: {
-    title: 'Manele IO 🎵 | Generează Manele Personalizate cu AI Online',
+    title: 'Manele IO | Generează Manele Personalizate cu AI Online',
     description: 'Descoperă Manele IO – prima aplicație din România unde poți genera manele personalizate cu AI. Creează melodii în stiluri variate: de pahar, jale, trapanele, lăutărești și multe altele. Rapid!',
     keywords: 'manele, manele AI, manele personalizate, generează manele online, trapanele, muzică românească, AI muzică, melodii personalizate, versuri AI, muzică, creație muzicală online',
     ogTitle: 'Manele IO – Generează Manele Personalizate cu AI',
