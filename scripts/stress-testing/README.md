@@ -39,25 +39,25 @@ cp env.local.example .env.local
 # 3. Editează .env.local cu valorile tale
 
 # 4. Rulează testul local
-npm run local-test 10
+npm run concurrent-real-generation -- 25
 ```
 
 ### 📋 Comenzi Local
 
 ```bash
-# 🎯 WORKFLOW COMPLET LOCAL
-npm run local-full-test [N]     # Test complet local cu N request-uri
+# Test unitar (1 user, 1 generare)
+npm run single-real-generation
 
-# Comenzi individuale locale
-npm run local-create-accounts   # Creare conturi în emulator
-npm run local-stress-test [N]   # Stress test local cu N request-uri
-npm run local-clean-accounts    # Cleanup conturi din emulator
+# Test concurent (N users simultan)
+npm run concurrent-real-generation -- 10
 
-# 🚀 Teste rapide locale
-npm run local-test              # Test local cu 10 request-uri
-npm run local-test-small        # Test local cu 5 request-uri
-npm run local-test-medium       # Test local cu 25 request-uri
-npm run local-test-large        # Test local cu 50 request-uri
+# Exemple cu numere diferite
+npm run concurrent-real-generation -- 5    # 5 users
+npm run concurrent-real-generation -- 25   # 25 users
+npm run concurrent-real-generation -- 50   # 50 users
+
+# Cu timeout personalizat (opțional)
+npm run concurrent-real-generation -- 10 300000  # 10 users, 5 min timeout
 ```
 
 ### ⚙️ Configurare Locală
@@ -107,20 +107,17 @@ MOCK_SUNO_DELAY=5000      # 5 secunde pentru muzică
 ```
 scripts/stress-testing/
 ├── src/
-│   ├── createTestAccounts.ts    # Creare conturi de test
-│   ├── stressTest.ts           # Script principal de stress testing
-│   ├── testDataGenerator.ts    # Generare date de test
-│   ├── performanceMonitor.ts   # Monitorizare performanță
-│   ├── config.ts              # Configurare staging + local
-│   ├── types.ts               # Tipuri TypeScript
-│   ├── utils.ts               # Funcții utilitare
-│   ├── 🆕 mockServices.ts     # Servicii simulate OpenAI/Suno
-│   └── 🆕 localBackendClient.ts # Client pentru emulator local
-├── output/                    # Rezultate testare
+│   ├── concurrentRealGeneration.ts  # Test concurent cu N users
+│   ├── singleRealGeneration.ts     # Test unitar (1 user, 1 generare)
+│   ├── testDataGenerator.ts        # Generare date de test
+│   ├── config.ts                   # Configurare staging + local
+│   ├── types.ts                    # Tipuri TypeScript
+│   └── utils.ts                    # Funcții utilitare
+├── output/                         # Rezultate testare
 ├── package.json
 ├── tsconfig.json
-├── env.example               # Exemplu configurare staging
-├── 🆕 env.local.example      # Exemplu configurare locală
+├── env.example                     # Exemplu configurare staging
+├── env.local.example               # Exemplu configurare locală
 └── README.md
 ```
 
@@ -163,39 +160,36 @@ Pentru a crea conturile de test, ai nevoie de un Firebase Service Account:
 # 1. Pornește emulatorul
 firebase emulators:start
 
-# 2. Test rapid local
-npm run local-test
+# 2. Test unitar pentru debug
+npm run single-real-generation
 
-# 3. Test complet local
-npm run local-full-test 25
+# 3. Test concurent cu 25 users
+npm run concurrent-real-generation -- 25
 ```
 
 ### 🌐 Testare Staging (Pentru Production Testing)
 
 ```bash
-# Test complet pe staging
-npm run full-test 50
+# Test complet pe staging (comandă veche - nu mai funcționează)
+# npm run full-test 50
 ```
 
 ### Comenzi Disponibile
 
 ```bash
-# 🎯 WORKFLOW COMPLET (Recomandat)
-npm run local-full-test [N]        # Local: creare conturi + stress test + cleanup
-npm run full-test [N]              # Staging: creare conturi + stress test + cleanup
+# 🎯 TESTE PRINCIPALE (Recomandate)
+npm run single-real-generation                    # Test unitar (1 user, 1 generare)
+npm run concurrent-real-generation -- [N]         # Test concurent (N users simultan)
 
-# Comenzi individuale
-npm run local-create-accounts      # Local: creare conturi de test
-npm run local-stress-test [N]      # Local: stress testing cu N request-uri
-npm run local-clean-accounts       # Local: ștergere conturi de test
-
-npm run create-accounts            # Staging: creare conturi de test
-npm run stress-test [N]            # Staging: stress testing cu N request-uri
-npm run clean-accounts             # Staging: ștergere conturi de test
+# Exemple practice
+npm run concurrent-real-generation -- 5           # Test rapid cu 5 users
+npm run concurrent-real-generation -- 25          # Test mediu cu 25 users
+npm run concurrent-real-generation -- 50          # Test intens cu 50 users
 
 # Utilitare
 npm run build               # Build TypeScript
 npm run clean               # Clean build directory
+npm run watch               # Watch mode pentru dezvoltare
 ```
 
 ### 🚀 Utilizare Rapidă
@@ -203,14 +197,17 @@ npm run clean               # Clean build directory
 Pentru un test local complet cu o singură comandă:
 
 ```bash
-# Test local cu 10 request-uri (default)
-npm run local-test
+# Test rapid cu 5 users
+npm run concurrent-real-generation -- 5
 
-# Test local cu 25 request-uri
-npm run local-test-medium
+# Test mediu cu 25 users
+npm run concurrent-real-generation -- 25
 
-# Test local cu 50 request-uri
-npm run local-test-large
+# Test intens cu 50 users
+npm run concurrent-real-generation -- 50
+
+# Test unitar pentru debug
+npm run single-real-generation
 ```
 
 ## 📊 Monitorizare și Rapoarte
@@ -266,15 +263,7 @@ Scripturile respectă limitele Firebase:
 
 ### Cleanup
 
-Pentru a șterge conturile de test după testare:
-
-```bash
-# Local cleanup
-npm run local-clean-accounts
-
-# Staging cleanup
-npm run clean-accounts
-```
+Testele noi includ cleanup automat la sfârșitul testului. Nu mai este nevoie de comenzi separate de cleanup.
 
 ## 🔧 Dezvoltare
 
