@@ -3,6 +3,7 @@ import { logger } from "firebase-functions/v2";
 import { buildLyricsPrompts } from "../../service/generation/lyrics/index";
 import { Requests } from "../../types";
 import { getOpenAIClient } from "./client";
+import { generateLyricsMock } from "./mock";
 
 const OPENAI_MODEL = "gpt-5";
 
@@ -41,6 +42,9 @@ function parseLyricsFromResponse(response: OpenAIResponse): string {
 // Atm we only do lyrics generation and keep the style constant across manele types
 export async function generateLyrics(data: Requests.GenerateSong): Promise<{ lyrics: string }> {
   try {
+    if (data.testMode && process.env.TEST_MODE === 'true') {
+      return generateLyricsMock(data);
+    }
     const { userPrompt, systemPrompt } = buildLyricsPrompts(data);
     logger.info("[OPENAI][generateLyrics] Built lyrics prompt for style " + data.style);
 

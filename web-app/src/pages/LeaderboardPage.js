@@ -10,8 +10,8 @@ function HeroCardLeaderboard() {
   return (
     <div className="hero-card">
       <div className="hero-card-content">
-        <h2 className="hero-title">Topul maneliștilor</h2>
-        <p className="hero-subtitle">Dă click pe butonul de mai jos pentru a genera o manea.</p>
+        <h1 className="hero-title">Topul maneliștilor</h1>
+        <h2 className="hero-subtitle">Dă click pe butonul de mai jos pentru a genera o manea.</h2>
         <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
           <span className="hero-btn-text">Generează acum</span>
         </Button>

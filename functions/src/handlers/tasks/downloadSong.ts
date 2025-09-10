@@ -7,6 +7,7 @@ import { pipeline } from "node:stream/promises";
 import { db, REGION, songsBucket } from "../../config";
 import { COLLECTIONS } from "../../constants/collections";
 import { Database } from "../../types/database";
+import { performMockDownload } from "./downloadSong.mock";
 
 // 10MB in bytes - maximum allowed file size
 // const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -57,6 +58,16 @@ export const downloadSongTask = onTaskDispatched(
     const { apiData, userId } = songSnap.data() as Database.SongData;
     if (!apiData.audioUrl) {
         logger.error("downloadSong: Missing audioUrl", { songId });
+        return;
+    }
+    // Skip real download for mock URLs (delegate to external mock module)
+    if (apiData.audioUrl.startsWith('https://mock.audio/')) {
+        await performMockDownload({
+          songId,
+          userId,
+          songDocRef,
+          audioUrl: apiData.audioUrl,
+        });
         return;
     }
     const fileName = `${songId}.mp3`;

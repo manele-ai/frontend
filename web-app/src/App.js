@@ -8,6 +8,7 @@ import NotificationSystem from './components/NotificationSystem';
 import BottomMenu from './components/ui/BottomMenu';
 import Footer from './components/ui/Footer';
 import Header from './components/ui/Header';
+import { useScrollToTop } from './hooks/useScrollToTop';
 // import Marquee from './components/ui/Marquee';
 import { usePostHog } from 'posthog-js/react';
 import GlobalGenerationListener from './components/GlobalGenerationListener';
@@ -45,6 +46,9 @@ function AppContent() {
   const { trackPageView } = usePostHogTracking();
   const posthog = usePostHog();
   const location = useLocation();
+  
+  // Scroll to top on route change
+  useScrollToTop();
 
   // Setup global error handling
   useEffect(() => {

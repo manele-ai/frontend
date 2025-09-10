@@ -206,3 +206,11 @@ firebase-debug.*.log
 **/firebase-adminsdk*.json
 **/manele-io-test-firebase-adminsdk*.json
 .vercel
+
+# Stress Testing Environment Files
+scripts/stress-testing/.env_local
+scripts/stress-testing/.env_staging
+scripts/stress-testing/.env_local.example
+scripts/stress-testing/.env_staging.example
+
+.env*

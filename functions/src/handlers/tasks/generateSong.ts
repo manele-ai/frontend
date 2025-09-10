@@ -80,13 +80,12 @@ export const generateSongTask = onTaskDispatched({
 
     // Then, use the generated content to initiate music generation
     // TODO: check for code here
-    const musicApiResponse = await initiateMusicGeneration(
-      {
-        lyrics,
-        title: generationData.title,
-        stylePrompt,
-      }
-    );
+    const musicApiResponse = await initiateMusicGeneration({
+      lyrics,
+      title: generationData.title,
+      stylePrompt,
+      testMode: !!generationData.testMode,
+    });
     if (!musicApiResponse.data.taskId) {
       throw new HttpsError('internal', 'Received invalid response from music API');
     }
