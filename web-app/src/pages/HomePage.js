@@ -6,6 +6,7 @@ import { redirectToSubscriptionCheckout } from 'services/stripe/subscription';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import Button from '../components/ui/Button';
+import GenerationFlow from '../components/ui/GenerationFlow';
 import SoundWave from '../components/ui/SoundWave';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
@@ -171,6 +172,9 @@ export default function HomePage() {
             />
           ))}
         </div>
+        
+        
+        <GenerationFlow />
       </div>
 
       <AuthModal
