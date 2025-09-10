@@ -6,7 +6,9 @@ import { redirectToSubscriptionCheckout } from 'services/stripe/subscription';
 import { useAuth } from '../components/auth/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
 import Button from '../components/ui/Button';
+import FAQ from '../components/ui/FAQ';
 import GenerationFlow from '../components/ui/GenerationFlow';
+import ScrollAnimation from '../components/ui/ScrollAnimation';
 import SoundWave from '../components/ui/SoundWave';
 import { styles } from '../data/stylesData';
 import { db } from '../services/firebase';
@@ -42,7 +44,7 @@ function ReusableCard({ background, title, subtitle, styleValue, audioUrl }) {
       <div className="style-example-card-overlay"></div>
       <div className="style-example-card-content">
         <div className="style-example-card-content-inner">
-          <h2 className="style-example-title">{title}</h2>
+          <h3 className="style-example-title">{title}</h3>
         </div>
         <div className="style-example-audio-player">
           <AudioPlayer 
@@ -127,54 +129,65 @@ export default function HomePage() {
       }}
     >
       {/* Hero Section */}
-      <div className="hero-section">
-        <div className="hero-card">
-          <div className="hero-card-content">
-            <h2 className="hero-title">GENEREAZĂ PROPRIA MANEA ACUM</h2>
-            <p className="hero-subtitle">Generază acum două manele <br></br>la preț de una!</p>
-            <div className="hero-buttons" style={{ 
-              display: 'flex', 
-              gap: '20px',
-              alignItems: 'center' 
-            }}>
-              <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
-                <span className="hero-btn-text">Fă o manea!</span>
-              </Button>
-              {!isSubscribed && (
-                <Button 
-                  className="hero-btn subscription-btn"
-                  onClick={onClickSubscription}
-                  disabled={isProcessingAbonament}
-                >
-                  {isProcessingAbonament ?
-                    <SoundWave size="large" color="#181A20"/> 
-                    : <span className="hero-btn-text">Fă-ți abonament!</span>
-                  }
+      <ScrollAnimation direction="up" delay={0.2}>
+        <div className="hero-section">
+          <div className="hero-card">
+            <div className="hero-card-content">
+              <h1 className="hero-title">GENEREAZĂ PROPRIA MANEA ACUM</h1>
+              <h2 className="hero-subtitle">Generază acum două manele <br></br>la preț de una!</h2>
+              <div className="hero-buttons" style={{ 
+                display: 'flex', 
+                gap: '20px',
+                alignItems: 'center' 
+              }}>
+                <Button className="hero-btn hero-section-button" onClick={() => navigate('/generate')}>
+                  <span className="hero-btn-text">Fă o manea!</span>
                 </Button>
-              )}
+                {!isSubscribed && (
+                  <Button 
+                    className="hero-btn subscription-btn"
+                    onClick={onClickSubscription}
+                    disabled={isProcessingAbonament}
+                  >
+                    {isProcessingAbonament ?
+                      <SoundWave size="large" color="#181A20"/> 
+                      : <span className="hero-btn-text">Fă-ți abonament!</span>
+                    }
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </ScrollAnimation>
       {/* <HeroCard /> */}
 
       {/* Main Content Container */}
       <div className="main-content-container">
-        <div className="styles-grid">
-          {styles.map((style, index) => (
-            <ReusableCard
-              key={index}
-              background={`url(${style.image}) center/cover no-repeat`}
-              title={style.title}
-              subtitle={style.subtitle}
-              styleValue={style.value}
-              audioUrl={style.audioUrl}
-            />
-          ))}
-        </div>
+        <ScrollAnimation direction="up" delay={0.4}>
+          <div className="styles-grid">
+            {styles.map((style, index) => (
+              <ReusableCard
+                key={index}
+                background={`url(${style.image}) center/cover no-repeat`}
+                title={style.title}
+                subtitle={style.subtitle}
+                styleValue={style.value}
+                audioUrl={style.audioUrl}
+              />
+            ))}
+          </div>
+        </ScrollAnimation>
         
         
-        <GenerationFlow />
+        <ScrollAnimation direction="up" delay={0.3}>
+          <GenerationFlow />
+        </ScrollAnimation>
+        
+        {/* FAQ Section */}
+        <ScrollAnimation direction="up" delay={0.3}>
+          <FAQ />
+        </ScrollAnimation>
       </div>
 
       <AuthModal
