@@ -206,3 +206,5 @@ firebase-debug.*.log
 **/firebase-adminsdk*.json
 **/manele-io-test-firebase-adminsdk*.json
 .vercel
+
+.env*

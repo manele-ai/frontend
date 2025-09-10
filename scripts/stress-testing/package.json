@@ -1,0 +1,27 @@
+{
+  "name": "manele-ai-stress-testing",
+  "version": "1.0.0",
+  "description": "Stress testing scripts for Manele AI application",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "concurrent-real-generation": "TEST_ENVIRONMENT=local ts-node src/concurrentRealGeneration.ts",
+    "single-real-generation": "USE_EMULATOR=true ts-node src/singleRealGeneration.ts",
+    "concurrent-staging": "TEST_ENVIRONMENT=staging ts-node src/concurrentRealGeneration.ts",
+    "single-staging": "TEST_ENVIRONMENT=staging ts-node src/singleRealGeneration.ts",
+    "clean": "rm -rf dist",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "dotenv": "^16.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "keywords": ["stress-testing", "firebase", "manele-ai", "emulator", "local-testing"],
+  "author": "Manele AI Team",
+  "license": "MIT"
+}

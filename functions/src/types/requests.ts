@@ -13,6 +13,8 @@ export namespace Requests {
     wantsDonation: boolean;
     donorName?: string;
     donationAmount?: number;
+    /** When true, backend uses mock providers (OpenAI + Music) */
+    testMode?: boolean;
   }
   
   export interface GetStatus {
