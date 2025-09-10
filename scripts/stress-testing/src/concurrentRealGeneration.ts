@@ -6,15 +6,24 @@ import { firebaseConfig, localConfig, testConfig } from './config';
 import { TestDataGenerator } from './testDataGenerator';
 import { logWithTimestamp, sleep } from './utils';
 
-// Load env (prefer local)
+// Load env (prefer local, then staging)
 loadEnv({ path: '.env_local' });
+loadEnv({ path: '.env_staging' });
 loadEnv();
 
-// Ensure emulator defaults for local run
-if (!process.env.USE_EMULATOR) process.env.USE_EMULATOR = 'true';
-if (!process.env.EMULATOR_HOST) process.env.EMULATOR_HOST = '127.0.0.1';
-if (!process.env.EMULATOR_FIRESTORE_PORT) process.env.EMULATOR_FIRESTORE_PORT = '8081';
-if (!process.env.EMULATOR_AUTH_PORT) process.env.EMULATOR_AUTH_PORT = '9099';
+// Environment detection
+const isLocal = process.env.TEST_ENVIRONMENT === 'local' || process.env.USE_EMULATOR === 'true';
+const isStaging = process.env.TEST_ENVIRONMENT === 'staging';
+
+// Set defaults based on environment
+if (isLocal) {
+  if (!process.env.USE_EMULATOR) process.env.USE_EMULATOR = 'true';
+  if (!process.env.EMULATOR_HOST) process.env.EMULATOR_HOST = '127.0.0.1';
+  if (!process.env.EMULATOR_FIRESTORE_PORT) process.env.EMULATOR_FIRESTORE_PORT = '8081';
+  if (!process.env.EMULATOR_AUTH_PORT) process.env.EMULATOR_AUTH_PORT = '9099';
+} else if (isStaging) {
+  process.env.USE_EMULATOR = 'false';
+}
 
 type ConcurrentResult = {
   uid: string;
@@ -31,13 +40,19 @@ type ConcurrentResult = {
 
 async function initializeFirebase(): Promise<void> {
   if (admin.apps.length > 0) return;
-  if (process.env.USE_EMULATOR === 'true') {
+  
+  if (isLocal) {
     process.env.FIRESTORE_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_FIRESTORE_PORT}`;
     process.env.FIREBASE_AUTH_EMULATOR_HOST = `${process.env.EMULATOR_HOST}:${process.env.EMULATOR_AUTH_PORT}`;
-    logWithTimestamp(`🔧 Connecting to local emulator:`);
+    logWithTimestamp(`🔧 Connecting to LOCAL emulator:`);
     logWithTimestamp(`   - Firestore: ${process.env.FIRESTORE_EMULATOR_HOST}`);
     logWithTimestamp(`   - Auth: ${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
+  } else if (isStaging) {
+    logWithTimestamp(`🌐 Connecting to STAGING environment:`);
+    logWithTimestamp(`   - Project: ${firebaseConfig.projectId}`);
+    logWithTimestamp(`   - Functions: https://europe-central2-manele-io-test.cloudfunctions.net`);
   }
+  
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: firebaseConfig.projectId,

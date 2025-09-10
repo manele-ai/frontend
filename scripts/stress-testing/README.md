@@ -116,8 +116,9 @@ scripts/stress-testing/
 ├── output/                         # Rezultate testare
 ├── package.json
 ├── tsconfig.json
-├── env.example                     # Exemplu configurare staging
+├── env.example                     # Exemplu configurare staging (vechi)
 ├── env.local.example               # Exemplu configurare locală
+├── env.staging.example             # Exemplu configurare staging (nou)
 └── README.md
 ```
 
@@ -137,9 +138,14 @@ npm install
 cp env.example .env
 ```
 
-#### Pentru Local (NOU!)
+#### Pentru Local
 ```bash
 cp env.local.example .env.local
+```
+
+#### Pentru Staging (NOU!)
+```bash
+cp env.staging.example .env_staging
 ```
 
 ### 3. Obținere Service Account
@@ -170,21 +176,33 @@ npm run concurrent-real-generation -- 25
 ### 🌐 Testare Staging (Pentru Production Testing)
 
 ```bash
-# Test complet pe staging (comandă veche - nu mai funcționează)
-# npm run full-test 50
+# 1. Configurează staging (opțional - dacă nu ai .env_staging)
+cp env.staging.example .env_staging
+# Editează .env_staging cu valorile tale
+
+# 2. Test unitar pe staging
+npm run single-staging
+
+# 3. Test concurent pe staging cu 25 users
+npm run concurrent-staging -- 25
 ```
 
 ### Comenzi Disponibile
 
 ```bash
-# 🎯 TESTE PRINCIPALE (Recomandate)
-npm run single-real-generation                    # Test unitar (1 user, 1 generare)
-npm run concurrent-real-generation -- [N]         # Test concurent (N users simultan)
+# 🎯 TESTE LOCAL (Emulator)
+npm run single-real-generation                    # Test unitar local (1 user, 1 generare)
+npm run concurrent-real-generation -- [N]         # Test concurent local (N users simultan)
+
+# 🌐 TESTE STAGING (Backend Real)
+npm run single-staging                            # Test unitar staging (1 user, 1 generare)
+npm run concurrent-staging -- [N]                 # Test concurent staging (N users simultan)
 
 # Exemple practice
-npm run concurrent-real-generation -- 5           # Test rapid cu 5 users
-npm run concurrent-real-generation -- 25          # Test mediu cu 25 users
-npm run concurrent-real-generation -- 50          # Test intens cu 50 users
+npm run concurrent-real-generation -- 5           # Test rapid local cu 5 users
+npm run concurrent-real-generation -- 25          # Test mediu local cu 25 users
+npm run concurrent-staging -- 10                  # Test staging cu 10 users
+npm run concurrent-staging -- 50                  # Test intens staging cu 50 users
 
 # Utilitare
 npm run build               # Build TypeScript
@@ -194,20 +212,18 @@ npm run watch               # Watch mode pentru dezvoltare
 
 ### 🚀 Utilizare Rapidă
 
-Pentru un test local complet cu o singură comandă:
+Pentru teste rapide cu o singură comandă:
 
 ```bash
-# Test rapid cu 5 users
-npm run concurrent-real-generation -- 5
+# 🏠 LOCAL (Emulator)
+npm run concurrent-real-generation -- 5           # Test rapid local cu 5 users
+npm run concurrent-real-generation -- 25          # Test mediu local cu 25 users
+npm run single-real-generation                    # Test unitar local pentru debug
 
-# Test mediu cu 25 users
-npm run concurrent-real-generation -- 25
-
-# Test intens cu 50 users
-npm run concurrent-real-generation -- 50
-
-# Test unitar pentru debug
-npm run single-real-generation
+# 🌐 STAGING (Backend Real)
+npm run concurrent-staging -- 10                 # Test staging cu 10 users
+npm run concurrent-staging -- 25                 # Test mediu staging cu 25 users
+npm run single-staging                           # Test unitar staging pentru debug
 ```
 
 ## 📊 Monitorizare și Rapoarte

@@ -7,6 +7,8 @@
     "build": "tsc",
     "concurrent-real-generation": "TEST_ENVIRONMENT=local ts-node src/concurrentRealGeneration.ts",
     "single-real-generation": "USE_EMULATOR=true ts-node src/singleRealGeneration.ts",
+    "concurrent-staging": "TEST_ENVIRONMENT=staging ts-node src/concurrentRealGeneration.ts",
+    "single-staging": "TEST_ENVIRONMENT=staging ts-node src/singleRealGeneration.ts",
     "clean": "rm -rf dist",
     "watch": "tsc --watch"
   },
