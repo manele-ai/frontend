@@ -90,8 +90,8 @@ export default function GeneratePage() {
       <div className="hero-section">
         <div className="hero-card">
           <div className="hero-card-content">
-            <h2 className="hero-title">FĂ-ȚI MANEAUA MAI JOS!</h2>
-            <p className="hero-subtitle">Creează-ți manea completând formularul de mai jos.</p>
+            <h1 className="hero-title">FĂ-ȚI MANEAUA MAI JOS!</h1>
+            <h2 className="hero-subtitle">Creează-ți manea completând formularul de mai jos.</h2>
           </div>
         </div>
       </div>
