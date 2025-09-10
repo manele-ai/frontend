@@ -63,6 +63,7 @@ jobs:
                 STRIPE_COUPON_ID_SUBSCRIBED_SONG=${{ secrets.STRIPE_COUPON_ID_SUBSCRIBED_SONG }}
                 GOOGLE_SHEETS_ID=${{ secrets.GOOGLE_SHEETS_ID }}
                 GOOGLE_SHEET_SA_JSON=${{ secrets.GOOGLE_SHEET_SA_JSON }}
+                TEST_MODE=${{ secrets.TEST_MODE }}
                 FRONTEND_BASE_URL=https://staging-9bha86vbc1980bca71.manele.io
                 EOF
 

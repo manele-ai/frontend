@@ -187,6 +187,12 @@ npm run single-staging
 npm run concurrent-staging -- 25
 ```
 
+**⚠️ Important pentru Staging:**
+- Backend-ul de staging trebuie să aibă `TEST_MODE=true` în environment
+- Acest lucru este setat automat în GitHub Actions prin secret `TEST_MODE`
+- Dacă `TEST_MODE=true`, backend-ul va folosi mock-uri pentru OpenAI și Music API
+- Dacă `TEST_MODE=false`, backend-ul va folosi serviciile reale
+
 ### Comenzi Disponibile
 
 ```bash
