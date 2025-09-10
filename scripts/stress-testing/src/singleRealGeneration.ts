@@ -6,14 +6,21 @@ import { firebaseConfig, localConfig, testConfig } from './config';
 import { TestDataGenerator } from './testDataGenerator';
 import { logWithTimestamp, sleep } from './utils';
 
-// Load environment variables (prefer local, then staging)
-loadEnv({ path: '.env_local' });
+// Load environment variables (prefer staging, then local, then default)
 loadEnv({ path: '.env_staging' });
+loadEnv({ path: '.env_local' });
 loadEnv();
 
-// Environment detection
-const isLocal = process.env.TEST_ENVIRONMENT === 'local' || process.env.USE_EMULATOR === 'true';
+// Environment detection - prioritize TEST_ENVIRONMENT
 const isStaging = process.env.TEST_ENVIRONMENT === 'staging';
+const isLocal = process.env.TEST_ENVIRONMENT === 'local' || (!isStaging && process.env.USE_EMULATOR === 'true');
+
+// Debug logging
+console.log('🔍 Environment Detection:');
+console.log(`   TEST_ENVIRONMENT: ${process.env.TEST_ENVIRONMENT}`);
+console.log(`   USE_EMULATOR: ${process.env.USE_EMULATOR}`);
+console.log(`   isLocal: ${isLocal}`);
+console.log(`   isStaging: ${isStaging}`);
 
 // Set defaults based on environment
 if (isLocal) {

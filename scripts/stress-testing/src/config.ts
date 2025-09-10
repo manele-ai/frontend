@@ -7,30 +7,34 @@ import { FirebaseConfig, LocalConfig, StagingConfig } from './types';
 config({ path: '.env_local' });
 config();
 
-// Try to load .env_local directly for Firebase credentials
+// Try to load Firebase credentials based on environment
 let firebasePrivateKey = '';
 let firebaseClientEmail = '';
 
+// Determine which env file to use based on TEST_ENVIRONMENT
+const isStaging = process.env.TEST_ENVIRONMENT === 'staging';
+const envFile = isStaging ? '.env_staging' : '.env_local';
+
 try {
-  const envLocalPath = path.join(__dirname, '..', '.env_local');
-  if (fs.existsSync(envLocalPath)) {
-    const envLocalContent = fs.readFileSync(envLocalPath, 'utf8');
+  const envPath = path.join(__dirname, '..', envFile);
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
     
     // Parse FIREBASE_PRIVATE_KEY
-    const privateKeyMatch = envLocalContent.match(/FIREBASE_PRIVATE_KEY=(.+)/);
+    const privateKeyMatch = envContent.match(/FIREBASE_PRIVATE_KEY=(.+)/);
     if (privateKeyMatch && privateKeyMatch[1]) {
       try {
         const parsed = JSON.parse(privateKeyMatch[1]);
         firebasePrivateKey = parsed.private_key?.replace(/\\n/g, '\n') || '';
         firebaseClientEmail = parsed.client_email || '';
-        console.log('🔍 Successfully parsed Firebase credentials from .env_local');
+        console.log(`🔍 Successfully parsed Firebase credentials from ${envFile}`);
       } catch (error) {
-        console.error('🔍 Failed to parse FIREBASE_PRIVATE_KEY JSON:', error);
+        console.error(`🔍 Failed to parse FIREBASE_PRIVATE_KEY JSON from ${envFile}:`, error);
       }
     }
   }
 } catch (error) {
-  console.error('🔍 Failed to read .env_local:', error);
+  console.error(`🔍 Failed to read ${envFile}:`, error);
 }
 
 export const firebaseConfig: FirebaseConfig = {
