@@ -58,32 +58,34 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     return handleGoogleSignIn();
   };
 
-  // Prevent body scroll when modal is open and handle keyboard events
+  // Prevent body scroll when modal is open (and not already authenticated) and handle keyboard events
   useEffect(() => {
-    if (isOpen) {
+    const shouldLockScroll = isOpen && authPhase !== AUTH_PHASE.READY;
+
+    // Handle escape key (only relevant while modal is interactable)
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && !(authPhase === AUTH_PHASE.STARTED)) {
+        closeModal();
+      }
+    };
+
+    if (shouldLockScroll) {
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = '0px'; // Prevent layout shift
-      
-      // Handle escape key
-      const handleEscape = (e) => {
-        if (e.key === 'Escape' && !(authPhase === AUTH_PHASE.STARTED)) {
-          closeModal();
-        }
-      };
-      
       document.addEventListener('keydown', handleEscape);
-      
-      return () => {
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-        document.removeEventListener('keydown', handleEscape);
-      };
     } else {
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
     }
+
+    return () => {
+      // Always ensure cleanup restores scroll and removes listeners
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, [isOpen, authPhase]);
-  
+
 
   // Don't show modal if not open yet or user already authenticated
   if (!isOpen || authPhase === AUTH_PHASE.READY) return null;
