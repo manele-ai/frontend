@@ -160,9 +160,7 @@ export default function ResultPage() {
           <div className="songs-container">
             {isLoadingData ? (
               // Show skeleton placeholders while data is loading
-              Array.from({ length: 1 }, (_, index) => (
-                <SongResultCardSkeleton key={`skeleton-${index}`} index={index} />
-              ))
+              <SongResultCardSkeleton key={`skeleton-0`} index={0} />
             ) : (
               // Show actual songs when data is loaded
               songIds.map((id, index) => (

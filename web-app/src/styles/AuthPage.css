@@ -6,8 +6,10 @@
   align-items: flex-start;
   justify-content: center;
   padding: 20px;
-  padding-top: 40px; /* Compensate for header */
-  padding-bottom: 150px; /* Extra space for bottom menu */
+  padding-top: 40px;
+  /* Compensate for header */
+  padding-bottom: 150px;
+  /* Extra space for bottom menu */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -25,7 +27,7 @@
 }
 
 /* Asigură-te că conținutul este deasupra overlay-ului */
-.auth-page > * {
+.auth-page>* {
   position: relative;
   z-index: 2;
 }
@@ -39,7 +41,7 @@
   align-items: center;
   gap: 16px;
   border-radius: 20px 20px 20px 20px;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   box-sizing: border-box;
   margin-top: 18px;
 }
@@ -362,21 +364,21 @@
     max-width: 480px;
     padding: 26px 10px;
   }
-  
+
   .auth-title {
     font-size: 32px;
     line-height: 32px;
   }
-  
+
   .auth-subtitle {
     font-size: 15px;
   }
-  
+
   .auth-button {
     width: 160px;
     height: 45px;
   }
-  
+
   .auth-button-text {
     font-size: 16px;
   }
@@ -392,22 +394,22 @@
     padding-top: 30px;
     margin: 0;
   }
-  
+
   .auth-container {
     width: 100%;
     padding: 20px 10px;
   }
-  
+
   .auth-title {
     font-size: 28px;
     line-height: 28px;
   }
-  
+
   .auth-subtitle {
     font-size: 14px;
     margin-bottom: 6px;
   }
-  
+
   .auth-input {
     padding: 10px 15px;
     font-size: 16px;
@@ -417,7 +419,7 @@
   .input-group {
     width: 100%;
   }
-  
+
   .auth-form {
     width: 100%;
   }
@@ -435,16 +437,16 @@
   .auth-divider::after {
     width: calc(50% - 20px);
   }
-  
+
   .auth-button {
     width: 140px;
     height: 40px;
   }
-  
+
   .auth-button-text {
     font-size: 14px;
   }
-  
+
   .google-button {
     padding: 14px 20px;
     font-size: 15px;
@@ -459,9 +461,12 @@
 
 /* Loading animation */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -470,7 +475,7 @@
 .auth-button:disabled,
 .google-button:disabled {
   animation: pulse 1.5s infinite;
-} 
+}
 
 .auth-modal-overlay {
   position: fixed;
@@ -490,7 +495,7 @@
   width: 100%;
   max-width: 480px;
   padding: 26px 10px;
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: 0;
@@ -538,4 +543,4 @@
   .auth-modal .auth-toggle-method {
     max-width: 200px;
   }
-} 
+}
