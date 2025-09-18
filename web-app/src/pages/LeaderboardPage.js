@@ -30,10 +30,10 @@ export default function LeaderboardPage() {
   // Function to find current user's rank
   const getCurrentUserRank = () => {
     if (!user) return null;
-    
+
     const timeframeData = data[timeframe];
     if (!timeframeData) return null;
-    
+
     let allUsersData;
     switch (activeTab) {
       case 'songs':
@@ -48,14 +48,14 @@ export default function LeaderboardPage() {
       default:
         return null;
     }
-    
+
     if (!allUsersData || allUsersData.length === 0) return null;
-    
+
     // Find user's position in the full list (not just top 10)
     const userIndex = allUsersData.findIndex(userData => userData.id === user.uid);
-    
+
     if (userIndex === -1) return null;
-    
+
     return {
       rank: userIndex + 1,
       userData: allUsersData[userIndex]
@@ -69,7 +69,7 @@ export default function LeaderboardPage() {
     console.log('Timeframe data:', timeframeData);
     console.log('Current timeframe:', timeframe);
     console.log('Current activeTab:', activeTab);
-    
+
     let activeData;
     switch (activeTab) {
       case 'songs':
@@ -86,7 +86,7 @@ export default function LeaderboardPage() {
       default:
         activeData = [];
     }
-    
+
     // Return only the top 10 users
     const top10Data = activeData ? activeData.slice(0, 10) : [];
     console.log(`Top 10 ${activeTab} data:`, top10Data);
@@ -96,7 +96,7 @@ export default function LeaderboardPage() {
 
   const renderTableContent = () => {
     const activeData = getActiveData();
-    
+
     if (!activeData || activeData.length === 0) {
       return (
         <div className="no-data-message">
@@ -104,7 +104,7 @@ export default function LeaderboardPage() {
         </div>
       );
     }
-    
+
     return (
       <>
         {/* Current User Rank Section */}
@@ -114,10 +114,10 @@ export default function LeaderboardPage() {
               <div className="current-user-rank-info">
                 <div className="current-user-rank-avatar">
                   {currentUserRank.userData.photoURL ? (
-                    <img 
-                      src={currentUserRank.userData.photoURL} 
-                      alt={currentUserRank.userData.displayName} 
-                      className="current-user-avatar" 
+                    <img
+                      src={currentUserRank.userData.photoURL}
+                      alt={currentUserRank.userData.displayName}
+                      className="current-user-avatar"
                     />
                   ) : (
                     <div className="current-user-avatar-placeholder">
@@ -139,7 +139,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
         )}
-        
+
         {/* Leaderboard Table */}
         <table className="leaderboard-table">
           <thead>
@@ -179,7 +179,7 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div 
+    <div
       className="leaderboard-page"
       style={{
         backgroundImage: 'url(/backgrounds/patternFudalSecond.svg)',
@@ -193,38 +193,38 @@ export default function LeaderboardPage() {
         <div className="hero-section-overlay"></div>
         <HeroCardLeaderboard />
       </div>
-      
+
       {/* Butoanele de filtrare în exterior, cu design ca în ProfilePage */}
       <div className="leaderboard-filters">
         <div className="timeframe-tabs">
-          <button 
+          <button
             className={`filter-btn ${timeframe === 'allTime' ? 'active' : ''}`}
             onClick={() => setTimeframe('allTime')}
           >
             Din totdeauna
           </button>
-          <button 
+          {/* <button 
             className={`filter-btn ${timeframe === 'today' ? 'active' : ''}`}
             onClick={() => setTimeframe('today')}
           >
             Astăzi
-          </button>
+          </button> */}
         </div>
 
         <div className="category-tabs">
-          <button 
+          <button
             className={`filter-btn ${activeTab === 'songs' ? 'active' : ''}`}
             onClick={() => setActiveTab('songs')}
           >
             Piese Generate
           </button>
-          <button 
+          <button
             className={`filter-btn ${activeTab === 'dedications' ? 'active' : ''}`}
             onClick={() => setActiveTab('dedications')}
           >
             Dedicații
           </button>
-          <button 
+          <button
             className={`filter-btn ${activeTab === 'donations' ? 'active' : ''}`}
             onClick={() => setActiveTab('donations')}
           >
@@ -232,7 +232,7 @@ export default function LeaderboardPage() {
           </button>
         </div>
       </div>
-      
+
       {/* Cardul de clasament ca componentă separată */}
       <div className="leaderboard-container">
         {loading ? (
