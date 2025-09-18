@@ -1,4 +1,3 @@
-
 /* GeneratePage.css - Stiluri specifice pentru pagina de generare */
 
 /* Layout de bază - specific pentru GeneratePage */
@@ -15,7 +14,8 @@
   color: #eab111;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   overflow-y: auto;
-  padding-bottom: 150px; /* Extra space for bottom menu */
+  padding-bottom: 150px;
+  /* Extra space for bottom menu */
 }
 
 /* Overlay pentru fundal */
@@ -32,7 +32,7 @@
 }
 
 /* Asigură-te că conținutul este deasupra overlay-ului */
-.generate-page > * {
+.generate-page>* {
   position: relative;
   z-index: 2;
 }
@@ -115,15 +115,15 @@
   .generate-page .credits-badge-container {
     margin: 0 0 8px 0;
   }
-  
+
   .generate-page .credits-badge {
     padding: 6px 10px;
   }
-  
+
   .generate-page .credits-badge-label {
     font-size: 11px;
   }
-  
+
   .generate-page .credits-badge-value {
     font-size: 14px;
   }
@@ -349,7 +349,7 @@
 }
 
 .generate-page .mode-slider-option.active {
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   color: #1a1a1a;
   box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
   transform: translateY(-1px);
@@ -368,29 +368,29 @@
     padding: 3px;
     gap: 2px;
   }
-  
+
   .generate-page .mode-slider-option {
     padding: 8px 16px;
     min-width: 80px;
     border-radius: 24px;
   }
-  
+
   .generate-page .mode-slider-option:hover {
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(234, 177, 17, 0.4);
   }
-  
+
   .generate-page .mode-slider-option.active {
     transform: translateY(-1px);
     box-shadow: 0 3px 10px rgba(234, 177, 17, 0.5);
   }
-  
+
   .generate-page .mode-slider-option:active {
     transform: translateY(0px);
     box-shadow: 0 2px 6px rgba(234, 177, 17, 0.3);
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .mode-slider-text {
     font-size: 13px;
     font-weight: 600;
@@ -429,7 +429,7 @@
   background: #2a2a2a;
   color: #ffffff;
   font-family: 'Satoshi', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
@@ -450,14 +450,15 @@
 
 /* Styling number input spinners */
 .generate-page .input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield;
+  /* Firefox */
   appearance: textfield;
 }
 
 .generate-page .input[type="number"]::-webkit-outer-spin-button,
 .generate-page .input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  background: linear-gradient(90deg, rgba(255,224,161,0.1) 0%, rgba(201,169,104,0.1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 0.1) 0%, rgba(201, 169, 104, 0.1) 100%);
   border-left: 1px solid rgba(255, 224, 161, 0.2);
   width: 24px;
   position: absolute;
@@ -477,11 +478,11 @@
 }
 
 .generate-page .input[type="number"]::-webkit-inner-spin-button:hover {
-  background: linear-gradient(90deg, rgba(255,224,161,0.2) 0%, rgba(201,169,104,0.2) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 0.2) 0%, rgba(201, 169, 104, 0.2) 100%);
 }
 
 .generate-page .input[type="number"]::-webkit-inner-spin-button:active {
-  background: linear-gradient(90deg, rgba(255,224,161,0.3) 0%, rgba(201,169,104,0.3) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 0.3) 0%, rgba(201, 169, 104, 0.3) 100%);
 }
 
 /* Add padding for the spinner buttons */
@@ -491,11 +492,12 @@
 }
 
 @media (max-width: 480px) {
+
   .generate-page .input[type="number"]::-webkit-outer-spin-button,
   .generate-page .input[type="number"]::-webkit-inner-spin-button {
     width: 28px;
   }
-  
+
   .generate-page .input[type="number"] {
     padding-right: 36px;
   }
@@ -564,7 +566,7 @@
 }
 
 .generate-page .checkbox-slider-option.active {
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   color: #1a1a1a;
   box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
   transform: translateY(-1px);
@@ -752,11 +754,11 @@
 }
 
 .generate-page .price-card {
-  background: linear-gradient(90deg, rgba(255,224,161,1) 0%, rgba(201,169,104,1) 100%);
+  background: linear-gradient(90deg, rgba(255, 224, 161, 1) 0%, rgba(201, 169, 104, 1) 100%);
   border-radius: 16px;
   padding: 24px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .generate-page .price-title {
@@ -848,6 +850,7 @@
   text-align: left;
   align-self: stretch;
 }
+
 /* Style Selection */
 .style-selection-container {
   margin-bottom: 30px;
@@ -906,17 +909,17 @@
     padding: 10px;
     padding-bottom: 150px;
   }
-  
+
   .generate-page .hero-section {
     width: 100%;
     padding: 15px;
   }
-  
+
   .generate-page .main-content-container {
     width: 100%;
     gap: 15px;
   }
-  
+
   /* Hero section responsive */
   .generate-page .hero-card {
     flex-direction: column;
@@ -924,143 +927,143 @@
     min-height: auto;
     justify-content: center;
   }
-  
+
   .generate-page .hero-card-content {
     width: 100%;
     align-items: center;
     gap: 15px;
     text-align: center;
   }
-  
+
   .generate-page .hero-title {
     font-size: 24px;
     line-height: 1.3;
     text-align: center;
   }
-  
+
   .generate-page .hero-subtitle {
     font-size: 16px;
     line-height: 1.4;
     text-align: center;
   }
-  
+
   /* Butonul din hero section pe mobile */
   .generate-page .hero-section-button {
     width: 180px;
     height: 50px;
     font-size: 14px;
   }
-  
+
   .generate-page .hero-section-button .hero-btn-text {
     font-size: 14px;
   }
-  
+
   .generate-page .hero-card-img {
     width: 100%;
     height: 200px;
     flex-shrink: 0;
   }
-  
+
   .generate-page .hero-section-overlay {
     background: transparent;
   }
-  
 
-  
+
+
   .generate-page .title {
     font-size: 24px;
   }
-  
+
   .generate-page .mode-slider {
     padding: 4px;
     gap: 2px;
   }
-  
+
   .generate-page .mode-slider-option {
     padding: 12px 20px;
     min-width: 90px;
     border-radius: 28px;
   }
-  
+
   .generate-page .mode-slider-option:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(234, 177, 17, 0.4);
   }
-  
+
   .generate-page .mode-slider-option.active {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(234, 177, 17, 0.5);
   }
-  
+
   .generate-page .mode-slider-option:active {
     transform: translateY(0px);
     box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .mode-slider-text {
     font-size: 14px;
     font-weight: 600;
   }
-  
+
   .generate-page .input-group {
     margin-bottom: 15px;
   }
-  
+
   .generate-page .input-label {
     font-size: 14px;
   }
-  
+
   .generate-page .input {
     padding: 10px 14px;
-    font-size: 14px;
+    font-size: 16px;
   }
-  
+
   .generate-page .input:focus {
     box-shadow: 0 0 0 1px rgba(255, 224, 161, 0.3);
   }
-  
+
   .generate-page .checkbox-label {
     font-size: 14px;
   }
-  
+
   .generate-page .checkbox-slider {
     min-width: 90px;
     padding: 4px;
     gap: 3px;
   }
-  
+
   .generate-page .checkbox-slider-option {
     padding: 8px 16px;
     min-width: 40px;
     border-radius: 20px;
   }
-  
+
   .generate-page .checkbox-slider-option:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(234, 177, 17, 0.4);
   }
-  
+
   .generate-page .checkbox-slider-option.active {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(234, 177, 17, 0.5);
   }
-  
+
   .generate-page .checkbox-slider-option:active {
     transform: translateY(0px);
     box-shadow: 0 2px 8px rgba(234, 177, 17, 0.3);
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .checkbox-slider-text {
     font-size: 12px;
     font-weight: 700;
   }
-  
+
   .generate-page .checkbox-slider-container {
     width: 100%;
   }
-  
+
 
 }
 
@@ -1068,209 +1071,209 @@
   .generate-page .hero-section {
     padding: 10px;
   }
-  
+
   .generate-page .main-content-container {
     padding: 0 10px;
   }
-  
+
   .generate-page .credits-badge-container {
     margin: 0 0 6px 0;
   }
-  
+
   .generate-page .credits-badge {
     padding: 5px 8px;
   }
-  
+
   .generate-page .credits-badge-label {
     font-size: 10px;
   }
-  
+
   .generate-page .credits-badge-value {
     font-size: 13px;
     transform: translateY(10%);
   }
-  
+
   .generate-page .mode-slider-container {
     margin: 6px 0 14px 0;
   }
-  
+
   .generate-page .mode-slider {
     padding: 2px;
   }
-  
+
   .generate-page .mode-slider-option {
     padding: 5px 12px;
     min-width: 65px;
     border-radius: 18px;
   }
-  
+
   .generate-page .mode-slider-text {
     font-size: 11px;
     letter-spacing: 0.3px;
   }
-  
+
   /* Butonul din hero section pe ecrane foarte mici */
   .generate-page .hero-section-button {
     width: 140px;
     height: 40px;
     font-size: 12px;
   }
-  
+
   .generate-page .hero-section-button .hero-btn-text {
     font-size: 12px;
   }
-  
+
   .generate-page .hero-card-img {
     width: 100%;
     height: 150px;
   }
-  
+
   .generate-page .hero-section-overlay {
     background: transparent;
   }
-  
+
   .generate-page .title {
     font-size: 20px;
   }
-  
+
   .generate-page .mode-slider-option {
     padding: 16px 24px;
     min-width: 100px;
     border-radius: 30px;
   }
-  
+
   .generate-page .mode-slider-option:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(234, 177, 17, 0.5);
   }
-  
+
   .generate-page .mode-slider-option.active {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(234, 177, 17, 0.6);
   }
-  
+
   .generate-page .mode-slider-option:active {
     transform: translateY(0px);
     box-shadow: 0 3px 10px rgba(234, 177, 17, 0.4);
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .mode-slider-text {
     font-size: 16px;
     font-weight: 600;
   }
-  
+
   .generate-page .checkbox-slider {
     min-width: 100px;
     padding: 5px;
     gap: 4px;
   }
-  
+
   .generate-page .checkbox-slider-option {
     padding: 12px 20px;
     min-width: 45px;
     border-radius: 22px;
   }
-  
+
   .generate-page .checkbox-slider-option:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(234, 177, 17, 0.5);
   }
-  
+
   .generate-page .checkbox-slider-option.active {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(234, 177, 17, 0.6);
   }
-  
+
   .generate-page .checkbox-slider-option:active {
     transform: translateY(0px);
     box-shadow: 0 3px 10px rgba(234, 177, 17, 0.4);
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .checkbox-slider-text {
     font-size: 14px;
     font-weight: 700;
   }
-  
+
   .generate-page .checkbox-slider-container {
     width: 100%;
   }
-  
+
   .generate-page .buttons-container {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .generate-page .generate-back-button,
   .generate-page .generate-button {
     width: 180px;
     height: 50px;
   }
-  
+
   .generate-page .generate-back-button .hero-btn-text,
   .generate-page .generate-button .hero-btn-text {
     font-size: 16px;
     font-weight: 600;
   }
-  
+
   .generate-page .generate-back-button:hover,
   .generate-page .generate-button:hover {
     transform: translateY(-2px);
     box-shadow: -2px 4px 3px 0px #000;
   }
-  
+
   .generate-page .generate-back-button:active,
   .generate-page .generate-button:active {
     transform: translateY(0px);
     box-shadow: -1px 2px 1px 0px #000;
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .generate-back-button,
   .generate-page .generate-button {
     width: 200px;
     height: 55px;
   }
-  
+
   .generate-page .generate-back-button .hero-btn-text,
   .generate-page .generate-button .hero-btn-text {
     font-size: 18px;
     font-weight: 600;
   }
-  
+
   .generate-page .generate-back-button:hover,
   .generate-page .generate-button:hover {
     transform: translateY(-2px);
     box-shadow: -2px 4px 3px 0px #000;
   }
-  
+
   .generate-page .generate-back-button:active,
   .generate-page .generate-button:active {
     transform: translateY(0px);
     box-shadow: -1px 2px 1px 0px #000;
     transition: all 0.1s ease;
   }
-  
+
   .generate-page .input:focus {
     box-shadow: 0 0 0 1px rgba(255, 224, 161, 0.3);
   }
-} 
+}
 
 /* Responsive styles for price display */
 @media (max-width: 768px) {
   .generate-page .price-card {
     padding: 20px;
   }
-  
+
   .generate-page .price-title {
     font-size: 18px;
   }
-  
+
   .generate-page .price-value {
     font-size: 28px;
   }
-  
+
   .generate-page .price-currency {
     font-size: 16px;
   }
@@ -1286,36 +1289,36 @@
   .generate-page .price-card {
     padding: 16px;
   }
-  
+
   .generate-page .price-title {
     font-size: 16px;
   }
-  
+
   .generate-page .price-value {
     font-size: 24px;
   }
-  
+
   .generate-page .price-currency {
     font-size: 14px;
   }
-  
+
   .generate-page .price-item-label,
   .generate-page .price-item-value {
     font-size: 12px;
   }
-} 
+}
 
 @media (max-width: 768px) {
   .style-cards-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
-  
+
   .style-mini-card {
     padding: 12px 8px;
     min-height: 60px;
   }
-  
+
   .style-mini-card-title {
     font-size: 12px;
   }
@@ -1326,16 +1329,16 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
-  
+
   .style-mini-card {
     padding: 10px 8px;
     min-height: 55px;
   }
-  
+
   .style-mini-card-title {
     font-size: 11px;
   }
-} 
+}
 
 /* Field Error Styles */
 .generate-page .input.error {
@@ -1391,7 +1394,7 @@
     width: 160px;
     height: 45px;
   }
-  
+
   .generate-page .hero-btn.button .hero-btn-text {
     font-size: 14px;
   }
@@ -1402,7 +1405,7 @@
     width: 150px;
     height: 48px;
   }
-  
+
   .generate-page .hero-btn.button .hero-btn-text {
     font-size: 15px;
   }
@@ -1508,22 +1511,22 @@
     margin-top: 12px;
   }
 
-  .example-player-controls{
+  .example-player-controls {
     width: 100%;
     background-color: transparent;
     border-radius: 0px;
     padding: 0px;
   }
-  
+
   .example-song-cover {
     width: 40px;
     height: 40px;
   }
-  
+
   .example-song-title {
     font-size: 14px;
   }
-  
+
   .example-song-subtitle {
     font-size: 11px;
   }
@@ -1535,22 +1538,22 @@
     margin-top: 10px;
   }
 
-  .example-player-controls{
+  .example-player-controls {
     width: 100%;
     background-color: transparent;
     border-radius: 0px;
     padding: 0px;
   }
-  
+
   .example-song-cover {
     width: 36px;
     height: 36px;
   }
-  
+
   .example-song-title {
     font-size: 13px;
   }
-  
+
   .example-song-subtitle {
     font-size: 10px;
   }
