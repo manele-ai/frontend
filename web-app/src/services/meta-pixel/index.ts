@@ -48,12 +48,13 @@ export function initPixel(advancedMatching?: AdvancedMatching) {
     }
 
     ensureFbqLoaded();
+    console.log(pixelId);
+    window.fbq?.('init', pixelId, advancedMatching || {});
 
     // Optional: keep autoConfig behavior similar to the lib defaults
     window.fbq?.('set', 'autoConfig', true, pixelId);
 
-    // Initialize + first PageView
-    window.fbq?.('init', pixelId, advancedMatching || {});
+    // Initialize PageView
     window.fbq?.('track', 'PageView');
 
     pixelReady = true;
