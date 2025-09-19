@@ -127,12 +127,12 @@ export const useGenerationStatus = (): UseGenerationStatusReturn => {
             // Use timeout w.r.t. when generation started
             const generationStartedAt = viewData?.generationStartedAt?.toDate().getTime() ?? 0;
             const timeSinceGenerationStarted = now - generationStartedAt;
-            console.log('timeSinceGenerationStarted', timeSinceGenerationStarted);
+            // console.log('timeSinceGenerationStarted', timeSinceGenerationStarted);
             return timeSinceGenerationStarted > TIMEOUT_AFTER_SECONDS * 1000;
         } else {
             // Use timeout w.r.t. when generation view doc was created
             const timeSinceCreatedAt = now - viewData?.createdAt?.toDate().getTime();
-            console.log('timeSinceCreatedAt', timeSinceCreatedAt);
+            // console.log('timeSinceCreatedAt', timeSinceCreatedAt);
             return timeSinceCreatedAt > TIMEOUT_AFTER_SECONDS * 1000;
         }
     }, [
