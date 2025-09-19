@@ -27,7 +27,7 @@ jobs:
           # Posthog analytics on production only
           REACT_APP_POSTHOG_KEY: phc_ibZxJGpzVpLsgYgg456tursWuvc5wwpZFoMhjaEOkxl
           REACT_APP_POSTHOG_HOST: https://eu.i.posthog.com
-          REACT_APP_META_PIXEL_ID: 1876470643221829
+          REACT_APP_META_PIXEL_ID: "1876470643221829"
         steps:
             - uses: actions/checkout@v3
             - name: Install Node.js
