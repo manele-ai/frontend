@@ -14,6 +14,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { auth, db } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
+import { trackCustom } from '../../services/meta-pixel';
 import { usePostHogTracking } from '../../utils/posthog';
 
 // User context structure
@@ -50,7 +51,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const recaptchaVerifier = useRef(null);
   const recaptchaContainerRef = useRef(null);
-  
+
   // Initialize PostHog tracking
   const { captureSignUp, captureSignIn, identifyUser, resetUserIdentity } = usePostHogTracking();
 
@@ -60,7 +61,7 @@ export function AuthProvider({ children }) {
       await firebaseUser.reload();
       // Fetch profile if exists, otherwise creates and returns it
       const { profile } = await createUserIfNotExists({
-          displayName: firebaseUser.displayName,
+        displayName: firebaseUser.displayName,
       });
       const userProfile = { id: profile.uid, ...profile };
       setUserProfile(userProfile);
@@ -125,7 +126,13 @@ export function AuthProvider({ children }) {
       await updateProfile(user, { displayName });
       await fetchOrCreateUserProfile(user);
 
+      // Posthog
       captureSignUp('email', true, user.metadata.creationTime);
+      // Pixel
+      trackCustom('sign_up', {
+        method: 'email',
+        uid: user.uid,
+      });
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -146,6 +153,10 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('email', true, user.metadata.creationTime);
+      trackCustom('sign_in', {
+        method: 'email',
+        uid: user.uid,
+      });
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -170,6 +181,10 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('google', true, user.metadata.creationTime);
+      trackCustom('sign_in', {
+        method: 'google',
+        uid: user.uid,
+      });
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -228,8 +243,8 @@ export function AuthProvider({ children }) {
     try {
       recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
         size: 'invisible',
-        callback: () => {},
-        'expired-callback': () => {}
+        callback: () => { },
+        'expired-callback': () => { }
       });
     } catch (error) {
       console.error('Error initializing RecaptchaVerifier:', error);
@@ -258,7 +273,7 @@ export function AuthProvider({ children }) {
         recaptchaVerifier.current.clear();
         recaptchaVerifier.current = null;
       }
-      
+
       // Remove and recreate the container element
       if (recaptchaContainerRef.current) {
         document.body.removeChild(recaptchaContainerRef.current);
@@ -270,8 +285,8 @@ export function AuthProvider({ children }) {
       // Create new RecaptchaVerifier instance
       recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
         size: 'invisible',
-        callback: () => {},
-        'expired-callback': () => {}
+        callback: () => { },
+        'expired-callback': () => { }
       });
 
       const confirmationResult = await signInWithPhoneNumber(
@@ -297,7 +312,7 @@ export function AuthProvider({ children }) {
     setAuthPhase(AUTH_PHASE.STARTED);
     try {
       const { user } = await confirmationResult.confirm(code);
-      
+
       // Update display name first if provided (for new users)
       if (displayName) {
         await updateProfile(user, {
@@ -307,6 +322,10 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('phone', true, user.metadata.creationTime);
+      trackCustom('sign_in', {
+        method: 'phone',
+        uid: user.uid,
+      });
     } catch (error) {
       console.error('Phone verification error:', error);
       captureSignIn('phone', false);
@@ -327,7 +346,7 @@ export function AuthProvider({ children }) {
       // Logged out
       if (!user) {
         resetUserIdentity();
-  
+
         setUser(null);
         setUserProfile(null);
         setLoading(false);
@@ -335,6 +354,7 @@ export function AuthProvider({ children }) {
       }
       // Logged in
       setUser(user);
+      // Posthog
       identifyUser(user.uid, user.email, user.displayName);
       try {
         const userProfile = await fetchUserProfile(user.uid);
