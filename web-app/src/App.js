@@ -25,6 +25,7 @@ import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import TarifePage from './pages/TarifePage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
+import { pageView } from './services/meta-pixel';
 import './styles/App.css';
 import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
@@ -46,7 +47,7 @@ function AppContent() {
   const { trackPageView } = usePostHogTracking();
   const posthog = usePostHog();
   const location = useLocation();
-  
+
   // Scroll to top on route change
   useScrollToTop();
 
@@ -67,6 +68,10 @@ function AppContent() {
     // Default page view event
     posthog?.capture('$pageview');
   }, [location]);
+
+  useEffect(() => {
+    pageView();
+  }, [location.pathname, location.search]);
 
   return (
     <>
