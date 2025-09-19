@@ -1,13 +1,13 @@
 // src/pages/ResultPage.tsx
-import { useEffect, useMemo, useState } from 'react';
+import ExampleSongsList from 'components/ExampleSongsList';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { isPixelReady, track } from 'services/meta-pixel';
 import SongResultCard from '../components/SongResultCard';
 import SongResultCardSkeleton from '../components/SongResultCardSkeleton';
 import Button from '../components/ui/Button';
-import '../styles/ResultPage.css';
-
-import ExampleSongsList from 'components/ExampleSongsList';
 import { useGenerationStatus } from '../hooks/useGenerationStatus';
+import '../styles/ResultPage.css';
 
 const GIF = '/NeTf.gif';
 
@@ -23,6 +23,8 @@ function useRequestIdFromLocation() {
 export default function ResultPage() {
   const navigate = useNavigate();
   const incomingRequestId = useRequestIdFromLocation();
+  const location = useLocation();
+  const triedRef = useRef(false);
 
   const {
     viewData,
@@ -42,11 +44,6 @@ export default function ResultPage() {
     if (incomingRequestId) {
       setActiveGenerationId(incomingRequestId);
     }
-    // console.log('isGenerationProcessing', isGenerationProcessing);
-    // if (!isGenerationProcessing) {
-    //   navigate('/generate');
-    //   return;
-    // }
   }, [incomingRequestId, activeId, setActiveGenerationId]);
 
   // Derive songIds from the generation view (supports single or multiple)
@@ -87,6 +84,37 @@ export default function ResultPage() {
 
     return () => window.clearInterval(timer);
   }, [viewData?.generationStarted, songIds.length]);
+
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const sessionId = q.get('session_id') || '';
+    const requestId = q.get('request_id') || '';
+    if (!sessionId) return;
+
+    const eventId = requestId ? `${sessionId}:${requestId}` : sessionId;
+    console.log('eventId', eventId);
+    let attempts = 0;
+    const trySend = () => {
+      if (isPixelReady()) {
+        if (triedRef.current) return;
+        triedRef.current = true;
+        // Dedupe happens inside `track` using this eventId
+        track(
+          'Purchase',
+          {
+            value: 24.90,
+            currency: 'RON',
+          },
+          eventId
+        );
+      } else if (attempts < 30) {
+        attempts += 1;
+        setTimeout(trySend, 200); // retry up to ~6s waiting for consent/init
+      }
+    };
+
+    trySend();
+  }, [location.search]);
 
   const statusMsg = useMemo(() => {
     switch (generationStatus) {

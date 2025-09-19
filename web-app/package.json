@@ -18,7 +18,6 @@
     "posthog-js": "^1.259.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-facebook-pixel": "^1.0.4",
     "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^6.30.1",
     "react-scripts": "5.0.1",
