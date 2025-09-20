@@ -23,7 +23,7 @@ function ensureFbqLoaded() {
     };
     if (!f._fbq) f._fbq = n;
     n.push = n;
-    n.loaded = false;
+    n.loaded = true;
     n.version = '2.0';
     n.queue = [];
     t = b.createElement(e);
@@ -50,8 +50,11 @@ export function initPixel(advancedMatching?: AdvancedMatching) {
     return;
   }
   ensureFbqLoaded();
-  // Start in "no consent" mode
-  window.fbq?.('consent', 'revoke');
+  if (isPixelGranted()) {
+    window.fbq?.('consent', 'grant');
+  } else {
+    window.fbq?.('consent', 'revoke');
+  }
   // Init but keep tracking paused
   window.fbq?.('init', pixelId, advancedMatching || {});
   // Keep autoConfig behavior similar to your previous logic
@@ -92,7 +95,6 @@ export function track(
 
   const key = `${event}:${eventId}`;
   if (hasFiredOnce(key, DEFAULT_TTL_MS)) return false;
-
   window.fbq?.('track', event, data, { eventID: eventId });
   console.log(event, data, { eventID: eventId });
   markFiredOnce(key, DEFAULT_TTL_MS);
