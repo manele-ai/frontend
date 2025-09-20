@@ -1,6 +1,6 @@
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
-import { initPixel, revokeConsent } from '../services/meta-pixel';
+import { grantConsentAndStart, revokeConsent } from '../services/meta-pixel';
 import './CookieConsent.css';
 
 const CookieConsent = () => {
@@ -17,7 +17,7 @@ const CookieConsent = () => {
     } else {
       // Apply user's previous choice
       if (hasConsent === 'true') {
-        initPixel();
+        grantConsentAndStart();
         posthog?.opt_in_capturing();
       } else {
         revokeConsent();
@@ -29,7 +29,7 @@ const CookieConsent = () => {
   const handleAccept = () => {
     // Save preference and enable analytics
     localStorage.setItem('cookieConsent', 'true');
-    initPixel();
+    grantConsentAndStart();
     posthog?.opt_in_capturing();
     setShowConsent(false);
     console.log('accepted');

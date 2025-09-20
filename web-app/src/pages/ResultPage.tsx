@@ -2,7 +2,7 @@
 import ExampleSongsList from 'components/ExampleSongsList';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { isPixelReady, track } from 'services/meta-pixel';
+import { isPixelGranted, track } from 'services/meta-pixel';
 import SongResultCard from '../components/SongResultCard';
 import SongResultCardSkeleton from '../components/SongResultCardSkeleton';
 import Button from '../components/ui/Button';
@@ -95,7 +95,7 @@ export default function ResultPage() {
     console.log('eventId', eventId);
     let attempts = 0;
     const trySend = () => {
-      if (isPixelReady()) {
+      if (isPixelGranted()) {
         if (triedRef.current) return;
         triedRef.current = true;
         // Dedupe happens inside `track` using this eventId
