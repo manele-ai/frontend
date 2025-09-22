@@ -28,6 +28,7 @@ jobs:
           REACT_APP_POSTHOG_KEY: phc_ibZxJGpzVpLsgYgg456tursWuvc5wwpZFoMhjaEOkxl
           REACT_APP_POSTHOG_HOST: https://eu.i.posthog.com
           REACT_APP_META_PIXEL_ID: "1876470643221829"
+          REACT_APP_TIKTOK_PIXEL_ID: "D364G03C77U6EMNBLMMG"
         steps:
             - uses: actions/checkout@v3
             - name: Install Node.js
