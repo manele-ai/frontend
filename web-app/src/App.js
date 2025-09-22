@@ -25,7 +25,6 @@ import ProfilePage from './pages/ProfilePage';
 import ResultPage from './pages/ResultPage';
 import TarifePage from './pages/TarifePage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
-import { pageView } from './services/meta-pixel';
 import './styles/App.css';
 import { setupGlobalErrorHandling, usePostHogTracking } from './utils/posthog';
 
@@ -70,7 +69,7 @@ function AppContent() {
   }, [location]);
 
   useEffect(() => {
-    pageView();
+    trackPageView();
   }, [location.pathname, location.search]);
 
   return (

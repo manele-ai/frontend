@@ -2,7 +2,7 @@
 import ExampleSongsList from 'components/ExampleSongsList';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { isPixelGranted, track } from 'services/meta-pixel';
+import { getPixelConsent, trackPurchase } from 'services/pixel';
 import SongResultCard from '../components/SongResultCard';
 import SongResultCardSkeleton from '../components/SongResultCardSkeleton';
 import Button from '../components/ui/Button';
@@ -92,21 +92,12 @@ export default function ResultPage() {
     if (!sessionId) return;
 
     const eventId = requestId ? `${sessionId}:${requestId}` : sessionId;
-    console.log('eventId', eventId);
     let attempts = 0;
     const trySend = () => {
-      if (isPixelGranted()) {
+      if (getPixelConsent() === 'true') {
         if (triedRef.current) return;
         triedRef.current = true;
-        // Dedupe happens inside `track` using this eventId
-        track(
-          'Purchase',
-          {
-            value: 24.90,
-            currency: 'RON',
-          },
-          eventId
-        );
+        trackPurchase({ value: 24.90, currency: 'RON', content_id: 'manea' }, eventId);
       } else if (attempts < 30) {
         attempts += 1;
         setTimeout(trySend, 200); // retry up to ~6s waiting for consent/init

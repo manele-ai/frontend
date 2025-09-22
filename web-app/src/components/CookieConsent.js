@@ -1,6 +1,6 @@
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
-import { grantConsentAndStart, revokeConsent } from '../services/meta-pixel';
+import { grantConsentAndStart } from '../services/pixel';
 import './CookieConsent.css';
 
 const CookieConsent = () => {
@@ -20,7 +20,7 @@ const CookieConsent = () => {
         grantConsentAndStart();
         posthog?.opt_in_capturing();
       } else {
-        revokeConsent();
+        // revokeConsent();
         posthog?.opt_out_capturing();
       }
     }
@@ -40,7 +40,7 @@ const CookieConsent = () => {
     localStorage.setItem('cookieConsent', 'false');
     posthog?.opt_out_capturing();
 
-    revokeConsent();
+    // revokeConsent();
     setShowConsent(false);
     console.log('declined');
   };

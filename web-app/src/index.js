@@ -4,7 +4,7 @@ import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { initPixel } from './services/meta-pixel';
+import { initPixel } from './services/pixel';
 import './styles/App.css';
 
 // How long a persisted snapshot on disk is considered valid for rehydration.
@@ -76,7 +76,7 @@ const queryClient = new QueryClient({
 //   throttleTime: 1000,        // reduce write frequency
 // });
 
-// Init Meta Pixel
+// Init Pixel
 initPixel();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
