@@ -14,7 +14,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { auth, db } from '../../services/firebase';
 import { createUserIfNotExists, updateUserProfile as updateUserProfileCloudFn } from '../../services/firebase/functions';
-import { trackCustom } from '../../services/meta-pixel';
+import { trackSignUp } from '../../services/pixel';
 import { usePostHogTracking } from '../../utils/posthog';
 
 // User context structure
@@ -129,10 +129,7 @@ export function AuthProvider({ children }) {
       // Posthog
       captureSignUp('email', true, user.metadata.creationTime);
       // Pixel
-      trackCustom('sign_up', {
-        method: 'email',
-        uid: user.uid,
-      });
+      trackSignUp(user.uid);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -153,10 +150,7 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('email', true, user.metadata.creationTime);
-      trackCustom('sign_in', {
-        method: 'email',
-        uid: user.uid,
-      });
+      trackSignUp(user.uid);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -181,10 +175,7 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('google', true, user.metadata.creationTime);
-      trackCustom('sign_in', {
-        method: 'google',
-        uid: user.uid,
-      });
+      trackSignUp(user.uid);
     } catch (error) {
       const errorMessage = getAuthErrorMessage(error.code);
       setError(errorMessage);
@@ -322,10 +313,7 @@ export function AuthProvider({ children }) {
       await fetchOrCreateUserProfile(user);
 
       captureSignIn('phone', true, user.metadata.creationTime);
-      trackCustom('sign_in', {
-        method: 'phone',
-        uid: user.uid,
-      });
+      trackSignUp(user.uid);
     } catch (error) {
       console.error('Phone verification error:', error);
       captureSignIn('phone', false);
