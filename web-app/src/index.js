@@ -19,7 +19,7 @@ const DEFAULT_GARBAGE_COLLECTION_TIME = 1000 * 60 * 60 * 24; // 5 minutes
 const options = {
   api_host: process.env.REACT_APP_POSTHOG_HOST || 'https://eu.i.posthog.com',
   capture_pageview: false, // we track it manually
-  opt_out_capturing_by_default: true, // disable capturing by default
+  opt_out_capturing_by_default: false, // disable capturing by default
 };
 
 // --- Error fallback component (unchanged) ---
