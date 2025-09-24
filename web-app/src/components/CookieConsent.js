@@ -21,7 +21,7 @@ const CookieConsent = () => {
         posthog?.opt_in_capturing();
       } else {
         // revokeConsent();
-        posthog?.opt_out_capturing();
+        // posthog?.opt_out_capturing();
       }
     }
   }, [posthog]);
